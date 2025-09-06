@@ -188,6 +188,20 @@
   h6 {
     @apply text-xs sm:text-sm md:text-base lg:text-lg;
   }
+
+  /* Ensure interactive elements show pointer cursor */
+  a[href] {
+    @apply cursor-pointer;
+  }
+  button:enabled,
+  [type='button']:enabled,
+  [type='submit']:enabled,
+  [role='button'] {
+    cursor: pointer;
+  }
+  [role='link'] {
+    cursor: pointer;
+  }
 }
 
 /* containerのスタイル */

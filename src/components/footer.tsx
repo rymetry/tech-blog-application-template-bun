@@ -10,12 +10,12 @@ export default function Footer() {
             <Link href="/" className="logo-text" aria-label="Tech Blog Home">
               Tech Blog
             </Link>
-            <p className="text-sm sm:text-sm md:text-base text-muted-foreground mt-2">
+            <p className="text-sm sm:text-sm md:text-base text-muted-foreground pt-2 md:pt-3">
               Sharing knowledge and insights in the tech world
             </p>
           </div>
           <div className="flex-col">
-            <div className="flex gap-4" aria-label="Social media links">
+            <div className="flex gap-1" aria-label="Social media links">
               <Link
                 href="https://facebook.com"
                 target="_blank"
@@ -23,7 +23,7 @@ export default function Footer() {
                 className="text-muted-foreground hover:text-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded-md p-2 sm:p-3 min-w-[44px] min-h-[44px] flex items-center justify-center"
                 aria-label="Facebook"
               >
-                <BsFacebook className="h-5 w-5 sm:h-6 sm:w-6" aria-hidden="true" />
+                <BsFacebook className="h-5 w-5" aria-hidden="true" />
               </Link>
               <Link
                 href="https://instagram.com"
@@ -32,7 +32,7 @@ export default function Footer() {
                 className="text-muted-foreground hover:text-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded-md p-2 sm:p-3 min-w-[44px] min-h-[44px] flex items-center justify-center"
                 aria-label="Instagram"
               >
-                <BsInstagram className="h-5 w-5 sm:h-6 sm:w-6" aria-hidden="true" />
+                <BsInstagram className="h-5 w-5" aria-hidden="true" />
               </Link>
               <Link
                 href="https://twitter.com"
@@ -41,7 +41,7 @@ export default function Footer() {
                 className="text-muted-foreground hover:text-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded-md p-2 sm:p-3 min-w-[44px] min-h-[44px] flex items-center justify-center"
                 aria-label="Twitter"
               >
-                <BsTwitterX className="h-5 w-5 sm:h-6 sm:w-6" aria-hidden="true" />
+                <BsTwitterX className="h-5 w-5" aria-hidden="true" />
               </Link>
               <Link
                 href="https://github.com"
@@ -50,22 +50,22 @@ export default function Footer() {
                 className="text-muted-foreground hover:text-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded-md p-2 sm:p-3 min-w-[44px] min-h-[44px] flex items-center justify-center"
                 aria-label="GitHub"
               >
-                <BsGithub className="h-5 w-5 sm:h-6 sm:w-6" aria-hidden="true" />
+                <BsGithub className="h-5 w-5" aria-hidden="true" />
               </Link>
               <Link
                 href="/contact"
                 className="text-muted-foreground hover:text-primary transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded-md p-2 sm:p-3 min-w-[44px] min-h-[44px] flex items-center justify-center"
                 aria-label="Contact us"
               >
-                <BsMailbox className="h-5 w-5 sm:h-6 sm:w-6" aria-hidden="true" />
+                <BsMailbox className="h-5 w-5" aria-hidden="true" />
               </Link>
             </div>
-            <div>
+            <div className="w-full text-center md:text-right md:pr-3">
               <Link
                 href="https://icons.getbootstrap.com/"
                 className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded-md"
               >
-                <p className="text-xs sm:text-sm text-muted-foreground mt-2">
+                <p className="text-xs sm:text-sm text-muted-foreground">
                   icons by Bootstrap icons
                 </p>
               </Link>
