@@ -33,7 +33,7 @@ export default function Home() {
         <SectionContainer>
           <div className="flex flex-col gap-8 md:gap-12">
             <div className="text-center">
-              <h2 className="font-bold tracking-tighter">
+              <h2 className="font-bold tracking-tight">
                 Latest Articles
               </h2>
               <p className="subtitle-description text-muted-foreground mt-2">
@@ -61,7 +61,7 @@ export default function Home() {
         <SectionContainer>
           <div className="flex flex-col gap-8 md:gap-12">
             <div className="text-center">
-              <h2 className="font-bold tracking-tighter">
+              <h2 className="font-bold tracking-tight">
                 Core Features
               </h2>
               <p className="subtitle-description text-muted-foreground mt-2">

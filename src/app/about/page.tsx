@@ -15,7 +15,7 @@ export default async function AboutPage() {
       <SectionContainer className="py-8 sm:py-10 md:py-12">
         <div className="grid gap-12 sm:gap-16">
           <section>
-            <h2 className="text-center font-bold tracking-tighter mb-6">
+            <h2 className="text-center font-bold tracking-tight mb-6">
               About the Author
             </h2>
             <div className="grid gap-8 lg:grid-cols-[200px_1fr] items-start">
@@ -49,7 +49,7 @@ export default async function AboutPage() {
           </section>
 
           <section>
-            <h2 className="text-center font-bold tracking-tighter mb-6">
+            <h2 className="text-center font-bold tracking-tight mb-6">
               Website Concept
             </h2>
             <div className="space-y-4">
