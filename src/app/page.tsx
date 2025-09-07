@@ -47,8 +47,8 @@ export default function Home() {
               <LatestPosts />
             </Suspense>
 
-            <div className="flex justify-center">
-              <Link href="/blog" className="block w-full max-w-96 sm:max-w-44">
+            <div className="flex justify-center mt-8">
+              <Link href="/blog" className="block w-full max-w-96">
                 <Button size="lg" className="gap-1 btn-text w-full">
                   View All Articles
                 </Button>
