@@ -8,7 +8,7 @@ import { Suspense } from 'react';
 export default function Home() {
   return (
     <div className="flex flex-col min-h-screen">
-      {/* Hero section */}
+      {/* Heroセクション */}
       <PageHero
         title="Tech Blog for Modern Developers"
         description="Discover the latest trends, deep dives, and practical knowledge in software engineering and technology."
