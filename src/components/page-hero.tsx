@@ -41,7 +41,7 @@ export function PageHero({
           {description ? (
             <p
               className={cn(
-                'text-base sm:text-lg md:text-xl text-muted-foreground',
+                'text-base sm:text-[17px] md:text-lg lg:text-xl text-muted-foreground',
                 descriptionClassName,
               )}
             >
