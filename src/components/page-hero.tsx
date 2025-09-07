@@ -32,7 +32,7 @@ export function PageHero({
         <div className="max-w-3xl mx-auto space-y-4">
           <h1
             className={cn(
-              'text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tighter',
+              'text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold tracking-tight',
               titleClassName,
             )}
           >
@@ -41,7 +41,7 @@ export function PageHero({
           {description ? (
             <p
               className={cn(
-                'text-base sm:text-lg md:text-xl text-muted-foreground',
+                'text-base sm:text-[17px] md:text-lg lg:text-xl text-muted-foreground',
                 descriptionClassName,
               )}
             >

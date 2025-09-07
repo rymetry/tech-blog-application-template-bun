@@ -46,7 +46,7 @@ export default async function BlogPostPage(props: BlogPostPageProps) {
 
     return (
       <>
-        <section className="w-full pt-32 pb-12 md:pt-40 md:pb-16 diagonal-background">
+        <section className="w-full pt-24 pb-12 md:pt-32 md:pb-16 diagonal-background">
           <div className="container text-center">
             <div className="max-w-3xl mx-auto space-y-4">
               <div className="mb-10 max-w-[360px] mx-auto">
@@ -60,10 +60,10 @@ export default async function BlogPostPage(props: BlogPostPageProps) {
                   sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 360px"
                 />
               </div>
-              <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tighter">
+              <h1 className="font-bold tracking-tight">
                 {post.title}
               </h1>
-              <div className="flex flex-wrap justify-center gap-4 mb-4 mt-4" aria-label="Tags">
+              <div className="flex flex-wrap justify-center gap-4 mb-4 mt-4 md:my-5 lg:my-6" aria-label="Tags">
                 {post.tags?.map((tag) => (
                   <Link
                     href={`/blog?tag=${tag.id}`}

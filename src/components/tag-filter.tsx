@@ -38,7 +38,7 @@ export function TagFilter({ tags }: TagFilterProps) {
           key={tag.id}
           onClick={() => handleTagClick(tag.id)}
           className={cn(
-            'tag-text px-2.5 py-1 rounded-full transition-colors flex items-center gap-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2',
+            'tag-text px-2.5 py-1 rounded-full transition-colors flex items-center gap-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 cursor-pointer',
             isSelected
               ? 'bg-primary text-primary-foreground'
               : 'bg-primary/10 text-primary hover:bg-primary/20',

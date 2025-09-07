@@ -108,14 +108,12 @@ function PaginationContent({ totalPages, currentPage }: PaginationProps) {
         return (
           <Button
             key={page}
-            variant="outline"
+            variant={isCurrentPage ? 'default' : 'outline'}
             size="sm"
             onClick={() => handlePageChange(pageNum)}
             className={cn(
-              'h-8 w-8 bg-secondary/70 border-border/30 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2',
-              isCurrentPage
-                ? 'bg-primary text-primary-foreground hover:bg-primary/90 border-primary'
-                : '',
+              'h-8 w-8 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2',
+              isCurrentPage ? 'border-primary' : 'bg-secondary/70 border-border/30',
             )}
             aria-label={`Page ${pageNum}`}
             aria-current={isCurrentPage ? 'page' : undefined}
