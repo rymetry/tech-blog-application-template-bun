@@ -23,6 +23,7 @@ const EnvSchema = z.object({
   REVALIDATE_SECRET: z
     .string({ required_error: 'REVALIDATE_SECRET is required' })
     .min(10, 'REVALIDATE_SECRET must be at least 10 characters'),
+  // オプションのキーは未定義を受け入れるが、指定された場合に空白のみの値に対しては依然としてガードする。
   RESEND_API_KEY: z.string().min(1, 'RESEND_API_KEY cannot be empty').optional(),
   CONTACT_TO: z.string().email('CONTACT_TO must be a valid email').optional(),
   TURNSTILE_SECRET_KEY: z
@@ -31,6 +32,8 @@ const EnvSchema = z.object({
     .optional(),
 });
 
+// 環境変数の値をトリミングし、空白を未定義に折りたたむことで、オプションのスキーマフィールドがオプションのまま維持されるようにする。
+// キーに特別な正規化が必要な場合（例：スラッグの小文字化）、このヘルパーを拡張する。
 const normalize = (value: string | undefined): string | undefined => {
   const trimmed = value?.trim();
   return trimmed ? trimmed : undefined;
