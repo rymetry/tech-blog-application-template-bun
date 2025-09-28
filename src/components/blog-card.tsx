@@ -1,8 +1,8 @@
 import { Author } from '@/components/author';
+import { SafeImage } from '@/components/safe-image';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { formatDate } from '@/lib/utils';
 import type { BlogPost } from '@/types';
-import Image from 'next/image';
 import Link from 'next/link';
 import { BsArrowClockwise, BsCalendar2Check, BsTag } from 'react-icons/bs';
 
@@ -20,10 +20,10 @@ export function BlogCard({ post, priority = false }: BlogCardProps) {
     >
       <Card className="h-full overflow-hidden border-border/30 bg-card/60 hover:border-primary/50 focus-within:border-primary/50 transition-all duration-300 group-hover:scale-98 group-active:scale-95 group-focus-visible:ring-2 group-focus-visible:ring-primary group-focus-visible:ring-offset-2 shadow-sm py-0">
         <div className="relative w-full aspect-[8/5] overflow-hidden">
-          <Image
+          <SafeImage
             src={post.coverImage.url || '/placeholder.svg'}
-            alt=""
-            aria-hidden="true"
+            alt={`Cover image for ${post.title}`}
+            fallbackAlt={`Placeholder cover for ${post.title}`}
             fill
             priority={priority}
             sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw"

@@ -1,10 +1,10 @@
 'use client';
 
 import { Author } from '@/components/author';
+import { SafeImage } from '@/components/safe-image';
 import { Card } from '@/components/ui/card';
 import { formatDate } from '@/lib/utils';
 import type { BlogPost } from '@/types';
-import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
 import { BsArrowClockwise, BsCalendar2Check, BsTag } from 'react-icons/bs';
@@ -24,10 +24,10 @@ export const RelatedPostCard = React.memo(function RelatedPostCard({ post }: Rel
         <div className="flex flex-col sm:flex-row">
           <div className="relative w-full sm:w-[330px] overflow-hidden">
             <div className="aspect-[8/5] w-full">
-              <Image
+              <SafeImage
                 src={post.coverImage.url || '/placeholder.svg'}
-                alt=""
-                aria-hidden="true"
+                alt={`Cover image for ${post.title}`}
+                fallbackAlt={`Placeholder cover for ${post.title}`}
                 fill
                 sizes="(max-width: 640px) 100vw, 330px"
                 loading="lazy"

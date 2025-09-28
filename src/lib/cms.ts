@@ -4,7 +4,9 @@ import { ENV } from './env';
 import {
   PostListSchema,
   TagListSchema,
+  PostSchema,
   SlugListSchema,
+  type CMSPost,
   type CMSPostList,
   type CMSSlugList,
   type CMSTagList,
@@ -27,9 +29,10 @@ const cmsHeaders = {
 async function fetchFromCMS<T>(
   endpoint: string,
   params: FetchParams = {},
-  { revalidate = DEFAULT_REVALIDATE, tags = [] }: FetchOptions = {},
+  options: FetchOptions = {},
   parser: (data: unknown) => T,
 ): Promise<T> {
+  const { revalidate = DEFAULT_REVALIDATE, tags = [] } = options;
   const url = new URL(`${CMS_BASE_URL}/${endpoint}`);
   const search = new URLSearchParams();
 
@@ -94,26 +97,41 @@ export async function getPosts(params: GetPostsParams = {}): Promise<GetPostsRes
 }
 
 export async function getPostBySlug(slug: string): Promise<BlogPost> {
-  const { items } = await getPosts({ filters: `slug[equals]${slug}`, limit: 1 });
-  const post = items[0];
-
-  if (!post) {
-    throw new Error(`Post not found for slug: ${slug}`);
+  try {
+    const { items } = await getPosts({ filters: `slug[equals]${slug}`, limit: 1 });
+    if (items[0]) {
+      return items[0];
+    }
+  } catch (error) {
+    console.error('Error fetching post by slug:', error);
   }
 
-  return post;
+  try {
+    const post = await fetchFromCMS<CMSPost>(
+      `blogs/${slug}`,
+      { depth: 3 },
+      { revalidate: DEFAULT_REVALIDATE, tags: ['posts'] },
+      PostSchema.parse,
+    );
+
+    return adaptBlog(post);
+  } catch (error) {
+    console.error('Fallback fetch by ID failed:', error);
+  }
+
+  throw new Error(`Post not found for slug or id: ${slug}`);
 }
 
 export async function getAllPostSlugs(): Promise<string[]> {
   try {
     const data = await fetchFromCMS<CMSSlugList>(
       'blogs',
-      { limit: 100, orders: '-publishedAt', fields: 'slug' },
+      { limit: 100, orders: '-publishedAt', fields: 'id,slug' },
       { revalidate: DEFAULT_REVALIDATE, tags: ['posts'] },
       SlugListSchema.parse,
     );
 
-    return data.contents.map((post) => post.slug);
+    return data.contents.map((post) => post.slug || post.id);
   } catch (error) {
     console.error('Error fetching post slugs:', error);
     return [];
