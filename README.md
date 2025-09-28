@@ -89,6 +89,20 @@ microCMS 連携について
 - 記事一覧: `getPosts`
 - 記事詳細: `getPostById`
 - タグ一覧: `getTags`
+- microCMS の Webhook で `/api/revalidate` を叩き、配信中サイトのキャッシュを更新できます（`x-revalidate-secret` ヘッダーに `REVALIDATE_SECRET` を設定）。
+  - Webhook 設定例（microCMS 管理画面）
+    1. 対象サービスの「API 設定」→「Webhook」を開く
+    2. URL に `https://<YOUR_DOMAIN>/api/revalidate` を指定
+    3. HTTP Method は `POST`
+    4. HTTP Header に `x-revalidate-secret: <REVALIDATE_SECRET>` を追加
+    5. 監視イベント（公開・更新・削除など）を有効化して保存
+  - 手動検証用 cURL 例
+
+    ```bash
+    curl -X POST \
+      -H "x-revalidate-secret: $REVALIDATE_SECRET" \
+      https://your-domain.example.com/api/revalidate
+    ```
 
 UI / スタイル
 - Tailwind CSS v4 を使用（`src/app/globals.css` に `@tailwind` と `@plugin "@tailwindcss/typography"` を記述）
