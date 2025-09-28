@@ -1,6 +1,7 @@
 import { BlogCard } from '@/components/blog-card';
 import { Pagination } from '@/components/pagination';
 import { getPosts } from '@/lib/cms';
+import { Suspense } from 'react';
 
 type SearchParams = {
   page?: string;
@@ -47,7 +48,9 @@ export async function BlogPostsList({ searchParams }: { searchParams: SearchPara
       </div>
       {totalPages > 1 && (
         <div className="mt-8">
-          <Pagination totalPages={totalPages} currentPage={page} />
+          <Suspense fallback={<div className="text-center">Loading pagination...</div>}>
+            <Pagination totalPages={totalPages} currentPage={page} />
+          </Suspense>
         </div>
       )}
     </>
