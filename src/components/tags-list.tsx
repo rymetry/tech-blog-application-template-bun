@@ -1,7 +1,7 @@
 import { TagFilter } from '@/components/tag-filter';
-import { getTags } from '@/lib/api';
+import { getTags } from '@/lib/cms';
 
 export async function TagsList() {
-  const { contents: tags } = await getTags();
+  const tags = await getTags();
   return <TagFilter tags={tags} />;
 }

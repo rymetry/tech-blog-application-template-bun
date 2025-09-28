@@ -1,7 +1,7 @@
 import { Author } from '@/components/author';
 import { PrevNextPosts } from '@/components/prev-next-posts';
 import { RelatedPosts } from '@/components/related-posts';
-import { getBlogPost } from '@/lib/api';
+import { getPostById } from '@/lib/cms';
 import { formatDate } from '@/lib/utils';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -18,7 +18,7 @@ interface BlogPostPageProps {
 export async function generateMetadata(props: BlogPostPageProps) {
   const params = await props.params;
   try {
-    const post = await getBlogPost(params.id);
+    const post = await getPostById(params.id);
 
     return {
       title: post.title,
@@ -42,7 +42,7 @@ export async function generateMetadata(props: BlogPostPageProps) {
 export default async function BlogPostPage(props: BlogPostPageProps) {
   const params = await props.params;
   try {
-    const post = await getBlogPost(params.id);
+    const post = await getPostById(params.id);
 
     return (
       <>
