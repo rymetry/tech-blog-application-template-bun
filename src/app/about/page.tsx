@@ -22,8 +22,9 @@ export default async function AboutPage() {
               <div className="relative w-40 h-40 rounded-full overflow-hidden mx-auto lg:mx-0 shadow-md">
                 <Image
                   src="/placeholder.svg?height=160&width=160"
-                  alt="Author"
+                  alt="Portrait of John Doe"
                   fill
+                  sizes="160px"
                   className="object-cover"
                 />
               </div>

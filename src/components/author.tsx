@@ -37,7 +37,7 @@ export function Author({ author, size = 'md', showName = true, compact = false }
   return (
     <div className="flex items-center gap-2" aria-label={`Author: ${authorName}`}>
       <Avatar className={sizeClasses[size]}>
-        {author.image?.url ? <AvatarImage src={author.image.url} alt="" loading="lazy" /> : null}
+        {author.image?.url ? <AvatarImage src={author.image.url} alt={authorName} loading="lazy" /> : null}
         <AvatarFallback>{authorInitial}</AvatarFallback>
       </Avatar>
       {showName && <span className={nameClasses}>{authorName}</span>}

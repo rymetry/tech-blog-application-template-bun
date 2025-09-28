@@ -22,11 +22,10 @@ export function BlogCard({ post, priority = false }: BlogCardProps) {
         <div className="relative w-full aspect-[8/5] overflow-hidden">
           <FallbackImage
             src={post.coverImage.url || '/placeholder.svg'}
-            alt=""
-            aria-hidden="true"
+            alt={post.title}
             fill
             priority={priority}
-            sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw"
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
             className="object-cover transition-transform duration-300 group-hover:scale-105"
           />
         </div>

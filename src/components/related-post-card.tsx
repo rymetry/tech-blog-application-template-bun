@@ -26,8 +26,7 @@ export const RelatedPostCard = React.memo(function RelatedPostCard({ post }: Rel
             <div className="aspect-[8/5] w-full">
               <FallbackImage
                 src={post.coverImage.url || '/placeholder.svg'}
-                alt=""
-                aria-hidden="true"
+                alt={post.title}
                 fill
                 sizes="(max-width: 640px) 100vw, 330px"
                 loading="lazy"
