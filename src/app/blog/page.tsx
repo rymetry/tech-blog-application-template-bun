@@ -6,26 +6,10 @@ import { TagsList } from '@/components/tags-list';
 import { getSiteDescription, getSiteName, getSiteUrl } from '@/lib/seo';
 import type { Metadata } from 'next';
 import { Suspense } from 'react';
-import { z } from 'zod';
 
 const siteName = getSiteName();
 const siteDescription = getSiteDescription();
 const siteUrl = getSiteUrl();
-
-const searchParamsSchema = z.object({
-  page: z
-    .string()
-    .optional()
-    .transform((value) => {
-      if (!value) return undefined;
-      const parsed = Number.parseInt(value, 10);
-      return Number.isNaN(parsed) || parsed < 1 ? undefined : parsed;
-    }),
-  tag: z.string().optional(),
-  q: z.string().optional(),
-});
-
-export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
   title: 'Blog',
@@ -47,20 +31,26 @@ export const metadata: Metadata = {
 };
 
 interface BlogPageProps {
-  searchParams: Promise<{ page?: string; tag?: string; q?: string }>;
+  searchParams: Promise<{
+    page?: string;
+    tag?: string;
+    q?: string;
+  }>;
 }
 
+// SearchFormをラップするクライアントコンポーネント
+function SearchFormWrapper() {
+  return (
+    <Suspense fallback={<div>Loading search...</div>}>
+      <SearchForm />
+    </Suspense>
+  );
+}
+
+// 取得系は外部コンポーネントに分離
+
 export default async function BlogPage(props: BlogPageProps) {
-  const rawParams = await props.searchParams;
-  const parsedResult = searchParamsSchema.safeParse(rawParams ?? {});
-  const parsedParams = parsedResult.success ? parsedResult.data : {};
-
-  const normalizedParams = {
-    page: parsedParams.page ? String(parsedParams.page) : undefined,
-    tag: parsedParams.tag,
-    q: parsedParams.q,
-  };
-
+  const searchParams = await props.searchParams;
   return (
     <>
       <PageHero
@@ -73,19 +63,21 @@ export default async function BlogPage(props: BlogPageProps) {
           <div className="space-y-8">
             <div>
               <h2 className="text-lg sm:text-xl md:text-2xl font-medium mb-4">Search</h2>
-              <SearchForm />
+              <SearchFormWrapper />
             </div>
 
             <div>
               <h2 className="text-lg sm:text-xl md:text-2xl font-medium mb-4">Tags</h2>
-              <Suspense fallback={null}>
+              <Suspense fallback={<div>Loading tags...</div>}>
                 <TagsList />
               </Suspense>
             </div>
           </div>
 
           <div className="space-y-8 sm:space-y-10">
-            <BlogPostsList searchParams={normalizedParams} />
+            <Suspense fallback={<div className="py-10 text-center">Loading posts...</div>}>
+              <BlogPostsList searchParams={searchParams} />
+            </Suspense>
           </div>
         </div>
       </SectionContainer>

@@ -79,8 +79,7 @@ export const TagListSchema = z.object({
 });
 
 export const SlugSchema = z.object({
-  id: z.string(),
-  slug: z.string().optional(),
+  slug: z.string(),
 });
 
 export const SlugListSchema = z.object({

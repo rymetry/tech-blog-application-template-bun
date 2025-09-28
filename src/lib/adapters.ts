@@ -28,7 +28,7 @@ export function adaptBlog(blog: CMSPost | CMSRelatedPost): BlogPost {
   return {
     id: blog.id,
     title: blog.title,
-    slug: blog.slug || blog.id,
+    slug: blog.slug,
     excerpt: blog.excerpt ?? '',
     publishedAt: blog.publishedAt,
     updatedAt: blog.updatedAt ?? blog.publishedAt,
@@ -72,7 +72,7 @@ export function adaptBlog(blog: CMSPost | CMSRelatedPost): BlogPost {
       return relatedRaw.map((relatedBlog) => ({
         id: relatedBlog.id,
         title: relatedBlog.title,
-        slug: relatedBlog.slug || relatedBlog.id,
+        slug: relatedBlog.slug,
         excerpt: relatedBlog.excerpt ?? '',
         publishedAt: relatedBlog.publishedAt,
         updatedAt: relatedBlog.updatedAt ?? relatedBlog.publishedAt,
