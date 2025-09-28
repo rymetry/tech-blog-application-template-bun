@@ -43,7 +43,7 @@ export async function BlogPostsList({ searchParams }: { searchParams: SearchPara
     <>
       <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
         {posts.map((post, index) => (
-          <BlogCard key={post.id} post={post} priority={index < 2} />
+          <BlogCard key={post.slug} post={post} priority={index < 2} />
         ))}
       </div>
       {totalPages > 1 && (

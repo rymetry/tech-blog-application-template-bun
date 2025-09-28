@@ -16,9 +16,9 @@ interface RelatedPostCardProps {
 export const RelatedPostCard = React.memo(function RelatedPostCard({ post }: RelatedPostCardProps) {
   return (
     <Link
-      href={`/blog/${post.id}`}
+      href={`/blog/${post.slug}`}
       className="group block max-w-[830px] mx-auto w-full focus-visible:outline-none"
-      aria-labelledby={`related-title-${post.id}`}
+      aria-labelledby={`related-title-${post.slug}`}
     >
       <Card className="h-full overflow-hidden border-border/30 bg-card/60 hover:border-primary/50 focus-within:border-primary/50 transition-all duration-300 group-hover:scale-98 group-active:scale-95 group-focus-visible:ring-2 group-focus-visible:ring-primary group-focus-visible:ring-offset-2 shadow-sm py-0">
         <div className="flex flex-col sm:flex-row">
@@ -38,7 +38,7 @@ export const RelatedPostCard = React.memo(function RelatedPostCard({ post }: Rel
           <div className="p-4 sm:p-5 flex flex-col justify-between sm:flex-1">
             <div>
               <h3
-                id={`related-title-${post.id}`}
+                id={`related-title-${post.slug}`}
                 className="card-title group-hover:text-primary transition-colors line-clamp-2 mb-2"
               >
                 {post.title}

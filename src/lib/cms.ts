@@ -4,9 +4,7 @@ import { ENV } from './env';
 import {
   PostListSchema,
   TagListSchema,
-  PostSchema,
   SlugListSchema,
-  type CMSPost,
   type CMSPostList,
   type CMSSlugList,
   type CMSTagList,
@@ -104,17 +102,6 @@ export async function getPostBySlug(slug: string): Promise<BlogPost> {
   }
 
   return post;
-}
-
-export async function getPostById(id: string): Promise<BlogPost> {
-  const post = await fetchFromCMS<CMSPost>(
-    `blogs/${id}`,
-    { depth: 3 },
-    { revalidate: DEFAULT_REVALIDATE, tags: ['posts'] },
-    PostSchema.parse,
-  );
-
-  return adaptBlog(post);
 }
 
 export async function getAllPostSlugs(): Promise<string[]> {
