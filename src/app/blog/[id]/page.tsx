@@ -1,8 +1,7 @@
 import { Author } from '@/components/author';
 import { PrevNextPosts } from '@/components/prev-next-posts';
 import { RelatedPosts } from '@/components/related-posts';
-import { getPostBySlug } from '@/lib/cms';
-import { buildBlogPostingJsonLd, buildBreadcrumbJsonLd, getSiteUrl, serializeJsonLd } from '@/lib/seo';
+import { getPostById } from '@/lib/cms';
 import { formatDate } from '@/lib/utils';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -12,16 +11,14 @@ import { BsArrowClockwise, BsCalendar2Check, BsTag } from 'react-icons/bs';
 
 interface BlogPostPageProps {
   params: Promise<{
-    slug: string;
+    id: string;
   }>;
 }
 
 export async function generateMetadata(props: BlogPostPageProps) {
   const params = await props.params;
   try {
-    const post = await getPostBySlug(params.slug);
-    const siteUrl = getSiteUrl();
-    const canonicalUrl = new URL(`/blog/${post.slug}`, siteUrl).toString();
+    const post = await getPostById(params.id);
 
     return {
       title: post.title,
@@ -29,17 +26,7 @@ export async function generateMetadata(props: BlogPostPageProps) {
       openGraph: {
         title: post.title,
         description: post.excerpt,
-        url: canonicalUrl,
-        type: 'article',
         images: [{ url: post.coverImage.url }],
-      },
-      twitter: {
-        card: 'summary_large_image',
-        title: post.title,
-        description: post.excerpt,
-      },
-      alternates: {
-        canonical: canonicalUrl,
       },
     };
   } catch {
@@ -55,17 +42,7 @@ export async function generateMetadata(props: BlogPostPageProps) {
 export default async function BlogPostPage(props: BlogPostPageProps) {
   const params = await props.params;
   try {
-    const post = await getPostBySlug(params.slug);
-    const siteUrl = getSiteUrl();
-    const canonicalUrl = new URL(`/blog/${post.slug}`, siteUrl).toString();
-    const breadcrumbJsonLd = serializeJsonLd(
-      buildBreadcrumbJsonLd([
-        { name: 'Home', url: siteUrl },
-        { name: 'Blog', url: `${siteUrl}/blog` },
-        { name: post.title, url: canonicalUrl },
-      ]),
-    );
-    const blogPostingJsonLd = serializeJsonLd(buildBlogPostingJsonLd(post));
+    const post = await getPostById(params.id);
 
     return (
       <>
@@ -144,19 +121,9 @@ export default async function BlogPostPage(props: BlogPostPageProps) {
           </Suspense>
 
           <Suspense fallback={<div className="py-8 text-center">Loading navigation...</div>}>
-            <PrevNextPosts postSlug={post.slug} />
+            <PrevNextPosts postId={params.id} />
           </Suspense>
         </article>
-        <script
-          type="application/ld+json"
-          suppressHydrationWarning
-          dangerouslySetInnerHTML={{ __html: breadcrumbJsonLd }}
-        />
-        <script
-          type="application/ld+json"
-          suppressHydrationWarning
-          dangerouslySetInnerHTML={{ __html: blogPostingJsonLd }}
-        />
       </>
     );
   } catch (error) {

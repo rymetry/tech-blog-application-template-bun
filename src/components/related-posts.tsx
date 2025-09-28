@@ -17,7 +17,7 @@ export async function RelatedPosts({ relatedPosts }: { relatedPosts: BlogPost[] 
       </h2>
       <div className="flex flex-col gap-4">
         {relatedPosts.map((relatedPost) => (
-          <RelatedPostCard key={relatedPost.slug} post={relatedPost} />
+          <RelatedPostCard key={relatedPost.id} post={relatedPost} />
         ))}
       </div>
     </section>

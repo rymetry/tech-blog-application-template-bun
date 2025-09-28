@@ -3,32 +3,7 @@ import { PageHero } from '@/components/page-hero';
 import { SearchForm } from '@/components/search-form';
 import { SectionContainer } from '@/components/section-container';
 import { TagsList } from '@/components/tags-list';
-import { getSiteDescription, getSiteName, getSiteUrl } from '@/lib/seo';
-import type { Metadata } from 'next';
 import { Suspense } from 'react';
-
-const siteName = getSiteName();
-const siteDescription = getSiteDescription();
-const siteUrl = getSiteUrl();
-
-export const metadata: Metadata = {
-  title: 'Blog',
-  description: siteDescription,
-  alternates: {
-    canonical: '/blog',
-  },
-  openGraph: {
-    title: `${siteName} Blog`,
-    description: siteDescription,
-    url: `${siteUrl}/blog`,
-    type: 'website',
-  },
-  twitter: {
-    card: 'summary_large_image',
-    title: `${siteName} Blog`,
-    description: siteDescription,
-  },
-};
 
 interface BlogPageProps {
   searchParams: Promise<{
