@@ -18,7 +18,7 @@ Tech Blog Application Template (Next.js + microCMS)
 - `public`：静的アセット
 
 必要要件
-- Node.js 18+（または Bun）
+- Node.js 18+（または Bun 1.1+ 推奨）
 - パッケージマネージャ（npm / pnpm / yarn / bun のいずれか）
 - microCMS のサービス（Service Domain と API Key）
 
@@ -28,16 +28,25 @@ Tech Blog Application Template (Next.js + microCMS)
    - pnpm: `pnpm install`
    - yarn: `yarn install`
    - bun: `bun install`
+   - Playwright（ブラウザ依存の取得）: `bunx playwright install --with-deps`
 
 2) 環境変数の設定（必須）
-   ルートに `.env.local` を作成し、以下を設定してください：
+   `.env.example` を `.env.local` にコピーし、環境に合わせて値を更新します：
 
-   ```env
-   MICROCMS_SERVICE_DOMAIN=your-service-domain
-   MICROCMS_API_KEY=your-api-key
+   ```bash
+   cp .env.example .env.local
    ```
 
-   補足: `src/lib/microcms.ts` で未設定時に警告を出します。画像の最適化は `next.config.ts` で `images.microcms-assets.io` を許可しています。
+   設定するキーは以下のとおりです（★は必須）：
+   - ★ `NEXT_PUBLIC_BASE_URL`：サイトの公開 URL（例: `http://localhost:3000`）
+   - ★ `MICROCMS_SERVICE_DOMAIN`：microCMS のサービスドメイン
+   - ★ `MICROCMS_API_KEY`：microCMS の API キー
+   - ★ `REVALIDATE_SECRET`：Webhook などで利用する再検証用シークレット（十分な長さのランダム文字列を推奨）
+   - `RESEND_API_KEY`：問い合わせメール送信に利用（未使用なら空のままで可）
+   - `CONTACT_TO`：問い合わせメールを受け取る宛先アドレス
+   - `TURNSTILE_SECRET_KEY`：Cloudflare Turnstile を利用する場合のシークレットキー
+
+   編集後に `bun run build` を実行すると、必須キーが欠けている場合は `src/lib/env.ts` が明示的なエラーメッセージを表示して処理を中断します。
 
 3) 開発サーバの起動
 
@@ -59,8 +68,12 @@ Tech Blog Application Template (Next.js + microCMS)
 - `dev`: `next dev --turbopack`
 - `build`: `next build`
 - `start`: `next start`
-- `lint`: `next lint`
+- `lint`: `eslint .`
 - `format`: `prettier --write "**/*.{js,jsx,ts,tsx,json,css,md}"`
+- `typecheck`: `tsc -p tsconfig.json --noEmit`
+- `test`: `bun test`
+- `e2e`: `bunx playwright test`
+- `a11y`: `bunx playwright test -g "a11y"`
 
 Lint / Format
 - ESLint: Flat config（`eslint.config.mjs`）。`next/core-web-vitals` と `next/typescript`、`prettier` を拡張
