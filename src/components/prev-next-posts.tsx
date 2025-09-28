@@ -1,5 +1,5 @@
 import { BlogCard } from '@/components/blog-card';
-import { getPosts } from '@/lib/cms';
+import { getBlogPosts } from '@/lib/api';
 import type { BlogPost } from '@/types';
 import { BsArrowLeft, BsArrowRight } from 'react-icons/bs';
 
@@ -8,7 +8,7 @@ export async function PrevNextPosts({ postId }: { postId: string }) {
   let nextPost: BlogPost | null = null;
 
   try {
-    const { items: allPosts } = await getPosts({ limit: 100 });
+    const { contents: allPosts } = await getBlogPosts({ limit: 100 });
     const currentIndex = allPosts.findIndex((p) => p.id === postId);
     prevPost = currentIndex < allPosts.length - 1 ? allPosts[currentIndex + 1] : null;
     nextPost = currentIndex > 0 ? allPosts[currentIndex - 1] : null;

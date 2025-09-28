@@ -1,6 +1,6 @@
 import { BlogCard } from '@/components/blog-card';
 import { Pagination } from '@/components/pagination';
-import { getPosts } from '@/lib/cms';
+import { getBlogPosts } from '@/lib/api';
 import { Suspense } from 'react';
 
 type SearchParams = {
@@ -19,7 +19,7 @@ export async function BlogPostsList({ searchParams }: { searchParams: SearchPara
     filters.push(`tags[contains]${searchParams.tag}`);
   }
 
-  const { items: posts, totalCount } = await getPosts({
+  const { contents: posts, totalCount } = await getBlogPosts({
     offset,
     limit,
     filters: filters.length > 0 ? filters.join('[and]') : undefined,

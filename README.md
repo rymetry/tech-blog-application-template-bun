@@ -84,10 +84,10 @@ Lint / Format
     - 使わない: `.prettierrc` の `plugins` エントリを削除
 
 microCMS 連携について
-- API クライアントは `src/lib/cms.ts`（native `fetch` + `revalidate/tags`）。
-- データ取得は同モジュール経由で、`adapters.ts` でアプリ内部向けの型に整形しています。
-- 記事一覧: `getPosts`
-- 記事詳細: `getPostById`
+- API クライアントは `src/lib/microcms.ts`。
+- データ取得は `src/lib/api.ts` が窓口で、`adapters.ts` でアプリ内部向けの型に整形しています。
+- 記事一覧: `getBlogPosts`
+- 記事詳細: `getBlogPost`（関連記事や著者等を含むため `depth` を利用）
 - タグ一覧: `getTags`
 
 UI / スタイル
