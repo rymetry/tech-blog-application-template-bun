@@ -1,12 +1,13 @@
 import { BlogCard } from '@/components/blog-card';
-import { getBlogPosts } from '@/lib/api';
+import { getPosts } from '@/lib/cms';
+import type { BlogPost } from '@/types';
 
 export async function LatestPosts() {
-  let latestPosts = [] as Awaited<ReturnType<typeof getBlogPosts>>['contents'];
+  let latestPosts: BlogPost[] = [];
 
   try {
-    const response = await getBlogPosts({ limit: 3 });
-    latestPosts = response.contents || [];
+    const response = await getPosts({ limit: 3 });
+    latestPosts = response.items;
   } catch (error) {
     console.error('Error fetching blog posts:', error);
   }
