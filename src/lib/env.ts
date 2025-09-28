@@ -22,7 +22,6 @@ const normalize = (value: string | undefined): string | undefined => {
 };
 
 const rawEnv: RawEnv = {
-  // NEXT_PUBLIC_BASE_URL: normalize(process.env.NEXT_PUBLIC_BASE_URL),
   MICROCMS_SERVICE_DOMAIN: normalize(process.env.MICROCMS_SERVICE_DOMAIN),
   MICROCMS_API_KEY: normalize(process.env.MICROCMS_API_KEY),
 };
