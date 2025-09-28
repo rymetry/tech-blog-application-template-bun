@@ -4,7 +4,7 @@ import { Author } from '@/components/author';
 import { Card } from '@/components/ui/card';
 import { formatDate } from '@/lib/utils';
 import type { BlogPost } from '@/types';
-import Image from 'next/image';
+import { FallbackImage } from '@/components/fallback-image';
 import Link from 'next/link';
 import React from 'react';
 import { BsArrowClockwise, BsCalendar2Check, BsTag } from 'react-icons/bs';
@@ -24,7 +24,7 @@ export const RelatedPostCard = React.memo(function RelatedPostCard({ post }: Rel
         <div className="flex flex-col sm:flex-row">
           <div className="relative w-full sm:w-[330px] overflow-hidden">
             <div className="aspect-[8/5] w-full">
-              <Image
+              <FallbackImage
                 src={post.coverImage.url || '/placeholder.svg'}
                 alt=""
                 aria-hidden="true"

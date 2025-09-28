@@ -3,7 +3,7 @@ import { PrevNextPosts } from '@/components/prev-next-posts';
 import { RelatedPosts } from '@/components/related-posts';
 import { getBlogPost } from '@/lib/api';
 import { formatDate } from '@/lib/utils';
-import Image from 'next/image';
+import { FallbackImage } from '@/components/fallback-image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
@@ -50,7 +50,7 @@ export default async function BlogPostPage(props: BlogPostPageProps) {
           <div className="container text-center">
             <div className="max-w-3xl mx-auto space-y-4">
               <div className="mb-10 max-w-[360px] mx-auto">
-                <Image
+                <FallbackImage
                   src={post.coverImage?.url || '/placeholder.svg'}
                   alt={`Cover image for ${post.title}`}
                   width={1200}
