@@ -1,37 +1,17 @@
 import type { BlogPost, Tag } from '@/types';
-import type { CMSPost, CMSRelatedPost, CMSTag } from './schemas';
-
-type CustomBody = CMSPost['custom_body'] | CMSRelatedPost['custom_body'] | undefined;
-
-const extractBody = (customBody: CustomBody): string => {
-  if (!customBody) {
-    return '';
-  }
-
-  if (typeof customBody.blog_body === 'string' && customBody.blog_body) {
-    return customBody.blog_body;
-  }
-
-  const maybeBody = (customBody as { body?: string | null | undefined }).body;
-
-  if (typeof maybeBody === 'string' && maybeBody) {
-    return maybeBody;
-  }
-
-  return '';
-};
+import type { Blog, MicroCMSTag } from './microcms';
 
 /**
  * microCMSのブログ記事を内部形式に変換する
  */
-export function adaptBlog(blog: CMSPost | CMSRelatedPost): BlogPost {
+export function adaptBlog(blog: Blog): BlogPost {
   return {
     id: blog.id,
     title: blog.title,
     slug: blog.slug,
-    excerpt: blog.excerpt ?? '',
+    excerpt: blog.excerpt,
     publishedAt: blog.publishedAt,
-    updatedAt: blog.updatedAt ?? blog.publishedAt,
+    updatedAt: blog.updatedAt,
     coverImage: {
       url: blog.ogp_image?.url || '/placeholder.svg',
       height: blog.ogp_image?.height || 630,
@@ -61,53 +41,48 @@ export function adaptBlog(blog: CMSPost | CMSRelatedPost): BlogPost {
         id: tag.id,
         name: tag.name,
       })) || [],
-    content: extractBody(blog.custom_body),
-    relatedPosts: ((): BlogPost[] => {
-      const relatedRaw = (blog.custom_body as { related_blogs?: CMSRelatedPost[] } | undefined)?.related_blogs;
-
-      if (!Array.isArray(relatedRaw)) {
-        return [];
-      }
-
-      return relatedRaw.map((relatedBlog) => ({
-        id: relatedBlog.id,
-        title: relatedBlog.title,
-        slug: relatedBlog.slug,
-        excerpt: relatedBlog.excerpt ?? '',
-        publishedAt: relatedBlog.publishedAt,
-        updatedAt: relatedBlog.updatedAt ?? relatedBlog.publishedAt,
-        coverImage: {
-          url: relatedBlog.ogp_image?.url || '/placeholder.svg',
-          height: relatedBlog.ogp_image?.height || 630,
-          width: relatedBlog.ogp_image?.width || 1200,
-        },
-        author: relatedBlog.authors
-          ? {
-              id: relatedBlog.authors.id || '',
-              name: relatedBlog.authors.name || 'Anonymous',
-              image: {
-                url: relatedBlog.authors.image?.url || '/placeholder.svg',
-                height: relatedBlog.authors.image?.height || 100,
-                width: relatedBlog.authors.image?.width || 100,
+    content: blog.custom_body?.blog_body || '',
+    relatedPosts:
+      blog.custom_body?.related_blogs?.map((relatedBlog) => {
+        return {
+          id: relatedBlog.id,
+          title: relatedBlog.title,
+          slug: relatedBlog.slug,
+          excerpt: relatedBlog.excerpt || '',
+          publishedAt: relatedBlog.publishedAt,
+          updatedAt: relatedBlog.updatedAt,
+          coverImage: {
+            url: relatedBlog.ogp_image?.url || '/placeholder.svg',
+            height: relatedBlog.ogp_image?.height || 630,
+            width: relatedBlog.ogp_image?.width || 1200,
+          },
+          author: relatedBlog.authors
+            ? {
+                id: relatedBlog.authors.id || '',
+                name: relatedBlog.authors.name || 'Anonymous',
+                image: {
+                  url: relatedBlog.authors.image?.url || '/placeholder.svg',
+                  height: relatedBlog.authors.image?.height || 100,
+                  width: relatedBlog.authors.image?.width || 100,
+                },
+              }
+            : {
+                id: '',
+                name: 'Anonymous',
+                image: {
+                  url: '/placeholder.svg',
+                  height: 100,
+                  width: 100,
+                },
               },
-            }
-          : {
-              id: '',
-              name: 'Anonymous',
-              image: {
-                url: '/placeholder.svg',
-                height: 100,
-                width: 100,
-              },
-            },
-        tags:
-          relatedBlog.tags?.map((tag) => ({
-            id: tag.id,
-            name: tag.name,
-          })) || [],
-        content: extractBody(relatedBlog.custom_body),
-      }));
-    })(),
+          tags:
+            relatedBlog.tags?.map((tag) => ({
+              id: tag.id,
+              name: tag.name,
+            })) || [],
+          content: relatedBlog.custom_body?.body || '',
+        };
+      }) || [],
   };
 }
 
@@ -115,7 +90,7 @@ export function adaptBlog(blog: CMSPost | CMSRelatedPost): BlogPost {
  * microCMSのタグを内部形式に変換する
  */
 
-export function adaptTag(tag: CMSTag): Tag {
+export function adaptTag(tag: MicroCMSTag): Tag {
   return {
     id: tag.id,
     name: tag.name,
