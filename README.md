@@ -110,7 +110,7 @@ UI / スタイル
 
 デプロイ
 - 一般的な Next.js の手順に従います（Vercel 推奨）
-- 環境変数（`MICROCMS_SERVICE_DOMAIN`, `MICROCMS_API_KEY`）をデプロイ環境にも設定してください
+- 環境変数（`NEXT_PUBLIC_BASE_URL`, `MICROCMS_SERVICE_DOMAIN`, `MICROCMS_API_KEY`, `REVALIDATE_SECRET` など必要なキー）をデプロイ環境にも設定してください
 
 ライセンス
 - このテンプレートのライセンス/利用規約はリポジトリのポリシーに従います
