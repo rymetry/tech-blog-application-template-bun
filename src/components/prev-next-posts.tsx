@@ -3,15 +3,18 @@ import { getPosts } from '@/lib/cms';
 import type { BlogPost } from '@/types';
 import { BsArrowLeft, BsArrowRight } from 'react-icons/bs';
 
-export async function PrevNextPosts({ postId }: { postId: string }) {
+export async function PrevNextPosts({ postSlug }: { postSlug: string }) {
   let prevPost: BlogPost | null = null;
   let nextPost: BlogPost | null = null;
 
   try {
     const { items: allPosts } = await getPosts({ limit: 100 });
-    const currentIndex = allPosts.findIndex((p) => p.id === postId);
-    prevPost = currentIndex < allPosts.length - 1 ? allPosts[currentIndex + 1] : null;
-    nextPost = currentIndex > 0 ? allPosts[currentIndex - 1] : null;
+    const currentIndex = allPosts.findIndex((p) => p.slug === postSlug);
+
+    if (currentIndex !== -1) {
+      prevPost = currentIndex < allPosts.length - 1 ? allPosts[currentIndex + 1] : null;
+      nextPost = currentIndex > 0 ? allPosts[currentIndex - 1] : null;
+    }
   } catch (error) {
     console.error('Error fetching related posts:', error);
   }

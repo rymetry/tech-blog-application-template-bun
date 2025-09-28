@@ -23,7 +23,7 @@ export async function LatestPosts() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
       {latestPosts.map((post, index) => (
-        <BlogCard key={post.id} post={post} priority={index === 0} />
+        <BlogCard key={post.slug} post={post} priority={index === 0} />
       ))}
     </div>
   );
