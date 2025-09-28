@@ -3,8 +3,7 @@
 import Image, { type ImageProps } from 'next/image';
 import { useEffect, useState } from 'react';
 
-type FallbackImageProps = Omit<ImageProps, 'src'> & {
-  src: ImageProps['src'];
+type FallbackImageProps = ImageProps & {
   fallbackSrc?: ImageProps['src'];
 };
 
