@@ -55,14 +55,12 @@
 ## 2. 画像最適化 & セキュア設定
 
 **変更ファイル**
-- `next.config.ts`（更新）
 - 画像を使う各コンポーネント（`<Image>` 化・sizes/priority/alt）
 
 **目的**
-- microCMS 画像最適化と**安全なドメイン制限**、`alt`/フォールバックの徹底
+- microCMS 画像最適化、`alt`/フォールバックの徹底
 
 **作業項目**
-- `images.remotePatterns` に `**.microcms-assets.io` と `images.microcms-assets.io` を追加
 - LCP 対象画像に `priority`、全画像に `sizes` を設定
 - 画像エラー時のフォールバック（例：背景色/プレースホルダSVG/アイコン）
 - 非装飾画像に**意味のある `alt`** を付与、装飾は `alt=""`
@@ -72,7 +70,7 @@
 - 画像ドメイン以外はブロックされる
 
 **要件**
-- R2-1〜2-5, R6-6
+- R2-1〜2-4, R6-6
 
 ---
 
