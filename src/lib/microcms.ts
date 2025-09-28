@@ -1,11 +1,15 @@
 import type { MicroCMSQueries } from 'microcms-js-sdk';
 import { createClient } from 'microcms-js-sdk';
-import { ENV } from './env';
+
+// 環境変数のチェック
+if (!process.env.MICROCMS_SERVICE_DOMAIN || !process.env.MICROCMS_API_KEY) {
+  console.warn('MICROCMS_SERVICE_DOMAIN または MICROCMS_API_KEY が環境変数に設定されていません。');
+}
 
 // microCMSクライアントの作成
 export const client = createClient({
-  serviceDomain: ENV.MICROCMS_SERVICE_DOMAIN,
-  apiKey: ENV.MICROCMS_API_KEY,
+  serviceDomain: process.env.MICROCMS_SERVICE_DOMAIN || '',
+  apiKey: process.env.MICROCMS_API_KEY || '',
   retry: true,
 });
 
