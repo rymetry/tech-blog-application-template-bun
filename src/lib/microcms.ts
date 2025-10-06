@@ -1,25 +1,109 @@
 import type { MicroCMSQueries } from 'microcms-js-sdk';
-import { createClient } from 'microcms-js-sdk';
 
-// 環境変数のチェック
-if (!process.env.MICROCMS_SERVICE_DOMAIN || !process.env.MICROCMS_API_KEY) {
-  console.warn('MICROCMS_SERVICE_DOMAIN または MICROCMS_API_KEY が環境変数に設定されていません。');
+const MICROCMS_API_KEY = process.env.MICROCMS_API_KEY || '';
+
+const ENDPOINT_URLS = {
+  ARTICLES: process.env.NEXT_PUBLIC_MICROCMS_ARTICLES_API || '',
+  AUTHORS: process.env.NEXT_PUBLIC_MICROCMS_AUTHORS_API || '',
+  TAGS: process.env.NEXT_PUBLIC_MICROCMS_TAGS_API || '',
+} as const;
+
+if (!MICROCMS_API_KEY) {
+  console.warn('MICROCMS_API_KEY environment variable is not set.');
 }
 
-// microCMSクライアントの作成
-export const client = createClient({
-  serviceDomain: process.env.MICROCMS_SERVICE_DOMAIN || '',
-  apiKey: process.env.MICROCMS_API_KEY || '',
-  retry: true,
+Object.entries(ENDPOINT_URLS).forEach(([key, value]) => {
+  if (!value) {
+    console.warn(`MicroCMS endpoint URL for ${key.toLowerCase()} is not set.`);
+  }
 });
 
-// 型定義
-export type BlogResponse = {
+const createDetailUrl = (baseUrl: string, contentId: string) => {
+  const normalizedBase = baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`;
+  return new URL(encodeURIComponent(contentId), normalizedBase).toString();
+};
+
+const appendQueries = (url: URL, queries?: MicroCMSQueries) => {
+  if (!queries) {
+    return;
+  }
+
+  for (const [key, value] of Object.entries(queries)) {
+    if (value === undefined || value === null) {
+      continue;
+    }
+
+    if (Array.isArray(value)) {
+      url.searchParams.set(key, value.join(','));
+      continue;
+    }
+
+    url.searchParams.set(key, String(value));
+  }
+};
+
+const fetchFromMicroCMS = async <T>(endpointUrl: string, queries?: MicroCMSQueries): Promise<T> => {
+  if (!endpointUrl) {
+    throw new Error('MicroCMS endpoint URL is not configured.');
+  }
+
+  const url = new URL(endpointUrl);
+  appendQueries(url, queries);
+
+  const response = await fetch(url.toString(), {
+    headers: {
+      'X-MICROCMS-API-KEY': MICROCMS_API_KEY,
+    },
+    cache: 'no-store',
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch ${url.toString()}: ${response.status} ${response.statusText}`);
+  }
+
+  return response.json() as Promise<T>;
+};
+
+export type MicroCMSImage = {
+  url: string;
+  height: number;
+  width: number;
+};
+
+export type MicroCMSAuthor = {
+  id: string;
+  createdAt: string;
+  updatedAt: string;
+  publishedAt: string;
+  revisedAt: string;
+  name: string;
+  image?: MicroCMSImage;
+  profileImage?: MicroCMSImage;
+  bio?: string;
+  role?: string;
+  email?: string;
+  socialLinks?: Record<string, unknown>;
+};
+
+export type MicroCMSRichContent = {
+  fieldId: string;
+  toc_visible?: boolean;
+  blog_body?: string;
+  showToc?: boolean;
+  body?: string;
+  related_blogs?: Blog[];
+  relatedArticles?: Blog[];
+};
+
+export type MicroCMSListResponse<T> = {
   totalCount: number;
   offset: number;
   limit: number;
-  contents: Blog[];
+  contents: T[];
 };
+
+// 型定義
+export type BlogResponse = MicroCMSListResponse<Blog>;
 
 export type Blog = {
   id: string;
@@ -27,90 +111,22 @@ export type Blog = {
   updatedAt: string;
   publishedAt: string;
   revisedAt: string;
-  date_published: string;
   title: string;
   slug: string;
-  ogp_image: {
-    url: string;
-    height: number;
-    width: number;
-  };
-  authors: {
+  ogp_image?: MicroCMSImage;
+  ogpImage?: MicroCMSImage;
+  authors?: MicroCMSAuthor;
+  tags?: {
     id: string;
     createdAt: string;
     updatedAt: string;
     publishedAt: string;
     revisedAt: string;
     name: string;
-    image: {
-      url: string;
-      height: number;
-      width: number;
-    };
-  };
-  tags: [
-    {
-      id: string;
-      createdAt: string;
-      updatedAt: string;
-      publishedAt: string;
-      revisedAt: string;
-      name: string;
-    },
-  ];
-  custom_body: {
-    fieldId: string;
-    toc_visible: boolean;
-    blog_body: string;
-    related_blogs: [
-      {
-        id: string;
-        createdAt: string;
-        updatedAt: string;
-        publishedAt: string;
-        revisedAt: string;
-        date: string;
-        title: string;
-        slug: string;
-        ogp_image: {
-          url: string;
-          height: number;
-          width: number;
-        };
-        authors?: {
-          id: string;
-          createdAt: string;
-          updatedAt: string;
-          publishedAt: string;
-          revisedAt: string;
-          name: string;
-          image: {
-            url: string;
-            height: number;
-            width: number;
-          };
-        };
-        tags?: [
-          {
-            id: string;
-            createdAt: string;
-            updatedAt: string;
-            publishedAt: string;
-            revisedAt: string;
-            name: string;
-          },
-        ];
-        custom_body: {
-          fieldId: string;
-          toc_visible: boolean;
-          body: string;
-          related_blogs: [];
-        };
-        excerpt: string;
-      },
-    ];
-  };
-  excerpt: string;
+  }[];
+  custom_body?: MicroCMSRichContent;
+  content?: MicroCMSRichContent;
+  excerpt?: string;
 };
 
 export type MicroCMSTag = {
@@ -118,25 +134,32 @@ export type MicroCMSTag = {
   name: string;
 };
 
+export type MicroCMSAuthorResponse = MicroCMSListResponse<MicroCMSAuthor>;
+export type MicroCMSTagResponse = MicroCMSListResponse<MicroCMSTag>;
+
 // エンドポイントの定義
 const ENDPOINTS = {
-  BLOGS: 'blogs',
-  TAGS: 'tags',
-  AUTHORS: 'authors',
+  BLOGS: ENDPOINT_URLS.ARTICLES,
+  TAGS: ENDPOINT_URLS.TAGS,
+  AUTHORS: ENDPOINT_URLS.AUTHORS,
 };
 
 /**
  * ブログ記事一覧を取得する
  */
 export const getList = async (queries?: MicroCMSQueries, endpoint = ENDPOINTS.BLOGS) => {
+  const targetEndpoint = endpoint || ENDPOINTS.BLOGS;
+
+  if (!targetEndpoint) {
+    console.error('MicroCMS articles endpoint URL is not configured.');
+    return { contents: [], totalCount: 0, offset: 0, limit: 10 };
+  }
+
   try {
-    const listData = await client.getList<Blog>({
-      endpoint,
-      queries,
-    });
+    const listData = await fetchFromMicroCMS<BlogResponse>(targetEndpoint, queries);
     return listData;
   } catch (error) {
-    console.error(`Error fetching from endpoint ${endpoint}:`, error);
+    console.error(`Error fetching from endpoint ${targetEndpoint}:`, error);
     return { contents: [], totalCount: 0, offset: 0, limit: 10 };
   }
 };
@@ -153,19 +176,21 @@ export const getDetail = async (
   queries?: MicroCMSQueries,
   endpoint = ENDPOINTS.BLOGS,
 ) => {
+  const targetEndpoint = endpoint || ENDPOINTS.BLOGS;
+
+  if (!targetEndpoint) {
+    throw new Error('MicroCMS articles endpoint URL is not configured.');
+  }
+
   try {
     // depthパラメータを設定して関連コンテンツの詳細も取得
     const mergedQueries = { ...queries, depth: 3 as const };
-
-    const detailData = await client.getListDetail<Blog>({
-      endpoint,
-      contentId,
-      queries: mergedQueries,
-    });
+    const detailUrl = createDetailUrl(targetEndpoint, contentId);
+    const detailData = await fetchFromMicroCMS<Blog>(detailUrl, mergedQueries);
 
     return detailData;
   } catch (error) {
-    console.error(`Error fetching detail from endpoint ${endpoint}:`, error);
+    console.error(`Error fetching detail from endpoint ${targetEndpoint}:`, error);
     throw error;
   }
 };
@@ -174,11 +199,15 @@ export const getDetail = async (
  * タグ一覧を取得する
  */
 export const getTags = async (queries?: MicroCMSQueries) => {
+  const targetEndpoint = ENDPOINTS.TAGS;
+
+  if (!targetEndpoint) {
+    console.error('MicroCMS tags endpoint URL is not configured.');
+    return { contents: [], totalCount: 0, offset: 0, limit: 10 };
+  }
+
   try {
-    const tagsData = await client.getList({
-      endpoint: ENDPOINTS.TAGS,
-      queries,
-    });
+    const tagsData = await fetchFromMicroCMS<MicroCMSTagResponse>(targetEndpoint, queries);
     return tagsData;
   } catch (error) {
     console.error('Error fetching tags:', error);
@@ -190,11 +219,15 @@ export const getTags = async (queries?: MicroCMSQueries) => {
  * 著者一覧を取得する
  */
 export const getAuthors = async (queries?: MicroCMSQueries) => {
+  const targetEndpoint = ENDPOINTS.AUTHORS;
+
+  if (!targetEndpoint) {
+    console.error('MicroCMS authors endpoint URL is not configured.');
+    return { contents: [], totalCount: 0, offset: 0, limit: 10 };
+  }
+
   try {
-    const authorsData = await client.getList({
-      endpoint: ENDPOINTS.AUTHORS,
-      queries,
-    });
+    const authorsData = await fetchFromMicroCMS<MicroCMSAuthorResponse>(targetEndpoint, queries);
     return authorsData;
   } catch (error) {
     console.error('Error fetching authors:', error);
