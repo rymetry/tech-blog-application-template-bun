@@ -1,11 +1,11 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 
 export default function DraftModeIndicator() {
   const router = useRouter();
-  const currentPath = typeof window !== 'undefined' ? window.location.pathname : '';
+  const currentPath = usePathname();
 
   const handleExitDraftMode = () => {
     // Draft Modeを終了するAPIを呼び出す

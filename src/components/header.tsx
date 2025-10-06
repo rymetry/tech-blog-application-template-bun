@@ -76,7 +76,7 @@ export default function Header() {
                 </svg>
               </Button>
             </SheetTrigger>
-            <SheetContent side="right" id="mobile-menu">
+            <SheetContent side="right" id="mobile-menu" title="Mobile Navigation">
               <nav className="flex flex-col gap-4 mt-8" aria-label="Mobile Navigation">
                 {navItems.map((item) => (
                   <Link

@@ -1,4 +1,4 @@
-import { adaptBlog, adaptTag } from '@/lib/adapters';
+import { adaptAuthor, adaptBlog, adaptTag } from '@/lib/adapters';
 import type { Author, BlogPost, Tag } from '@/types/index';
 import {
   getDetail,
@@ -101,7 +101,7 @@ export async function getAuthors(): Promise<AuthorResponse> {
     const response = await getMicroCMSAuthors();
 
     return {
-      contents: response.contents,
+      contents: response.contents.map(adaptAuthor),
       totalCount: response.totalCount,
       offset: response.offset,
       limit: response.limit,
