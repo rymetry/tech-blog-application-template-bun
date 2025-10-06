@@ -3,9 +3,9 @@ import type { MicroCMSQueries } from 'microcms-js-sdk';
 const MICROCMS_API_KEY = process.env.MICROCMS_API_KEY || '';
 
 const ENDPOINT_URLS = {
-  ARTICLES: process.env.NEXT_PUBLIC_MICROCMS_ARTICLES_API || '',
-  AUTHORS: process.env.NEXT_PUBLIC_MICROCMS_AUTHORS_API || '',
-  TAGS: process.env.NEXT_PUBLIC_MICROCMS_TAGS_API || '',
+  ARTICLES: process.env.MICROCMS_ARTICLES || '',
+  AUTHORS: process.env.MICROCMS_AUTHORS || '',
+  TAGS: process.env.MICROCMS_TAGS || '',
 } as const;
 
 if (!MICROCMS_API_KEY) {
