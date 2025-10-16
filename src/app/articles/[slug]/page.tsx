@@ -11,14 +11,14 @@ import { BsArrowClockwise, BsCalendar2Check, BsTag } from 'react-icons/bs';
 
 interface BlogPostPageProps {
   params: Promise<{
-    id: string;
+    slug: string;
   }>;
 }
 
 export async function generateMetadata(props: BlogPostPageProps) {
-  const params = await props.params;
+  const { slug } = await props.params;
   try {
-    const post = await getBlogPost(params.id);
+    const post = await getBlogPost(slug);
 
     return {
       title: post.title,
@@ -40,9 +40,9 @@ export async function generateMetadata(props: BlogPostPageProps) {
 // 関連/前後ナビは外部コンポーネントに分離
 
 export default async function BlogPostPage(props: BlogPostPageProps) {
-  const params = await props.params;
+  const { slug } = await props.params;
   try {
-    const post = await getBlogPost(params.id);
+    const post = await getBlogPost(slug);
 
     return (
       <>
@@ -121,7 +121,7 @@ export default async function BlogPostPage(props: BlogPostPageProps) {
           </Suspense>
 
           <Suspense fallback={<div className="py-8 text-center">Loading navigation...</div>}>
-            <PrevNextPosts postId={params.id} />
+            <PrevNextPosts postSlug={post.slug} />
           </Suspense>
         </article>
       </>

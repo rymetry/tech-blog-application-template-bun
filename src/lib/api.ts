@@ -63,13 +63,20 @@ export async function getBlogPosts(
  * ブログ記事詳細を取得する
  * depthパラメータを使用して関連コンテンツの詳細も取得する
  */
-export async function getBlogPost(id: string): Promise<BlogPost> {
+export async function getBlogPost(slug: string): Promise<BlogPost> {
   try {
+    const { contents } = await getList({ filters: `slug[equals]${slug}`, limit: 1 });
+    const matchedPost = contents[0];
+
+    if (!matchedPost) {
+      throw new Error(`Blog post not found for slug: ${slug}`);
+    }
+
     // getDetail関数内でdepth=3が設定されるため、関連コンテンツの詳細も取得される
-    const blog = await getDetail(id);
+    const blog = await getDetail(matchedPost.id);
     return adaptBlog(blog);
   } catch (error) {
-    console.error(`Error in getBlogPost for ${id}:`, error);
+    console.error(`Error in getBlogPost for slug ${slug}:`, error);
     throw error;
   }
 }

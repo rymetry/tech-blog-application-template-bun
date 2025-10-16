@@ -28,7 +28,7 @@ function SearchFormContent() {
       // ページをリセット
       params.delete('page');
 
-      router.push(`/blog?${params.toString()}`);
+      router.push(`/articles?${params.toString()}`);
     },
     [query, router, searchParams],
   );

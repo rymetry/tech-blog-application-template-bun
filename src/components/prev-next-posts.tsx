@@ -3,13 +3,19 @@ import { getBlogPosts } from '@/lib/api';
 import type { BlogPost } from '@/types';
 import { BsArrowLeft, BsArrowRight } from 'react-icons/bs';
 
-export async function PrevNextPosts({ postId }: { postId: string }) {
+export async function PrevNextPosts({ postSlug }: { postSlug: string }) {
   let prevPost: BlogPost | null = null;
   let nextPost: BlogPost | null = null;
 
   try {
     const { contents: allPosts } = await getBlogPosts({ limit: 100 });
-    const currentIndex = allPosts.findIndex((p) => p.id === postId);
+    const currentIndex = allPosts.findIndex((p) => p.slug === postSlug);
+
+    if (currentIndex === -1) {
+      console.warn(`Current post not found in PrevNextPosts for slug: ${postSlug}`);
+      return null;
+    }
+
     prevPost = currentIndex < allPosts.length - 1 ? allPosts[currentIndex + 1] : null;
     nextPost = currentIndex > 0 ? allPosts[currentIndex - 1] : null;
   } catch (error) {
