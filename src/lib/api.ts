@@ -38,12 +38,14 @@ type ArticlePostParams = {
   orders?: string;
 };
 
+const DEFAULT_ARTICLE_LIMIT = 10;
+
 // MicroCMSの一覧取得はパラメータごとに結果が変わるため、キャッシュキーに条件を埋め込んで誤キャッシュを防ぐ。
 const getArticleParamsKey = (params: ArticlePostParams) => [
   'microcms',
   'article-posts',
   `offset:${params.offset ?? 0}`,
-  `limit:${params.limit ?? ''}`,
+  `limit:${params.limit ?? DEFAULT_ARTICLE_LIMIT}`,
   `filters:${params.filters ?? ''}`,
   `q:${params.q ?? ''}`,
   `orders:${params.orders ?? ''}`,

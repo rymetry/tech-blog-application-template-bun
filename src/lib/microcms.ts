@@ -26,6 +26,8 @@ export const MICROCMS_CACHE_TAGS = {
   TAGS: 'microcms:tags',
 } as const;
 
+type MicroCMSCacheTag = (typeof MICROCMS_CACHE_TAGS)[keyof typeof MICROCMS_CACHE_TAGS];
+
 const createDetailUrl = (baseUrl: string, contentId: string) => {
   const normalizedBase = baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`;
   return new URL(encodeURIComponent(contentId), normalizedBase).toString();
@@ -59,7 +61,7 @@ interface NextFetchOptions extends RequestInit {
 
 const fetchFromMicroCMS = async <T>(
   endpointUrl: string,
-  cacheTag: string,
+  cacheTag: MicroCMSCacheTag,
   queries?: MicroCMSQueries,
 ): Promise<T> => {
   if (!endpointUrl) {
@@ -69,7 +71,7 @@ const fetchFromMicroCMS = async <T>(
   const url = new URL(endpointUrl);
   appendQueries(url, queries);
 
-  const response = await fetch(url.toString(), {
+  const fetchOptions: NextFetchOptions = {
     headers: {
       'X-MICROCMS-API-KEY': MICROCMS_API_KEY,
       Accept: 'application/json',
@@ -78,7 +80,9 @@ const fetchFromMicroCMS = async <T>(
       revalidate: MICROCMS_REVALIDATE_SECONDS,
       tags: ['microcms', cacheTag],
     },
-  } as NextFetchOptions);
+  };
+
+  const response = await fetch(url.toString(), fetchOptions);
 
   if (!response.ok) {
     throw new Error(`Failed to fetch ${url.toString()}: ${response.status} ${response.statusText}`);
