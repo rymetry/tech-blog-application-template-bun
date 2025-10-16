@@ -1,5 +1,5 @@
 import { adaptAuthor, adaptBlog, adaptTag } from '@/lib/adapters';
-import type { Author, BlogPost, Tag } from '@/types/index';
+import type { Author, BlogPost, Tag } from '@/types';
 import {
   getDetail,
   getList,
