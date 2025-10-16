@@ -3,7 +3,7 @@ import { SectionContainer } from '@/components/section-container';
 import Image from 'next/image';
 
 export const metadata = {
-  title: 'About - Tech Article',
+  title: 'About - Tech Blog',
   description: 'Learn more about our tech blog and the team behind it',
 };
 
