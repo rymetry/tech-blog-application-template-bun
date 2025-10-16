@@ -66,7 +66,7 @@ export default async function ArticlePostPage(props: ArticlePostPageProps) {
               <div className="flex flex-wrap justify-center gap-4 mb-4 mt-4 md:my-5 lg:my-6" aria-label="Tags">
                 {post.tags?.map((tag) => (
                   <Link
-                    href={`/article?tag=${tag.id}`}
+                    href={`/articles?tag=${tag.id}`}
                     key={tag.id}
                     className="tag-text bg-primary/10 text-primary hover:bg-primary/20 px-2 py-1 rounded-full transition-colors flex items-center gap-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
                     aria-label={`View all posts with tag: ${tag.name}`}
