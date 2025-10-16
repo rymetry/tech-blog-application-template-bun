@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { Suspense, useCallback, useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 
 interface PaginationProps {
   totalPages: number;
@@ -139,9 +139,5 @@ function PaginationContent({ totalPages, currentPage }: PaginationProps) {
 
 // エクスポートされるメインのPaginationコンポーネント
 export function Pagination(props: PaginationProps) {
-  return (
-    <Suspense fallback={<div>Loading pagination...</div>}>
-      <PaginationContent {...props} />
-    </Suspense>
-  );
+  return <PaginationContent {...props} />;
 }

@@ -1,13 +1,14 @@
 import { Author } from '@/components/author';
 import { PrevNextPosts } from '@/components/prev-next-posts';
 import { RelatedPosts } from '@/components/related-posts';
-import { getArticlePost } from '@/lib/api';
+import { getArticlePost, getArticlePosts } from '@/lib/api';
+import { MICROCMS_REVALIDATE_SECONDS } from '@/lib/microcms';
 import { formatDate } from '@/lib/utils';
+import { CalendarCheck, RefreshCcw, Tag } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
-import { BsArrowClockwise, BsCalendar2Check, BsTag } from 'react-icons/bs';
 
 interface ArticlePostPageProps {
   params: Promise<{
@@ -15,8 +16,10 @@ interface ArticlePostPageProps {
   }>;
 }
 
-export async function generateMetadata(props: ArticlePostPageProps) {
-  const { slug } = await props.params;
+export const revalidate = MICROCMS_REVALIDATE_SECONDS;
+
+export async function generateMetadata({ params }: ArticlePostPageProps) {
+  const { slug } = await params;
   try {
     const post = await getArticlePost(slug);
 
@@ -37,10 +40,20 @@ export async function generateMetadata(props: ArticlePostPageProps) {
   }
 }
 
+export async function generateStaticParams() {
+  try {
+    const { contents } = await getArticlePosts({ limit: 100, orders: '-publishedAt' });
+    return contents.map((article) => ({ slug: article.slug }));
+  } catch (error) {
+    console.error('Error generating static params for articles:', error);
+    return [];
+  }
+}
+
 // 関連/前後ナビは外部コンポーネントに分離
 
-export default async function ArticlePostPage(props: ArticlePostPageProps) {
-  const { slug } = await props.params;
+export default async function ArticlePostPage({ params }: ArticlePostPageProps) {
+  const { slug } = await params;
   try {
     const post = await getArticlePost(slug);
 
@@ -71,7 +84,7 @@ export default async function ArticlePostPage(props: ArticlePostPageProps) {
                     className="tag-text bg-primary/10 text-primary hover:bg-primary/20 px-2 py-1 rounded-full transition-colors flex items-center gap-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
                     aria-label={`View all posts with tag: ${tag.name}`}
                   >
-                    <BsTag className="h-3 w-3" aria-hidden="true" />
+                    <Tag className="h-3 w-3" aria-hidden="true" />
                     {tag.name}
                   </Link>
                 ))}
@@ -84,7 +97,7 @@ export default async function ArticlePostPage(props: ArticlePostPageProps) {
                 )}
                 <div className="flex flex-col gap-2 text-sm sm:text-base text-muted-foreground">
                   <div className="flex items-center gap-1">
-                    <BsCalendar2Check className="h-4 w-4" aria-hidden="true" />
+                    <CalendarCheck className="h-4 w-4" aria-hidden="true" />
                     <time
                       dateTime={post.publishedAt}
                       aria-label={`Published on ${formatDate(post.publishedAt)}`}
@@ -93,7 +106,7 @@ export default async function ArticlePostPage(props: ArticlePostPageProps) {
                     </time>
                   </div>
                   <div className="flex items-center gap-1">
-                    <BsArrowClockwise className="h-4 w-4" aria-hidden="true" />
+                    <RefreshCcw className="h-4 w-4" aria-hidden="true" />
                     <time
                       dateTime={post.updatedAt}
                       aria-label={`Updated on ${formatDate(post.updatedAt)}`}
@@ -121,7 +134,7 @@ export default async function ArticlePostPage(props: ArticlePostPageProps) {
           </Suspense>
 
           <Suspense fallback={<div className="py-8 text-center">Loading navigation...</div>}>
-            <PrevNextPosts postSlug={post.slug} />
+            <PrevNextPosts postSlug={post.slug} publishedAt={post.publishedAt} />
           </Suspense>
         </article>
       </>

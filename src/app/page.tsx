@@ -2,8 +2,11 @@ import { LatestPosts } from '@/components/latest-posts';
 import { PageHero } from '@/components/page-hero';
 import { SectionContainer } from '@/components/section-container';
 import { Button } from '@/components/ui/button';
+import { MICROCMS_REVALIDATE_SECONDS } from '@/lib/microcms';
 import Link from 'next/link';
 import { Suspense } from 'react';
+
+export const revalidate = MICROCMS_REVALIDATE_SECONDS;
 
 export default function Home() {
   return (

@@ -1,19 +1,16 @@
-'use client';
-
 import { Author } from '@/components/author';
 import { Card } from '@/components/ui/card';
 import { formatDate } from '@/lib/utils';
 import type { ArticlePost } from '@/types';
+import { CalendarCheck, RefreshCcw, Tag } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
-import React from 'react';
-import { BsArrowClockwise, BsCalendar2Check, BsTag } from 'react-icons/bs';
 
 interface RelatedPostCardProps {
   post: ArticlePost;
 }
 
-export const RelatedPostCard = React.memo(function RelatedPostCard({ post }: RelatedPostCardProps) {
+export function RelatedPostCard({ post }: RelatedPostCardProps) {
   return (
     <Link
       href={`/articles/${post.slug}`}
@@ -50,9 +47,8 @@ export const RelatedPostCard = React.memo(function RelatedPostCard({ post }: Rel
                       <span
                         key={tag.id}
                         className="tag-text bg-primary/10 text-primary px-2 py-0.5 rounded-full flex items-center gap-1"
-                        onClick={(e) => e.stopPropagation()}
                       >
-                        <BsTag className="h-3 w-3" aria-hidden="true" />
+                        <Tag className="h-3 w-3" aria-hidden="true" />
                         {tag.name}
                       </span>
                     ))}
@@ -81,7 +77,7 @@ export const RelatedPostCard = React.memo(function RelatedPostCard({ post }: Rel
               )}
               <div className="flex flex-col gap-1 items-end card-meta">
                 <div className="flex items-center gap-1">
-                  <BsCalendar2Check className="h-3 w-3" aria-hidden="true" />
+                  <CalendarCheck className="h-3 w-3" aria-hidden="true" />
                   <time
                     dateTime={post.publishedAt}
                     aria-label={`Published on ${formatDate(post.publishedAt)}`}
@@ -90,7 +86,7 @@ export const RelatedPostCard = React.memo(function RelatedPostCard({ post }: Rel
                   </time>
                 </div>
                 <div className="flex items-center gap-1">
-                  <BsArrowClockwise className="h-3 w-3" aria-hidden="true" />
+                  <RefreshCcw className="h-3 w-3" aria-hidden="true" />
                   <time
                     dateTime={post.updatedAt}
                     aria-label={`Updated on ${formatDate(post.updatedAt)}`}
@@ -105,4 +101,4 @@ export const RelatedPostCard = React.memo(function RelatedPostCard({ post }: Rel
       </Card>
     </Link>
   );
-});
+}
