@@ -145,7 +145,7 @@ const ENDPOINTS = {
 };
 
 /**
- * ブログ記事一覧を取得する
+ * 記事一覧を取得する
  */
 export const getList = async (queries?: MicroCMSQueries, endpoint = ENDPOINTS.ARTICLES) => {
   const targetEndpoint = endpoint || ENDPOINTS.ARTICLES;
@@ -165,11 +165,11 @@ export const getList = async (queries?: MicroCMSQueries, endpoint = ENDPOINTS.AR
 };
 
 /**
- * ブログ記事詳細を取得する
+ * 記事詳細を取得する
  * @param contentId コンテンツID
  * @param queries クエリパラメータ
  * @param endpoint エンドポイント
- * @returns ブログ記事詳細
+ * @returns 記事詳細
  */
 export const getDetail = async (
   contentId: string,
