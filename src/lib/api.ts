@@ -38,52 +38,66 @@ type ArticlePostParams = {
   orders?: string;
 };
 
-const fetchArticlePostsCached = unstable_cache(
-  async (params: ArticlePostParams = {}): Promise<ArticleResponse> => {
-    const response = await getList({
-      offset: params.offset,
-      limit: params.limit,
-      filters: params.filters,
-      q: params.q,
-      orders: params.orders,
-    });
+// MicroCMSの一覧取得はパラメータごとに結果が変わるため、キャッシュキーに条件を埋め込んで誤キャッシュを防ぐ。
+const getArticleParamsKey = (params: ArticlePostParams) => [
+  'microcms',
+  'article-posts',
+  `offset:${params.offset ?? 0}`,
+  `limit:${params.limit ?? ''}`,
+  `filters:${params.filters ?? ''}`,
+  `q:${params.q ?? ''}`,
+  `orders:${params.orders ?? ''}`,
+];
 
-    return {
-      contents: response.contents.map(adaptArticle),
-      totalCount: response.totalCount,
-      offset: response.offset,
-      limit: response.limit,
-    };
-  },
-  ['microcms', 'article-posts'],
-  {
-    revalidate: MICROCMS_REVALIDATE_SECONDS,
-    tags: [MICROCMS_CACHE_TAGS.ARTICLES],
-  },
-);
+const fetchArticlePostsCached = async (params: ArticlePostParams = {}): Promise<ArticleResponse> =>
+  unstable_cache(
+    async () => {
+      const response = await getList({
+        offset: params.offset,
+        limit: params.limit,
+        filters: params.filters,
+        q: params.q,
+        orders: params.orders,
+      });
 
-const fetchArticlePostCached = unstable_cache(
-  async (slug: string): Promise<ArticlePost> => {
-    const { contents } = await getList({
-      filters: `slug[equals]${slug}`,
-      limit: 1,
-      depth: 3 as const,
-    });
+      return {
+        contents: response.contents.map(adaptArticle),
+        totalCount: response.totalCount,
+        offset: response.offset,
+        limit: response.limit,
+      };
+    },
+    getArticleParamsKey(params),
+    {
+      revalidate: MICROCMS_REVALIDATE_SECONDS,
+      tags: [MICROCMS_CACHE_TAGS.ARTICLES],
+    },
+  )();
 
-    const matchedPost = contents[0];
+// 記事詳細はslugごとにキャッシュを分離し、ISRの恩恵を保ちつつ取り違いを防ぐ。
+const fetchArticlePostCached = async (slug: string): Promise<ArticlePost> =>
+  unstable_cache(
+    async () => {
+      const { contents } = await getList({
+        filters: `slug[equals]${slug}`,
+        limit: 1,
+        depth: 3 as const,
+      });
 
-    if (!matchedPost) {
-      throw new Error(`Article post not found for slug: ${slug}`);
-    }
+      const matchedPost = contents[0];
 
-    return adaptArticle(matchedPost);
-  },
-  ['microcms', 'article-post'],
-  {
-    revalidate: MICROCMS_REVALIDATE_SECONDS,
-    tags: [MICROCMS_CACHE_TAGS.ARTICLES],
-  },
-);
+      if (!matchedPost) {
+        throw new Error(`Article post not found for slug: ${slug}`);
+      }
+
+      return adaptArticle(matchedPost);
+    },
+    ['microcms', 'article-post', slug],
+    {
+      revalidate: MICROCMS_REVALIDATE_SECONDS,
+      tags: [MICROCMS_CACHE_TAGS.ARTICLES],
+    },
+  )();
 
 const fetchTagsCached = unstable_cache(
   async (): Promise<TagResponse> => {

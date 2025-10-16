@@ -3,10 +3,9 @@ import { PageHero } from '@/components/page-hero';
 import { SearchForm } from '@/components/search-form';
 import { SectionContainer } from '@/components/section-container';
 import { TagsList } from '@/components/tags-list';
-import { MICROCMS_REVALIDATE_SECONDS } from '@/lib/microcms';
 import { Suspense } from 'react';
 
-export const revalidate = MICROCMS_REVALIDATE_SECONDS;
+export const revalidate = 300;
 
 interface ArticlePageProps {
   searchParams: Promise<{

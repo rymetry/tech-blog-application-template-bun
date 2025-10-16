@@ -2,7 +2,6 @@ import { Author } from '@/components/author';
 import { PrevNextPosts } from '@/components/prev-next-posts';
 import { RelatedPosts } from '@/components/related-posts';
 import { getArticlePost, getArticlePosts } from '@/lib/api';
-import { MICROCMS_REVALIDATE_SECONDS } from '@/lib/microcms';
 import { formatDate } from '@/lib/utils';
 import { CalendarCheck, RefreshCcw, Tag } from 'lucide-react';
 import Image from 'next/image';
@@ -16,7 +15,8 @@ interface ArticlePostPageProps {
   }>;
 }
 
-export const revalidate = MICROCMS_REVALIDATE_SECONDS;
+// revalidateは数値リテラルでなければビルド時に最適化されないため、ここで直接指定する。
+export const revalidate = 300;
 
 export async function generateMetadata({ params }: ArticlePostPageProps) {
   const { slug } = await params;
