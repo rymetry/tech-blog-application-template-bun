@@ -3,14 +3,14 @@
 import { Author } from '@/components/author';
 import { Card } from '@/components/ui/card';
 import { formatDate } from '@/lib/utils';
-import type { BlogPost } from '@/types';
+import type { ArticlePost } from '@/types';
 import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
 import { BsArrowClockwise, BsCalendar2Check, BsTag } from 'react-icons/bs';
 
 interface RelatedPostCardProps {
-  post: BlogPost;
+  post: ArticlePost;
 }
 
 export const RelatedPostCard = React.memo(function RelatedPostCard({ post }: RelatedPostCardProps) {

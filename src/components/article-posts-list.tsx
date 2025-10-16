@@ -1,6 +1,6 @@
-import { BlogCard } from '@/components/blog-card';
+import { ArticleCard } from '@/components/article-card';
 import { Pagination } from '@/components/pagination';
-import { getBlogPosts } from '@/lib/api';
+import { getArticlePosts } from '@/lib/api';
 import { Suspense } from 'react';
 
 type SearchParams = {
@@ -9,7 +9,7 @@ type SearchParams = {
   q?: string;
 };
 
-export async function BlogPostsList({ searchParams }: { searchParams: SearchParams }) {
+export async function ArticlePostsList({ searchParams }: { searchParams: SearchParams }) {
   const page = searchParams.page ? Number.parseInt(searchParams.page) : 1;
   const limit = 10;
   const offset = (page - 1) * limit;
@@ -19,7 +19,7 @@ export async function BlogPostsList({ searchParams }: { searchParams: SearchPara
     filters.push(`tags[contains]${searchParams.tag}`);
   }
 
-  const { contents: posts, totalCount } = await getBlogPosts({
+  const { contents: posts, totalCount } = await getArticlePosts({
     offset,
     limit,
     filters: filters.length > 0 ? filters.join('[and]') : undefined,
@@ -43,7 +43,7 @@ export async function BlogPostsList({ searchParams }: { searchParams: SearchPara
     <>
       <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
         {posts.map((post, index) => (
-          <BlogCard key={post.id} post={post} priority={index < 2} />
+          <ArticleCard key={post.id} post={post} priority={index < 2} />
         ))}
       </div>
       {totalPages > 1 && (

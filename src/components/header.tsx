@@ -10,7 +10,7 @@ import { ModeToggle } from './mode-toggle';
 
 const navItems = [
   { name: 'Home', href: '/' },
-  { name: 'Blog', href: '/articles' },
+  { name: 'Article', href: '/articles' },
   { name: 'About', href: '/about' },
   { name: 'Contact', href: '/contact' },
 ];
@@ -23,8 +23,8 @@ export default function Header() {
     <header className="border-b border-border/20 bg-background/80 backdrop-blur-sm fixed top-0 left-0 right-0 z-50">
       <div className="container flex h-16 items-center justify-between max-w-[1280px] mx-auto">
         <div className="flex items-center gap-6 md:gap-10">
-          <Link href="/" className="logo-text" aria-label="Tech Blog Home">
-            Tech Blog
+          <Link href="/" className="logo-text" aria-label="Tech Article Home">
+            Tech Article
           </Link>
         </div>
 

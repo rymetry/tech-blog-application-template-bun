@@ -1,9 +1,9 @@
-import { adaptAuthor, adaptBlog, adaptTag } from '@/lib/adapters';
-import type { Author, BlogPost, Tag } from '@/types';
+import { adaptAuthor, adaptArticle, adaptTag } from '@/lib/adapters';
+import type { Author, ArticlePost, Tag } from '@/types';
 import { getList, getAuthors as getMicroCMSAuthors, getTags as getMicroCMSTags } from './microcms';
 
-export interface BlogResponse {
-  contents: BlogPost[];
+export interface ArticleResponse {
+  contents: ArticlePost[];
   totalCount: number;
   offset: number;
   limit: number;
@@ -26,14 +26,14 @@ export interface AuthorResponse {
 /**
  * ブログ記事一覧を取得する
  */
-export async function getBlogPosts(
+export async function getArticlePosts(
   params: {
     offset?: number;
     limit?: number;
     filters?: string;
     q?: string;
   } = {},
-): Promise<BlogResponse> {
+): Promise<ArticleResponse> {
   try {
     const response = await getList({
       offset: params.offset,
@@ -43,13 +43,13 @@ export async function getBlogPosts(
     });
 
     return {
-      contents: response.contents.map(adaptBlog),
+      contents: response.contents.map(adaptArticle),
       totalCount: response.totalCount,
       offset: response.offset,
       limit: response.limit,
     };
   } catch (error) {
-    console.error('Error in getBlogPosts:', error);
+    console.error('Error in getArticlePosts:', error);
     return { contents: [], totalCount: 0, offset: 0, limit: 10 };
   }
 }
@@ -58,7 +58,7 @@ export async function getBlogPosts(
  * ブログ記事詳細を取得する
  * depthパラメータを使用して関連コンテンツの詳細も取得する
  */
-export async function getBlogPost(slug: string): Promise<BlogPost> {
+export async function getArticlePost(slug: string): Promise<ArticlePost> {
   try {
     // getDetail関数内でdepth=3が設定されるため、関連コンテンツの詳細も取得される
     const { contents } = await getList({
@@ -69,12 +69,12 @@ export async function getBlogPost(slug: string): Promise<BlogPost> {
     const matchedPost = contents[0];
 
     if (!matchedPost) {
-      throw new Error(`Blog post not found for slug: ${slug}`);
+      throw new Error(`Article post not found for slug: ${slug}`);
     }
 
-    return adaptBlog(matchedPost);
+    return adaptArticle(matchedPost);
   } catch (error) {
-    console.error(`Error in getBlogPost for slug ${slug}:`, error);
+    console.error(`Error in getArticlePost for slug ${slug}:`, error);
     throw error;
   }
 }

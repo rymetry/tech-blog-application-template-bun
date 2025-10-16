@@ -7,8 +7,8 @@ export default function Footer() {
       <div className="container py-8 md:py-12 max-w-[1280px] mx-auto">
         <div className="flex flex-col md:flex-row justify-between items-center gap-6">
           <div>
-            <Link href="/" className="logo-text" aria-label="Tech Blog Home">
-              Tech Blog
+            <Link href="/" className="logo-text" aria-label="Tech Article Home">
+              Tech Article
             </Link>
             <p className="text-sm sm:text-sm md:text-base text-muted-foreground pt-2 md:pt-3">
               Sharing knowledge and insights in the tech world
@@ -73,7 +73,7 @@ export default function Footer() {
           </div>
         </div>
         <div className="mt-8 text-center text-xs sm:text-sm text-muted-foreground">
-          © {new Date().getFullYear()} Tech Blog. All rights reserved.
+          © {new Date().getFullYear()} Tech Article. All rights reserved.
         </div>
       </div>
     </footer>

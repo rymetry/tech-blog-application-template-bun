@@ -1,7 +1,7 @@
 import { Author } from '@/components/author';
 import { PrevNextPosts } from '@/components/prev-next-posts';
 import { RelatedPosts } from '@/components/related-posts';
-import { getBlogPost } from '@/lib/api';
+import { getArticlePost } from '@/lib/api';
 import { formatDate } from '@/lib/utils';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -9,16 +9,16 @@ import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
 import { BsArrowClockwise, BsCalendar2Check, BsTag } from 'react-icons/bs';
 
-interface BlogPostPageProps {
+interface ArticlePostPageProps {
   params: Promise<{
     slug: string;
   }>;
 }
 
-export async function generateMetadata(props: BlogPostPageProps) {
+export async function generateMetadata(props: ArticlePostPageProps) {
   const { slug } = await props.params;
   try {
-    const post = await getBlogPost(slug);
+    const post = await getArticlePost(slug);
 
     return {
       title: post.title,
@@ -31,18 +31,18 @@ export async function generateMetadata(props: BlogPostPageProps) {
     };
   } catch {
     return {
-      title: 'Blog Post',
-      description: 'Blog post not found',
+      title: 'Article Post',
+      description: 'Article post not found',
     };
   }
 }
 
 // 関連/前後ナビは外部コンポーネントに分離
 
-export default async function BlogPostPage(props: BlogPostPageProps) {
+export default async function ArticlePostPage(props: ArticlePostPageProps) {
   const { slug } = await props.params;
   try {
-    const post = await getBlogPost(slug);
+    const post = await getArticlePost(slug);
 
     return (
       <>
@@ -66,7 +66,7 @@ export default async function BlogPostPage(props: BlogPostPageProps) {
               <div className="flex flex-wrap justify-center gap-4 mb-4 mt-4 md:my-5 lg:my-6" aria-label="Tags">
                 {post.tags?.map((tag) => (
                   <Link
-                    href={`/blog?tag=${tag.id}`}
+                    href={`/article?tag=${tag.id}`}
                     key={tag.id}
                     className="tag-text bg-primary/10 text-primary hover:bg-primary/20 px-2 py-1 rounded-full transition-colors flex items-center gap-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
                     aria-label={`View all posts with tag: ${tag.name}`}
@@ -127,7 +127,7 @@ export default async function BlogPostPage(props: BlogPostPageProps) {
       </>
     );
   } catch (error) {
-    console.error('Error fetching blog post:', error);
+    console.error('Error fetching article post:', error);
     notFound();
   }
 }

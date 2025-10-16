@@ -1,11 +1,11 @@
-import { BlogPostsList } from '@/components/blog-posts-list';
+import { ArticlePostsList } from '@/components/article-posts-list';
 import { PageHero } from '@/components/page-hero';
 import { SearchForm } from '@/components/search-form';
 import { SectionContainer } from '@/components/section-container';
 import { TagsList } from '@/components/tags-list';
 import { Suspense } from 'react';
 
-interface BlogPageProps {
+interface ArticlePageProps {
   searchParams: Promise<{
     page?: string;
     tag?: string;
@@ -24,12 +24,12 @@ function SearchFormWrapper() {
 
 // 取得系は外部コンポーネントに分離
 
-export default async function BlogPage(props: BlogPageProps) {
+export default async function ArticlePage(props: ArticlePageProps) {
   const searchParams = await props.searchParams;
   return (
     <>
       <PageHero
-        title="Blog"
+        title="Article"
         description="Explore our collection of articles, tutorials, and insights"
       />
 
@@ -51,7 +51,7 @@ export default async function BlogPage(props: BlogPageProps) {
 
           <div className="space-y-8 sm:space-y-10">
             <Suspense fallback={<div className="py-10 text-center">Loading posts...</div>}>
-              <BlogPostsList searchParams={searchParams} />
+              <ArticlePostsList searchParams={searchParams} />
             </Suspense>
           </div>
         </div>

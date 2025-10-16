@@ -1,14 +1,14 @@
-import { BlogCard } from '@/components/blog-card';
-import { getBlogPosts } from '@/lib/api';
-import type { BlogPost } from '@/types';
+import { ArticleCard } from '@/components/article-card';
+import { getArticlePosts } from '@/lib/api';
+import type { ArticlePost } from '@/types';
 import { BsArrowLeft, BsArrowRight } from 'react-icons/bs';
 
 export async function PrevNextPosts({ postSlug }: { postSlug: string }) {
-  let prevPost: BlogPost | null = null;
-  let nextPost: BlogPost | null = null;
+  let prevPost: ArticlePost | null = null;
+  let nextPost: ArticlePost | null = null;
 
   try {
-    const { contents: allPosts } = await getBlogPosts({ limit: 100 });
+    const { contents: allPosts } = await getArticlePosts({ limit: 100 });
     const currentIndex = allPosts.findIndex((p) => p.slug === postSlug);
 
     if (currentIndex === -1) {
@@ -50,7 +50,7 @@ export async function PrevNextPosts({ postSlug }: { postSlug: string }) {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {prevPost ? (
           <div className="md:col-start-1">
-            <BlogCard post={prevPost} />
+            <ArticleCard post={prevPost} />
           </div>
         ) : (
           <div className="md:col-start-1">
@@ -60,7 +60,7 @@ export async function PrevNextPosts({ postSlug }: { postSlug: string }) {
 
         {nextPost ? (
           <div className="md:col-start-2">
-            <BlogCard post={nextPost} />
+            <ArticleCard post={nextPost} />
           </div>
         ) : (
           <div className="md:col-start-2">

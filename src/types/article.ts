@@ -1,7 +1,7 @@
 import type { Author } from './author';
 import type { Tag } from './tag';
 
-export interface BlogPost {
+export interface ArticlePost {
   id: string;
   title: string;
   slug: string;
@@ -16,5 +16,5 @@ export interface BlogPost {
   author: Author;
   tags: Tag[];
   content: string;
-  relatedPosts?: BlogPost[];
+  relatedPosts?: ArticlePost[];
 }

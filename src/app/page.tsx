@@ -10,7 +10,7 @@ export default function Home() {
     <div className="flex flex-col min-h-screen">
       {/* Heroセクション */}
       <PageHero
-        title="Tech Blog for Modern Developers"
+        title="Tech Article for Modern Developers"
         description="Discover the latest trends, deep dives, and practical knowledge in software engineering and technology."
         className="pb-12 sm:pb-16 md:pb-20 lg:pb-24"
       >
