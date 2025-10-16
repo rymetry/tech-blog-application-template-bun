@@ -1,7 +1,7 @@
 import { RelatedPostCard } from '@/components/related-post-card';
-import type { BlogPost } from '@/types';
+import type { ArticlePost } from '@/types';
 
-export async function RelatedPosts({ relatedPosts }: { relatedPosts: BlogPost[] }) {
+export async function RelatedPosts({ relatedPosts }: { relatedPosts: ArticlePost[] }) {
   if (!relatedPosts || relatedPosts.length === 0) return null;
 
   return (

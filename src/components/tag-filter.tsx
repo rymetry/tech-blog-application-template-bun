@@ -25,7 +25,7 @@ export function TagFilter({ tags }: TagFilterProps) {
         params.set('tag', tagId);
       }
 
-      router.push(`/blog?${params.toString()}`);
+      router.push(`/articles?${params.toString()}`);
     },
     [currentTag, router, searchParams],
   );

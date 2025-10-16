@@ -1,5 +1,5 @@
-import type { Author as AuthorType, BlogPost, Tag } from '@/types';
-import type { Blog, MicroCMSAuthor, MicroCMSTag } from './microcms';
+import type { Author as AuthorType, ArticlePost, Tag } from '@/types';
+import type { Article, MicroCMSAuthor, MicroCMSTag } from './microcms';
 
 type ImageLike = { url: string; height: number; width: number };
 
@@ -22,29 +22,29 @@ const pickImage = (primary?: ImageLike, secondary?: ImageLike): ImageLike | unde
 /**
  * microCMSのブログ記事を内部形式に変換する
  */
-export function adaptBlog(blog: Blog): BlogPost {
-  const coverImage = pickImage(blog.ogp_image, blog.ogpImage) || fallbackImage;
+export function adaptArticle(article: Article): ArticlePost {
+  const coverImage = pickImage(article.ogp_image, article.ogpImage) || fallbackImage;
   const authorImage =
-    pickImage(blog.authors?.image, blog.authors?.profileImage) || fallbackAuthorImage;
-  const blogBody = blog.custom_body?.blog_body || blog.content?.body || '';
-  const relatedBlogs = blog.custom_body?.related_blogs || blog.content?.relatedArticles || [];
+    pickImage(article.authors?.image, article.authors?.profileImage) || fallbackAuthorImage;
+  const articleBody = article.custom_body?.article_body || article.content?.body || '';
+  const relatedArticles = article.custom_body?.related_articles || article.content?.relatedArticles || [];
 
   return {
-    id: blog.id,
-    title: blog.title,
-    slug: blog.slug,
-    excerpt: blog.excerpt || '',
-    publishedAt: blog.publishedAt,
-    updatedAt: blog.updatedAt,
+    id: article.id,
+    title: article.title,
+    slug: article.slug,
+    excerpt: article.excerpt || '',
+    publishedAt: article.publishedAt,
+    updatedAt: article.updatedAt,
     coverImage: {
       url: coverImage.url,
       height: coverImage.height,
       width: coverImage.width,
     },
-    author: blog.authors
+    author: article.authors
       ? {
-          id: blog.authors.id || '',
-          name: blog.authors.name || 'Anonymous',
+          id: article.authors.id || '',
+          name: article.authors.name || 'Anonymous',
           image: {
             url: authorImage.url,
             height: authorImage.height,
@@ -61,35 +61,35 @@ export function adaptBlog(blog: Blog): BlogPost {
           },
         },
     tags:
-      blog.tags?.map((tag) => ({
+      article.tags?.map((tag) => ({
         id: tag.id,
         name: tag.name,
       })) || [],
-    content: blogBody,
+    content: articleBody,
     relatedPosts:
-      relatedBlogs?.map((relatedBlog) => {
+      relatedArticles?.map((relatedArticle) => {
         const relatedCover =
-          pickImage(relatedBlog.ogp_image, relatedBlog.ogpImage) || fallbackImage;
+          pickImage(relatedArticle.ogp_image, relatedArticle.ogpImage) || fallbackImage;
         const relatedAuthorImage =
-          pickImage(relatedBlog.authors?.image, relatedBlog.authors?.profileImage) ||
+          pickImage(relatedArticle.authors?.image, relatedArticle.authors?.profileImage) ||
           fallbackAuthorImage;
 
         return {
-          id: relatedBlog.id,
-          title: relatedBlog.title,
-          slug: relatedBlog.slug,
-          excerpt: relatedBlog.excerpt || '',
-          publishedAt: relatedBlog.publishedAt,
-          updatedAt: relatedBlog.updatedAt,
+          id: relatedArticle.id,
+          title: relatedArticle.title,
+          slug: relatedArticle.slug,
+          excerpt: relatedArticle.excerpt || '',
+          publishedAt: relatedArticle.publishedAt,
+          updatedAt: relatedArticle.updatedAt,
           coverImage: {
             url: relatedCover.url,
             height: relatedCover.height,
             width: relatedCover.width,
           },
-          author: relatedBlog.authors
+          author: relatedArticle.authors
             ? {
-                id: relatedBlog.authors.id || '',
-                name: relatedBlog.authors.name || 'Anonymous',
+                id: relatedArticle.authors.id || '',
+                name: relatedArticle.authors.name || 'Anonymous',
                 image: {
                   url: relatedAuthorImage.url,
                   height: relatedAuthorImage.height,
@@ -106,14 +106,14 @@ export function adaptBlog(blog: Blog): BlogPost {
                 },
               },
           tags:
-            relatedBlog.tags?.map((tag) => ({
+            relatedArticle.tags?.map((tag) => ({
               id: tag.id,
               name: tag.name,
             })) || [],
           content:
-            relatedBlog.custom_body?.blog_body ||
-            relatedBlog.custom_body?.body ||
-            relatedBlog.content?.body ||
+            relatedArticle.custom_body?.article_body ||
+            relatedArticle.custom_body?.body ||
+            relatedArticle.content?.body ||
             '',
         };
       }) || [],

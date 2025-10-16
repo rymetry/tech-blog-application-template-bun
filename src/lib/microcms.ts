@@ -88,11 +88,11 @@ export type MicroCMSAuthor = {
 export type MicroCMSRichContent = {
   fieldId: string;
   toc_visible?: boolean;
-  blog_body?: string;
+  article_body?: string;
   showToc?: boolean;
   body?: string;
-  related_blogs?: Blog[];
-  relatedArticles?: Blog[];
+  related_articles?: Article[];
+  relatedArticles?: Article[];
 };
 
 export type MicroCMSListResponse<T> = {
@@ -103,9 +103,9 @@ export type MicroCMSListResponse<T> = {
 };
 
 // 型定義
-export type BlogResponse = MicroCMSListResponse<Blog>;
+export type ArticleResponse = MicroCMSListResponse<Article>;
 
-export type Blog = {
+export type Article = {
   id: string;
   createdAt: string;
   updatedAt: string;
@@ -139,16 +139,16 @@ export type MicroCMSTagResponse = MicroCMSListResponse<MicroCMSTag>;
 
 // エンドポイントの定義
 const ENDPOINTS = {
-  BLOGS: ENDPOINT_URLS.ARTICLES,
+  ARTICLES: ENDPOINT_URLS.ARTICLES,
   TAGS: ENDPOINT_URLS.TAGS,
   AUTHORS: ENDPOINT_URLS.AUTHORS,
 };
 
 /**
- * ブログ記事一覧を取得する
+ * 記事一覧を取得する
  */
-export const getList = async (queries?: MicroCMSQueries, endpoint = ENDPOINTS.BLOGS) => {
-  const targetEndpoint = endpoint || ENDPOINTS.BLOGS;
+export const getList = async (queries?: MicroCMSQueries, endpoint = ENDPOINTS.ARTICLES) => {
+  const targetEndpoint = endpoint || ENDPOINTS.ARTICLES;
 
   if (!targetEndpoint) {
     console.error('MicroCMS articles endpoint URL is not configured.');
@@ -156,7 +156,7 @@ export const getList = async (queries?: MicroCMSQueries, endpoint = ENDPOINTS.BL
   }
 
   try {
-    const listData = await fetchFromMicroCMS<BlogResponse>(targetEndpoint, queries);
+    const listData = await fetchFromMicroCMS<ArticleResponse>(targetEndpoint, queries);
     return listData;
   } catch (error) {
     console.error(`Error fetching from endpoint ${targetEndpoint}:`, error);
@@ -165,18 +165,18 @@ export const getList = async (queries?: MicroCMSQueries, endpoint = ENDPOINTS.BL
 };
 
 /**
- * ブログ記事詳細を取得する
+ * 記事詳細を取得する
  * @param contentId コンテンツID
  * @param queries クエリパラメータ
  * @param endpoint エンドポイント
- * @returns ブログ記事詳細
+ * @returns 記事詳細
  */
 export const getDetail = async (
   contentId: string,
   queries?: MicroCMSQueries,
-  endpoint = ENDPOINTS.BLOGS,
+  endpoint = ENDPOINTS.ARTICLES,
 ) => {
-  const targetEndpoint = endpoint || ENDPOINTS.BLOGS;
+  const targetEndpoint = endpoint || ENDPOINTS.ARTICLES;
 
   if (!targetEndpoint) {
     throw new Error('MicroCMS articles endpoint URL is not configured.');
@@ -186,7 +186,7 @@ export const getDetail = async (
     // depthパラメータを設定して関連コンテンツの詳細も取得
     const mergedQueries = { ...queries, depth: 3 as const };
     const detailUrl = createDetailUrl(targetEndpoint, contentId);
-    const detailData = await fetchFromMicroCMS<Blog>(detailUrl, mergedQueries);
+    const detailData = await fetchFromMicroCMS<Article>(detailUrl, mergedQueries);
 
     return detailData;
   } catch (error) {

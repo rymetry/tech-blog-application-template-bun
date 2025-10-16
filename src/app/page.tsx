@@ -15,7 +15,7 @@ export default function Home() {
         className="pb-12 sm:pb-16 md:pb-20 lg:pb-24"
       >
         <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-12 sm:mt-16">
-          <Link href="/blog" className="block w-full max-w-96 sm:max-w-44">
+          <Link href="/articles" className="block w-full max-w-96 sm:max-w-44">
             <Button size="lg" className="gap-1 btn-text w-full">
               Explore Articles
             </Button>
@@ -46,7 +46,7 @@ export default function Home() {
             </Suspense>
 
             <div className="flex justify-center mt-8">
-              <Link href="/blog" className="block w-full max-w-96">
+              <Link href="/articles" className="block w-full max-w-96">
                 <Button size="lg" className="gap-1 btn-text w-full">
                   View All Articles
                 </Button>

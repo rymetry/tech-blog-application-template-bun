@@ -26,7 +26,7 @@ function PaginationContent({ totalPages, currentPage }: PaginationProps) {
         params.set('page', page.toString());
       }
 
-      router.push(`/blog?${params.toString()}`);
+      router.push(`/articles?${params.toString()}`);
     },
     [router, searchParams],
   );

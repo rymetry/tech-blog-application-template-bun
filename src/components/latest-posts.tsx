@@ -1,14 +1,14 @@
-import { BlogCard } from '@/components/blog-card';
-import { getBlogPosts } from '@/lib/api';
+import { ArticleCard } from '@/components/article-card';
+import { getArticlePosts } from '@/lib/api';
 
 export async function LatestPosts() {
-  let latestPosts = [] as Awaited<ReturnType<typeof getBlogPosts>>['contents'];
+  let latestPosts = [] as Awaited<ReturnType<typeof getArticlePosts>>['contents'];
 
   try {
-    const response = await getBlogPosts({ limit: 3 });
+    const response = await getArticlePosts({ limit: 3 });
     latestPosts = response.contents || [];
   } catch (error) {
-    console.error('Error fetching blog posts:', error);
+    console.error('Error fetching article posts:', error);
   }
 
   if (!latestPosts || latestPosts.length === 0) {
@@ -22,7 +22,7 @@ export async function LatestPosts() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
       {latestPosts.map((post, index) => (
-        <BlogCard key={post.id} post={post} priority={index === 0} />
+        <ArticleCard key={post.id} post={post} priority={index === 0} />
       ))}
     </div>
   );
