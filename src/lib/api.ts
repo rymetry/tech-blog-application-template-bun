@@ -1,11 +1,6 @@
 import { adaptAuthor, adaptBlog, adaptTag } from '@/lib/adapters';
 import type { Author, BlogPost, Tag } from '@/types';
-import {
-  getDetail,
-  getList,
-  getAuthors as getMicroCMSAuthors,
-  getTags as getMicroCMSTags,
-} from './microcms';
+import { getList, getAuthors as getMicroCMSAuthors, getTags as getMicroCMSTags } from './microcms';
 
 export interface BlogResponse {
   contents: BlogPost[];
@@ -65,16 +60,19 @@ export async function getBlogPosts(
  */
 export async function getBlogPost(slug: string): Promise<BlogPost> {
   try {
-    const { contents } = await getList({ filters: `slug[equals]${slug}`, limit: 1 });
+    // getDetail関数内でdepth=3が設定されるため、関連コンテンツの詳細も取得される
+    const { contents } = await getList({
+      filters: `slug[equals]${slug}`,
+      limit: 1,
+      depth: 3 as const,
+    });
     const matchedPost = contents[0];
 
     if (!matchedPost) {
       throw new Error(`Blog post not found for slug: ${slug}`);
     }
 
-    // getDetail関数内でdepth=3が設定されるため、関連コンテンツの詳細も取得される
-    const blog = await getDetail(matchedPost.id);
-    return adaptBlog(blog);
+    return adaptBlog(matchedPost);
   } catch (error) {
     console.error(`Error in getBlogPost for slug ${slug}:`, error);
     throw error;
