@@ -42,8 +42,31 @@ export async function generateMetadata({ params }: ArticlePostPageProps) {
 
 export async function generateStaticParams() {
   try {
-    const { contents } = await getArticlePosts({ limit: 100, orders: '-publishedAt' });
-    return contents.map((article) => ({ slug: article.slug }));
+    const limit = 100;
+    let offset = 0;
+    let totalCount = Infinity;
+    const slugs: { slug: string }[] = [];
+
+    while (slugs.length < totalCount) {
+      const { contents, totalCount: fetchedTotalCount } = await getArticlePosts({
+        limit,
+        offset,
+        orders: '-publishedAt',
+      });
+
+      if (totalCount === Infinity) {
+        totalCount = fetchedTotalCount;
+      }
+
+      if (contents.length === 0) {
+        break;
+      }
+
+      slugs.push(...contents.map((article) => ({ slug: article.slug })));
+      offset += limit;
+    }
+
+    return slugs;
   } catch (error) {
     console.error('Error generating static params for articles:', error);
     return [];

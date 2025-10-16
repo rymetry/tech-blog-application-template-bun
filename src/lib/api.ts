@@ -72,7 +72,7 @@ const fetchArticlePostsCached = async (params: ArticlePostParams = {}): Promise<
     getArticleParamsKey(params),
     {
       revalidate: MICROCMS_REVALIDATE_SECONDS,
-      tags: [MICROCMS_CACHE_TAGS.ARTICLES],
+      tags: ['microcms', MICROCMS_CACHE_TAGS.ARTICLES],
     },
   )();
 
@@ -97,7 +97,7 @@ const fetchArticlePostCached = async (slug: string): Promise<ArticlePost> =>
     ['microcms', 'article-post', slug],
     {
       revalidate: MICROCMS_REVALIDATE_SECONDS,
-      tags: [MICROCMS_CACHE_TAGS.ARTICLES],
+      tags: ['microcms', MICROCMS_CACHE_TAGS.ARTICLES],
     },
   )();
 
@@ -115,7 +115,7 @@ const fetchTagsCached = unstable_cache(
   ['microcms', 'tags'],
   {
     revalidate: MICROCMS_REVALIDATE_SECONDS,
-    tags: [MICROCMS_CACHE_TAGS.TAGS],
+    tags: ['microcms', MICROCMS_CACHE_TAGS.TAGS],
   },
 );
 
@@ -133,7 +133,7 @@ const fetchAuthorsCached = unstable_cache(
   ['microcms', 'authors'],
   {
     revalidate: MICROCMS_REVALIDATE_SECONDS,
-    tags: [MICROCMS_CACHE_TAGS.AUTHORS],
+    tags: ['microcms', MICROCMS_CACHE_TAGS.AUTHORS],
   },
 );
 
