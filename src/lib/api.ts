@@ -54,9 +54,10 @@ const getArticleParamsKey = (params: ArticlePostParams) => [
 const fetchArticlePostsCached = async (params: ArticlePostParams = {}): Promise<ArticleResponse> =>
   unstable_cache(
     async () => {
+      const limit = params.limit ?? DEFAULT_ARTICLE_LIMIT;
       const response = await getList({
         offset: params.offset,
-        limit: params.limit,
+        limit,
         filters: params.filters,
         q: params.q,
         orders: params.orders,
