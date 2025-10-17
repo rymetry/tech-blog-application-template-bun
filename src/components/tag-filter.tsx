@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils';
 import type { Tag } from '@/types';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useCallback, useMemo } from 'react';
-import { BsTag } from 'react-icons/bs';
+import { Tag as TagIcon } from 'lucide-react';
 
 interface TagFilterProps {
   tags: Tag[];
@@ -46,7 +46,7 @@ export function TagFilter({ tags }: TagFilterProps) {
           aria-pressed={isSelected}
           aria-label={`Filter by tag: ${tag.name}`}
         >
-          <BsTag className="h-3 w-3" aria-hidden="true" />
+          <TagIcon className="h-3 w-3" aria-hidden="true" />
           {tag.name}
         </button>
       );

@@ -18,6 +18,16 @@ Object.entries(ENDPOINT_URLS).forEach(([key, value]) => {
   }
 });
 
+export const MICROCMS_REVALIDATE_SECONDS = 300;
+
+export const MICROCMS_CACHE_TAGS = {
+  ARTICLES: 'microcms:articles',
+  AUTHORS: 'microcms:authors',
+  TAGS: 'microcms:tags',
+} as const;
+
+type MicroCMSCacheTag = (typeof MICROCMS_CACHE_TAGS)[keyof typeof MICROCMS_CACHE_TAGS];
+
 const createDetailUrl = (baseUrl: string, contentId: string) => {
   const normalizedBase = baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`;
   return new URL(encodeURIComponent(contentId), normalizedBase).toString();
@@ -42,7 +52,18 @@ const appendQueries = (url: URL, queries?: MicroCMSQueries) => {
   }
 };
 
-const fetchFromMicroCMS = async <T>(endpointUrl: string, queries?: MicroCMSQueries): Promise<T> => {
+interface NextFetchOptions extends RequestInit {
+  next?: {
+    revalidate?: number;
+    tags?: string[];
+  };
+}
+
+const fetchFromMicroCMS = async <T>(
+  endpointUrl: string,
+  cacheTag: MicroCMSCacheTag,
+  queries?: MicroCMSQueries,
+): Promise<T> => {
   if (!endpointUrl) {
     throw new Error('MicroCMS endpoint URL is not configured.');
   }
@@ -50,12 +71,18 @@ const fetchFromMicroCMS = async <T>(endpointUrl: string, queries?: MicroCMSQueri
   const url = new URL(endpointUrl);
   appendQueries(url, queries);
 
-  const response = await fetch(url.toString(), {
+  const fetchOptions: NextFetchOptions = {
     headers: {
       'X-MICROCMS-API-KEY': MICROCMS_API_KEY,
+      Accept: 'application/json',
     },
-    cache: 'no-store',
-  });
+    next: {
+      revalidate: MICROCMS_REVALIDATE_SECONDS,
+      tags: ['microcms', cacheTag],
+    },
+  };
+
+  const response = await fetch(url.toString(), fetchOptions);
 
   if (!response.ok) {
     throw new Error(`Failed to fetch ${url.toString()}: ${response.status} ${response.statusText}`);
@@ -156,7 +183,11 @@ export const getList = async (queries?: MicroCMSQueries, endpoint = ENDPOINTS.AR
   }
 
   try {
-    const listData = await fetchFromMicroCMS<ArticleResponse>(targetEndpoint, queries);
+    const listData = await fetchFromMicroCMS<ArticleResponse>(
+      targetEndpoint,
+      MICROCMS_CACHE_TAGS.ARTICLES,
+      queries,
+    );
     return listData;
   } catch (error) {
     console.error(`Error fetching from endpoint ${targetEndpoint}:`, error);
@@ -186,7 +217,11 @@ export const getDetail = async (
     // depthパラメータを設定して関連コンテンツの詳細も取得
     const mergedQueries = { ...queries, depth: 3 as const };
     const detailUrl = createDetailUrl(targetEndpoint, contentId);
-    const detailData = await fetchFromMicroCMS<Article>(detailUrl, mergedQueries);
+    const detailData = await fetchFromMicroCMS<Article>(
+      detailUrl,
+      MICROCMS_CACHE_TAGS.ARTICLES,
+      mergedQueries,
+    );
 
     return detailData;
   } catch (error) {
@@ -207,7 +242,11 @@ export const getTags = async (queries?: MicroCMSQueries) => {
   }
 
   try {
-    const tagsData = await fetchFromMicroCMS<MicroCMSTagResponse>(targetEndpoint, queries);
+    const tagsData = await fetchFromMicroCMS<MicroCMSTagResponse>(
+      targetEndpoint,
+      MICROCMS_CACHE_TAGS.TAGS,
+      queries,
+    );
     return tagsData;
   } catch (error) {
     console.error('Error fetching tags:', error);
@@ -227,7 +266,11 @@ export const getAuthors = async (queries?: MicroCMSQueries) => {
   }
 
   try {
-    const authorsData = await fetchFromMicroCMS<MicroCMSAuthorResponse>(targetEndpoint, queries);
+    const authorsData = await fetchFromMicroCMS<MicroCMSAuthorResponse>(
+      targetEndpoint,
+      MICROCMS_CACHE_TAGS.AUTHORS,
+      queries,
+    );
     return authorsData;
   } catch (error) {
     console.error('Error fetching authors:', error);

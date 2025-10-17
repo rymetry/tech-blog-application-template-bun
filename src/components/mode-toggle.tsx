@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { useTheme } from 'next-themes';
 import { useCallback, useEffect, useState } from 'react';
-import { BsLaptop, BsMoonStars, BsSun } from 'react-icons/bs';
+import { Laptop, MoonStar, Sun } from 'lucide-react';
 
 export function ModeToggle() {
   const { setTheme, theme } = useTheme();
@@ -34,11 +34,11 @@ export function ModeToggle() {
             mounted ? `Change theme, current theme is ${theme || 'system'}` : 'Change theme'
           }
         >
-          <BsSun
+          <Sun
             className="h-[1.2rem] w-[1.2rem] rotate-0 scale-100 transition-all dark:-rotate-90 dark:scale-0"
             aria-hidden="true"
           />
-          <BsMoonStars
+          <MoonStar
             className="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100"
             aria-hidden="true"
           />
@@ -46,15 +46,15 @@ export function ModeToggle() {
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuItem onClick={setLightTheme} className="focus:bg-secondary">
-          <BsSun className="mr-2 h-4 w-4" aria-hidden="true" />
+          <Sun className="mr-2 h-4 w-4" aria-hidden="true" />
           <span>Light</span>
         </DropdownMenuItem>
         <DropdownMenuItem onClick={setDarkTheme} className="focus:bg-secondary">
-          <BsMoonStars className="mr-2 h-4 w-4" aria-hidden="true" />
+          <MoonStar className="mr-2 h-4 w-4" aria-hidden="true" />
           <span>Dark</span>
         </DropdownMenuItem>
         <DropdownMenuItem onClick={setSystemTheme} className="focus:bg-secondary">
-          <BsLaptop className="mr-2 h-4 w-4" aria-hidden="true" />
+          <Laptop className="mr-2 h-4 w-4" aria-hidden="true" />
           <span>System</span>
         </DropdownMenuItem>
       </DropdownMenuContent>

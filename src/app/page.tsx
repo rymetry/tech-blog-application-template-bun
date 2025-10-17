@@ -5,6 +5,8 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { Suspense } from 'react';
 
+export const revalidate = 300;
+
 export default function Home() {
   return (
     <div className="flex flex-col min-h-screen">

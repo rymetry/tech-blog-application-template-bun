@@ -4,7 +4,7 @@ import { formatDate } from '@/lib/utils';
 import type { ArticlePost } from '@/types';
 import Image from 'next/image';
 import Link from 'next/link';
-import { BsArrowClockwise, BsCalendar2Check, BsTag } from 'react-icons/bs';
+import { CalendarCheck, RefreshCcw, Tag } from 'lucide-react';
 
 interface ArticleCardProps {
   post: ArticlePost;
@@ -43,7 +43,7 @@ export function ArticleCard({ post, priority = false }: ArticleCardProps) {
                 key={tag.id}
                 className="tag-text bg-primary/10 text-primary px-2 py-0.5 rounded-full flex items-center gap-1"
               >
-                <BsTag className="h-3 w-3" aria-hidden="true" />
+                <Tag className="h-3 w-3" aria-hidden="true" />
                 {tag.name}
               </span>
             ))}
@@ -58,7 +58,7 @@ export function ArticleCard({ post, priority = false }: ArticleCardProps) {
           <Author author={post.author} size="sm" compact />
           <div className="flex flex-col gap-1 items-end">
             <div className="flex items-center gap-1">
-              <BsCalendar2Check className="h-3 w-3" aria-hidden="true" />
+              <CalendarCheck className="h-3 w-3" aria-hidden="true" />
               <time
                 dateTime={post.publishedAt}
                 aria-label={`Published on ${formatDate(post.publishedAt)}`}
@@ -67,7 +67,7 @@ export function ArticleCard({ post, priority = false }: ArticleCardProps) {
               </time>
             </div>
             <div className="flex items-center gap-1">
-              <BsArrowClockwise className="h-3 w-3" aria-hidden="true" />
+              <RefreshCcw className="h-3 w-3" aria-hidden="true" />
               <time
                 dateTime={post.updatedAt}
                 aria-label={`Updated on ${formatDate(post.updatedAt)}`}
