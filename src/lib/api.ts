@@ -39,6 +39,8 @@ type ArticlePostParams = {
 };
 
 const DEFAULT_ARTICLE_LIMIT = 10;
+const DEFAULT_TAG_LIMIT = 10;
+const DEFAULT_AUTHOR_LIMIT = 10;
 
 // MicroCMSの一覧取得はパラメータごとに結果が変わるため、キャッシュキーに条件を埋め込んで誤キャッシュを防ぐ。
 const getArticleParamsKey = (params: ArticlePostParams) => [
@@ -104,7 +106,7 @@ const fetchArticlePostCached = async (slug: string): Promise<ArticlePost> =>
 
 const fetchTagsCached = unstable_cache(
   async (): Promise<TagResponse> => {
-    const response = await getMicroCMSTags();
+    const response = await getMicroCMSTags({ limit: DEFAULT_TAG_LIMIT });
 
     return {
       contents: response.contents.map(adaptTag),
@@ -122,7 +124,7 @@ const fetchTagsCached = unstable_cache(
 
 const fetchAuthorsCached = unstable_cache(
   async (): Promise<AuthorResponse> => {
-    const response = await getMicroCMSAuthors();
+    const response = await getMicroCMSAuthors({ limit: DEFAULT_AUTHOR_LIMIT });
 
     return {
       contents: response.contents.map(adaptAuthor),
@@ -148,7 +150,7 @@ export async function getArticlePosts(
     return await fetchArticlePostsCached(params);
   } catch (error) {
     console.error('Error in getArticlePosts:', error);
-    return { contents: [], totalCount: 0, offset: 0, limit: 10 };
+    return { contents: [], totalCount: 0, offset: 0, limit: DEFAULT_ARTICLE_LIMIT };
   }
 }
 
@@ -174,7 +176,7 @@ export async function getTags(): Promise<TagResponse> {
     return await fetchTagsCached();
   } catch (error) {
     console.error('Error in getTags:', error);
-    return { contents: [], totalCount: 0, offset: 0, limit: 10 };
+    return { contents: [], totalCount: 0, offset: 0, limit: DEFAULT_TAG_LIMIT };
   }
 }
 
@@ -186,6 +188,6 @@ export async function getAuthors(): Promise<AuthorResponse> {
     return await fetchAuthorsCached();
   } catch (error) {
     console.error('Error in getAuthors:', error);
-    return { contents: [], totalCount: 0, offset: 0, limit: 10 };
+    return { contents: [], totalCount: 0, offset: 0, limit: DEFAULT_AUTHOR_LIMIT };
   }
 }
