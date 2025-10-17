@@ -7,12 +7,13 @@ import type { ArticlePost } from '@/types';
 import { CalendarCheck, RefreshCcw, Tag } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { memo } from 'react';
 
 interface RelatedPostCardProps {
   post: ArticlePost;
 }
 
-export function RelatedPostCard({ post }: RelatedPostCardProps) {
+function RelatedPostCardComponent({ post }: RelatedPostCardProps) {
   return (
     <Link
       href={`/articles/${post.slug}`}
@@ -105,3 +106,6 @@ export function RelatedPostCard({ post }: RelatedPostCardProps) {
     </Link>
   );
 }
+
+export const RelatedPostCard = memo(RelatedPostCardComponent);
+RelatedPostCard.displayName = 'RelatedPostCard';

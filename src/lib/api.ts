@@ -75,6 +75,8 @@ const fetchArticlePostsCached = async (params: ArticlePostParams = {}): Promise<
     getArticleParamsKey(params),
     {
       revalidate: MICROCMS_REVALIDATE_SECONDS,
+      // fetchFromMicroCMS側でも同じタグを付与しているが、こちらでも付けておくことで
+      // revalidateTag('microcms') がunstable_cacheの結果まで確実に無効化できる。
       tags: ['microcms', MICROCMS_CACHE_TAGS.ARTICLES],
     },
   )();
@@ -100,6 +102,8 @@ const fetchArticlePostCached = async (slug: string): Promise<ArticlePost> =>
     ['microcms', 'article-post', slug],
     {
       revalidate: MICROCMS_REVALIDATE_SECONDS,
+      // fetchFromMicroCMS側でも同じタグを付与しているが、こちらでも付けておくことで
+      // revalidateTag('microcms') がunstable_cacheの結果まで確実に無効化できる。
       tags: ['microcms', MICROCMS_CACHE_TAGS.ARTICLES],
     },
   )();
@@ -118,6 +122,8 @@ const fetchTagsCached = unstable_cache(
   ['microcms', 'tags'],
   {
     revalidate: MICROCMS_REVALIDATE_SECONDS,
+    // fetchFromMicroCMS側でも同じタグを付与しているが、こちらでも付けておくことで
+    // revalidateTag('microcms') がunstable_cacheの結果まで確実に無効化できる。
     tags: ['microcms', MICROCMS_CACHE_TAGS.TAGS],
   },
 );
@@ -136,6 +142,8 @@ const fetchAuthorsCached = unstable_cache(
   ['microcms', 'authors'],
   {
     revalidate: MICROCMS_REVALIDATE_SECONDS,
+    // fetchFromMicroCMS側でも同じタグを付与しているが、こちらでも付けておくことで
+    // revalidateTag('microcms') がunstable_cacheの結果まで確実に無効化できる。
     tags: ['microcms', MICROCMS_CACHE_TAGS.AUTHORS],
   },
 );
