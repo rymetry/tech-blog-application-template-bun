@@ -5,10 +5,9 @@ import { Input } from '@/components/ui/input';
 import { Search } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import type React from 'react';
-import { Suspense, useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 
-// 検索フォームの内部実装
-function SearchFormContent() {
+export function SearchForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [query, setQuery] = useState(searchParams.get('q') || '');
@@ -62,14 +61,5 @@ function SearchFormContent() {
         Search
       </Button>
     </form>
-  );
-}
-
-// エクスポートされるメインのSearchFormコンポーネント
-export function SearchForm() {
-  return (
-    <Suspense fallback={<div>Loading search form...</div>}>
-      <SearchFormContent />
-    </Suspense>
   );
 }

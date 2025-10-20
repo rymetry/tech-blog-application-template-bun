@@ -1,7 +1,6 @@
 import { ArticleCard } from '@/components/article-card';
 import { Pagination } from '@/components/pagination';
 import { getArticlePosts } from '@/lib/api';
-import { Suspense } from 'react';
 
 type SearchParams = {
   page?: string;
@@ -48,9 +47,7 @@ export async function ArticlePostsList({ searchParams }: { searchParams: SearchP
       </div>
       {totalPages > 1 && (
         <div className="mt-8">
-          <Suspense fallback={<div className="text-center">Loading pagination...</div>}>
-            <Pagination totalPages={totalPages} currentPage={page} />
-          </Suspense>
+          <Pagination totalPages={totalPages} currentPage={page} />
         </div>
       )}
     </>

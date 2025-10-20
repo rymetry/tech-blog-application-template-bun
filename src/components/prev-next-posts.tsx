@@ -1,25 +1,35 @@
 import { ArticleCard } from '@/components/article-card';
 import { getArticlePosts } from '@/lib/api';
 import type { ArticlePost } from '@/types';
-import { BsArrowLeft, BsArrowRight } from 'react-icons/bs';
+import { ArrowLeft, ArrowRight } from 'lucide-react';
 
-export async function PrevNextPosts({ postSlug }: { postSlug: string }) {
+interface PrevNextPostsProps {
+  postSlug: string;
+  publishedAt: string;
+}
+
+export async function PrevNextPosts({ postSlug, publishedAt }: PrevNextPostsProps) {
   let prevPost: ArticlePost | null = null;
   let nextPost: ArticlePost | null = null;
 
   try {
-    const { contents: allPosts } = await getArticlePosts({ limit: 100 });
-    const currentIndex = allPosts.findIndex((p) => p.slug === postSlug);
+    const [olderPosts, newerPosts] = await Promise.all([
+      getArticlePosts({
+        limit: 1,
+        orders: '-publishedAt',
+        filters: `slug[not_equals]${postSlug}[and]publishedAt[less_than]${publishedAt}`,
+      }),
+      getArticlePosts({
+        limit: 1,
+        orders: 'publishedAt',
+        filters: `slug[not_equals]${postSlug}[and]publishedAt[greater_than]${publishedAt}`,
+      }),
+    ]);
 
-    if (currentIndex === -1) {
-      console.warn(`Current post not found in PrevNextPosts for slug: ${postSlug}`);
-      return null;
-    }
-
-    prevPost = currentIndex < allPosts.length - 1 ? allPosts[currentIndex + 1] : null;
-    nextPost = currentIndex > 0 ? allPosts[currentIndex - 1] : null;
+    prevPost = olderPosts.contents[0] ?? null;
+    nextPost = newerPosts.contents[0] ?? null;
   } catch (error) {
-    console.error('Error fetching related posts:', error);
+    console.error('Error fetching adjacent posts:', error);
   }
 
   return (
@@ -36,14 +46,14 @@ export async function PrevNextPosts({ postSlug }: { postSlug: string }) {
       <div className="flex justify-between">
         <div>
           <h3 className="text-base sm:text-lg md:text-xl font-medium mb-3 flex gap-2 items-center text-primary">
-            <BsArrowLeft className="h-4 w-4" aria-hidden="true" />
+            <ArrowLeft className="h-4 w-4" aria-hidden="true" />
             Previous Article
           </h3>
         </div>
         <div>
           <h3 className="text-base sm:text-lg md:text-xl font-medium mb-3 flex gap-2 items-center justify-end text-primary">
             Next Article
-            <BsArrowRight className="h-4 w-4" aria-hidden="true" />
+            <ArrowRight className="h-4 w-4" aria-hidden="true" />
           </h3>
         </div>
       </div>

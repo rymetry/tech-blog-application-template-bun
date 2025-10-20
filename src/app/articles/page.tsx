@@ -5,6 +5,8 @@ import { SectionContainer } from '@/components/section-container';
 import { TagsList } from '@/components/tags-list';
 import { Suspense } from 'react';
 
+export const revalidate = 300;
+
 interface ArticlePageProps {
   searchParams: Promise<{
     page?: string;
@@ -13,23 +15,12 @@ interface ArticlePageProps {
   }>;
 }
 
-// SearchFormをラップするクライアントコンポーネント
-function SearchFormWrapper() {
-  return (
-    <Suspense fallback={<div>Loading search...</div>}>
-      <SearchForm />
-    </Suspense>
-  );
-}
-
-// 取得系は外部コンポーネントに分離
-
 export default async function ArticlePage(props: ArticlePageProps) {
   const searchParams = await props.searchParams;
   return (
     <>
       <PageHero
-        title="Article"
+        title="Blog"
         description="Explore our collection of articles, tutorials, and insights"
       />
 
@@ -38,7 +29,7 @@ export default async function ArticlePage(props: ArticlePageProps) {
           <div className="space-y-8">
             <div>
               <h2 className="text-lg sm:text-xl md:text-2xl font-medium mb-4">Search</h2>
-              <SearchFormWrapper />
+              <SearchForm />
             </div>
 
             <div>
