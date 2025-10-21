@@ -1,6 +1,7 @@
 import { adaptAuthor, adaptArticle, adaptTag } from '@/lib/adapters';
 import type { Author, ArticlePost, Tag } from '@/types';
 import {
+  getDetail,
   getList,
   getAuthors as getMicroCMSAuthors,
   getTags as getMicroCMSTags,
@@ -108,6 +109,25 @@ const fetchArticlePostCached = async (slug: string): Promise<ArticlePost> =>
     },
   )();
 
+const fetchArticlePostPreview = async (slug: string, draftKey?: string): Promise<ArticlePost> => {
+  const queries = {
+    filters: `slug[equals]${slug}`,
+    limit: 1,
+    depth: 3 as const,
+    ...(draftKey ? { draftKey } : {}),
+  };
+
+  const { contents } = await getList(queries);
+
+  const matchedPost = contents[0];
+
+  if (!matchedPost) {
+    throw new Error(`Preview article post not found for slug: ${slug}`);
+  }
+
+  return adaptArticle(matchedPost);
+};
+
 const fetchTagsCached = unstable_cache(
   async (): Promise<TagResponse> => {
     const response = await getMicroCMSTags({ limit: DEFAULT_TAG_LIMIT });
@@ -166,8 +186,27 @@ export async function getArticlePosts(
  * ブログ記事詳細を取得する
  * depthパラメータを使用して関連コンテンツの詳細も取得する
  */
-export async function getArticlePost(slug: string): Promise<ArticlePost> {
+type GetArticlePostOptions = {
+  draftKey?: string;
+  contentId?: string;
+};
+
+export async function getArticlePost(
+  slug: string,
+  options: GetArticlePostOptions = {},
+): Promise<ArticlePost> {
   try {
+    const { draftKey, contentId } = options;
+
+    if (draftKey && contentId) {
+      const detail = await getDetail(contentId, { draftKey, depth: 3 as const });
+      return adaptArticle(detail);
+    }
+
+    if (draftKey) {
+      return await fetchArticlePostPreview(slug, draftKey);
+    }
+
     // キャッシュされた記事詳細を取得
     return await fetchArticlePostCached(slug);
   } catch (error) {
@@ -198,4 +237,36 @@ export async function getAuthors(): Promise<AuthorResponse> {
     console.error('Error in getAuthors:', error);
     return { contents: [], totalCount: 0, offset: 0, limit: DEFAULT_AUTHOR_LIMIT };
   }
+}
+
+export async function getAllArticles(): Promise<ArticlePost[]> {
+  const allArticles: ArticlePost[] = [];
+  const limit = 100;
+  let offset = 0;
+  let totalCount = Infinity;
+
+  try {
+    while (offset < totalCount) {
+      const { contents, totalCount: fetchedTotalCount } = await getArticlePosts({
+        limit,
+        offset,
+        orders: '-publishedAt',
+      });
+
+      if (totalCount === Infinity) {
+        totalCount = fetchedTotalCount;
+      }
+
+      if (!contents.length) {
+        break;
+      }
+
+      allArticles.push(...contents);
+      offset += limit;
+    }
+  } catch (error) {
+    console.error('Error fetching all articles:', error);
+  }
+
+  return allArticles;
 }

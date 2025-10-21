@@ -1,9 +1,13 @@
 import Footer from '@/components/footer';
 import Header from '@/components/header';
+import DraftModeIndicator from '@/components/draft-mode-indicator';
 import { ThemeProvider } from '@/components/theme-provider';
+import { buildOgImage, feedUrl, metadataBase, siteMetadata } from '@/lib/metadata';
 import { cn } from '@/lib/utils';
 import type { Metadata } from 'next';
+import { draftMode } from 'next/headers';
 import { Inter, Noto_Sans_JP } from 'next/font/google';
+import Script from 'next/script';
 import './globals.css';
 
 const fontSans = Noto_Sans_JP({
@@ -22,18 +26,55 @@ const fontUi = Inter({
   subsets: ['latin'],
 });
 
+const defaultOgImage = buildOgImage();
+const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
+
 export const metadata: Metadata = {
-  title: 'rymlab',
-  description:
-    'A modern tech blog for sharing knowledge and insights on web development, programming, and technology and quality assurance.',
-  keywords: ['rymlab', 'web development', 'programming', 'technology', 'quality assurance'],
+  metadataBase,
+  title: {
+    default: siteMetadata.name,
+    template: `%s | ${siteMetadata.name}`,
+  },
+  description: siteMetadata.description,
+  keywords: siteMetadata.keywords,
+  openGraph: {
+    type: 'website',
+    locale: siteMetadata.locale,
+    siteName: siteMetadata.name,
+    title: siteMetadata.name,
+    description: siteMetadata.description,
+    url: siteMetadata.url,
+    images: [defaultOgImage],
+  },
+  twitter: {
+    card: siteMetadata.twitter.cardType,
+    site: siteMetadata.twitter.site,
+    creator: siteMetadata.twitter.creator,
+    title: siteMetadata.name,
+    description: siteMetadata.description,
+    images: [defaultOgImage.url],
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
+  alternates: {
+    canonical: siteMetadata.url,
+    types: {
+      'application/rss+xml': feedUrl,
+    },
+  },
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+export default async function RootLayout({ children }: { children: React.ReactNode }) {
+  const draftState = await draftMode();
+  const { isEnabled } = draftState;
+
   return (
     <html lang="ja" suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://images.microcms-assets.io" crossOrigin="" />
+        <link rel="alternate" type="application/rss+xml" href={feedUrl} />
       </head>
       <body
         className={cn(
@@ -53,7 +94,26 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </main>
             <Footer />
           </div>
+          {isEnabled && <DraftModeIndicator />}
         </ThemeProvider>
+        {GA_MEASUREMENT_ID ? (
+          <>
+            <Script
+              src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
+              strategy="afterInteractive"
+            />
+            <Script id="ga4" strategy="afterInteractive">
+              {`
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', '${GA_MEASUREMENT_ID}', {
+                  page_path: window.location.pathname,
+                });
+              `}
+            </Script>
+          </>
+        ) : null}
       </body>
     </html>
   );

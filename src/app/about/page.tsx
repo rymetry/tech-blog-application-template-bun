@@ -1,15 +1,25 @@
 import { PageHero } from '@/components/page-hero';
 import { SectionContainer } from '@/components/section-container';
+import { JsonLd } from '@/components/json-ld';
+import { buildPageMetadata } from '@/lib/metadata';
+import { buildBreadcrumbJsonLd } from '@/lib/structured-data';
 import Image from 'next/image';
 
-export const metadata = {
-  title: 'About - Tech Blog',
-  description: 'Learn more about our tech blog and the team behind it',
-};
+export const metadata = buildPageMetadata({
+  title: 'About',
+  description: 'Learn more about our tech blog and the team behind it.',
+  canonicalPath: '/about',
+});
 
 export default async function AboutPage() {
+  const breadcrumbJsonLd = buildBreadcrumbJsonLd([
+    { name: 'Home', path: '/' },
+    { name: 'About', path: '/about' },
+  ]);
+
   return (
     <>
+      <JsonLd data={breadcrumbJsonLd} id="about-breadcrumb-jsonld" />
       <PageHero title="About" description="Learn more about our tech blog and the team behind it" />
 
       <SectionContainer className="py-8 sm:py-10 md:py-12">

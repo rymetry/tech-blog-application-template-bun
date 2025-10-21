@@ -2,14 +2,27 @@ import { LatestPosts } from '@/components/latest-posts';
 import { PageHero } from '@/components/page-hero';
 import { SectionContainer } from '@/components/section-container';
 import { Button } from '@/components/ui/button';
+import { JsonLd } from '@/components/json-ld';
+import { buildPageMetadata } from '@/lib/metadata';
+import { buildBlogListJsonLd } from '@/lib/structured-data';
 import Link from 'next/link';
 import { Suspense } from 'react';
 
 export const revalidate = 300;
 
+export const metadata = buildPageMetadata({
+  title: 'Home',
+  canonicalPath: '/',
+  description:
+    'Discover the latest trends, deep dives, and practical knowledge in software engineering and technology from tech-blog-application-bun.',
+});
+
 export default function Home() {
+  const blogJsonLd = buildBlogListJsonLd();
+
   return (
     <div className="flex flex-col min-h-screen">
+      <JsonLd data={blogJsonLd} id="homepage-jsonld" />
       {/* Heroセクション */}
       <PageHero
         title="Tech Blog for Modern Developers"

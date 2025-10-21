@@ -1,8 +1,14 @@
 import type { NextConfig } from 'next';
 
+const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.SITE_URL || 'http://localhost:3000';
+
 const nextConfig: NextConfig = {
-  /* config options here */
+  reactStrictMode: true,
+  env: {
+    NEXT_PUBLIC_SITE_URL: siteUrl,
+  },
   images: {
+    formats: ['image/avif', 'image/webp'],
     remotePatterns: [
       {
         protocol: 'https',

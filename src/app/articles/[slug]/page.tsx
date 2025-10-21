@@ -1,11 +1,15 @@
 import { Author } from '@/components/author';
 import { PrevNextPosts } from '@/components/prev-next-posts';
 import { RelatedPosts } from '@/components/related-posts';
+import { JsonLd } from '@/components/json-ld';
 import { getArticlePost, getArticlePosts } from '@/lib/api';
+import { buildPageMetadata } from '@/lib/metadata';
+import { buildArticleJsonLd, buildBreadcrumbJsonLd } from '@/lib/structured-data';
 import { formatDate } from '@/lib/utils';
 import { CalendarCheck, RefreshCcw, Tag } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { draftMode } from 'next/headers';
 import { notFound } from 'next/navigation';
 import { Suspense } from 'react';
 
@@ -13,30 +17,43 @@ interface ArticlePostPageProps {
   params: Promise<{
     slug: string;
   }>;
+  searchParams?: Promise<{
+    draftKey?: string;
+    contentId?: string;
+  }>;
 }
 
 // revalidateは数値リテラルでなければビルド時に最適化されないため、ここで直接指定する。
 export const revalidate = 300;
 
-export async function generateMetadata({ params }: ArticlePostPageProps) {
+export async function generateMetadata({ params, searchParams }: ArticlePostPageProps) {
   const { slug } = await params;
-  try {
-    const post = await getArticlePost(slug);
+  const draftState = await draftMode();
+  const search = searchParams ? await searchParams : {};
+  const { draftKey, contentId } = search;
+  const previewOptions = draftState.isEnabled ? { draftKey, contentId } : {};
 
-    return {
+  try {
+    const post = await getArticlePost(slug, previewOptions);
+
+    return buildPageMetadata({
       title: post.title,
       description: post.excerpt,
-      openGraph: {
-        title: post.title,
-        description: post.excerpt,
-        images: [{ url: post.coverImage.url }],
-      },
-    };
+      canonicalPath: `/articles/${post.slug}`,
+      imageUrl: post.coverImage?.url,
+      imageAlt: post.title,
+      type: 'article',
+      publishedTime: post.publishedAt,
+      modifiedTime: post.updatedAt,
+      tags: post.tags?.map((tag) => tag.name),
+      authors: post.author?.name ? [post.author.name] : undefined,
+    });
   } catch {
-    return {
+    return buildPageMetadata({
       title: 'Article Post',
       description: 'Article post not found',
-    };
+      canonicalPath: `/articles/${slug}`,
+    });
   }
 }
 
@@ -75,13 +92,26 @@ export async function generateStaticParams() {
 
 // 関連/前後ナビは外部コンポーネントに分離
 
-export default async function ArticlePostPage({ params }: ArticlePostPageProps) {
+export default async function ArticlePostPage({ params, searchParams }: ArticlePostPageProps) {
   const { slug } = await params;
+  const draftState = await draftMode();
+  const search = searchParams ? await searchParams : {};
+  const { draftKey, contentId } = search;
+  const previewOptions = draftState.isEnabled ? { draftKey, contentId } : {};
+
   try {
-    const post = await getArticlePost(slug);
+    const post = await getArticlePost(slug, previewOptions);
+    const breadcrumbJsonLd = buildBreadcrumbJsonLd([
+      { name: 'Home', path: '/' },
+      { name: 'Blog', path: '/articles' },
+      { name: post.title, path: `/articles/${post.slug}` },
+    ]);
+    const articleJsonLd = buildArticleJsonLd(post);
 
     return (
       <>
+        <JsonLd data={breadcrumbJsonLd} id="article-breadcrumb-jsonld" />
+        <JsonLd data={articleJsonLd} id="article-structured-jsonld" />
         <section className="w-full pt-24 pb-12 md:pt-32 md:pb-16 diagonal-background">
           <div className="container text-center">
             <div className="max-w-3xl mx-auto space-y-4">

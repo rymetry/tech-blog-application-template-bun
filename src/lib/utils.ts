@@ -1,3 +1,5 @@
+import { format } from 'date-fns';
+import { ja } from 'date-fns/locale';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
@@ -5,12 +7,46 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export function formatDate(date: string) {
-  return new Date(date)
-    .toLocaleDateString('ja-JP', {
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-    })
-    .replaceAll('/', '-');
+export function formatDate(date: string | Date) {
+  const parsed = date instanceof Date ? date : new Date(date);
+
+  if (Number.isNaN(parsed.getTime())) {
+    return '';
+  }
+
+  return format(parsed, 'yyyy-MM-dd', { locale: ja });
+}
+
+export function truncateForSEO(text: string, maxLength = 160) {
+  if (!text) {
+    return '';
+  }
+
+  const normalized = text.trim();
+  if (normalized.length <= maxLength) {
+    return normalized;
+  }
+
+  return `${normalized.slice(0, Math.max(0, maxLength - 3)).trim()}...`;
+}
+
+export function stripHtml(value: string | undefined | null) {
+  if (!value) {
+    return '';
+  }
+
+  return value.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+}
+
+export function escapeForXml(value: string | undefined | null) {
+  if (!value) {
+    return '';
+  }
+
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&apos;');
 }
