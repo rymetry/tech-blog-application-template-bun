@@ -41,11 +41,11 @@ const isValidSecret = (candidate: string | null) => {
   const secretBuffer = toUtf8Buffer(PREVIEW_SECRET);
   const candidateBuffer = toUtf8Buffer(candidate);
 
-  if (secretBuffer.length !== candidateBuffer.length) {
+  try {
+    return timingSafeEqual(secretBuffer, candidateBuffer);
+  } catch {
     return false;
   }
-
-  return timingSafeEqual(secretBuffer, candidateBuffer);
 };
 
 export async function GET(request: Request) {
