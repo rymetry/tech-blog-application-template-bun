@@ -2,6 +2,7 @@ import Footer from '@/components/footer';
 import Header from '@/components/header';
 import DraftModeIndicator from '@/components/draft-mode-indicator';
 import { ThemeProvider } from '@/components/theme-provider';
+import { validateGaMeasurementId } from '@/lib/constants';
 import { buildOgImage, feedUrl, metadataBase, siteMetadata } from '@/lib/metadata';
 import { cn } from '@/lib/utils';
 import type { Metadata } from 'next';
@@ -27,7 +28,7 @@ const fontUi = Inter({
 });
 
 const defaultOgImage = buildOgImage();
-const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
+const GA_MEASUREMENT_ID = validateGaMeasurementId(process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID);
 const GA_MEASUREMENT_ID_JSON = GA_MEASUREMENT_ID ? JSON.stringify(GA_MEASUREMENT_ID) : null;
 
 export const metadata: Metadata = {

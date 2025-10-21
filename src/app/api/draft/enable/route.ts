@@ -1,5 +1,5 @@
 import { absoluteUrl } from '@/lib/metadata';
-import { timingSafeEqual } from 'node:crypto';
+import { timingSafeEqual } from 'crypto';
 import { draftMode } from 'next/headers';
 import { NextResponse } from 'next/server';
 
