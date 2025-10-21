@@ -7,7 +7,6 @@ const STATIC_ROUTES = ['/', '/articles', '/about', '/contact'];
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const routes: MetadataRoute.Sitemap = STATIC_ROUTES.map((route) => ({
     url: absoluteUrl(route),
-    lastModified: new Date(),
   }));
 
   try {

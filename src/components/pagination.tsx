@@ -1,7 +1,7 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
+import { buildQueryString, cn } from '@/lib/utils';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useCallback, useMemo } from 'react';
@@ -18,15 +18,13 @@ function PaginationContent({ totalPages, currentPage }: PaginationProps) {
 
   const handlePageChange = useCallback(
     (page: number) => {
-      const params = new URLSearchParams(searchParams.toString());
+      const baseParams = Object.fromEntries(searchParams.entries());
+      const queryString = buildQueryString({
+        ...baseParams,
+        page: page === 1 ? undefined : page,
+      });
 
-      if (page === 1) {
-        params.delete('page');
-      } else {
-        params.set('page', page.toString());
-      }
-
-      router.push(`/articles?${params.toString()}`);
+      router.push(`/articles${queryString}`);
     },
     [router, searchParams],
   );

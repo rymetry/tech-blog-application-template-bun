@@ -8,6 +8,8 @@ export interface PageMetadataOptions {
   description: string;
   path: string;
   image?: string;
+  imageWidth?: number;
+  imageHeight?: number;
   type?: 'website' | 'article';
   alternates?: Metadata['alternates'];
 }
@@ -36,6 +38,8 @@ const createBaseMetadata = ({
   description,
   path,
   image,
+  imageWidth,
+  imageHeight,
   type = 'website',
   publishedTime,
   modifiedTime,
@@ -47,7 +51,10 @@ const createBaseMetadata = ({
   const canonicalUrl = absoluteUrl(normalizedPath);
   const truncatedDescription = truncateForSEO(description ?? siteMetadata.description);
   const metadataTitle = title ? SITE_TITLE_TEMPLATE.replace('%s', title) : siteMetadata.name;
-  const ogImage = buildOgImage(image, title);
+  const ogImage = buildOgImage(image, title, {
+    width: imageWidth,
+    height: imageHeight,
+  });
 
   return {
     title: metadataTitle,
@@ -111,6 +118,8 @@ export interface ArticleMetadataOptions {
 export const createArticleMetadata = ({ article, path }: ArticleMetadataOptions): Metadata => {
   const description = article.excerpt || '';
   const image = article.coverImage?.url;
+  const imageWidth = article.coverImage?.width;
+  const imageHeight = article.coverImage?.height;
   const articlePath = path ?? `/articles/${article.slug}`;
   const tags = article.tags?.map((tag) => tag.name).filter(Boolean);
   const authors = article.author?.name ? [article.author.name] : undefined;
@@ -120,6 +129,8 @@ export const createArticleMetadata = ({ article, path }: ArticleMetadataOptions)
     description,
     path: articlePath,
     image,
+    imageWidth,
+    imageHeight,
     type: 'article',
     publishedTime: article.publishedAt,
     modifiedTime: article.updatedAt,

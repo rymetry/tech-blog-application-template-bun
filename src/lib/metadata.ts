@@ -65,14 +65,18 @@ export const absoluteUrl = (path = '/') => {
 
 export const feedUrl = absoluteUrl(siteMetadata.feedPath);
 
-export const buildOgImage = (imageUrl?: string, altText?: string) => {
+export const buildOgImage = (
+  imageUrl?: string,
+  altText?: string,
+  dimensions: { width?: number; height?: number } = {},
+) => {
   const url = imageUrl ? absoluteUrl(imageUrl) : absoluteUrl(siteMetadata.defaultOgImagePath);
   const alt = altText || siteMetadata.name;
 
   return {
     url,
-    width: 1200,
-    height: 630,
+    width: dimensions.width ?? 1200,
+    height: dimensions.height ?? 630,
     alt,
   };
 };

@@ -8,13 +8,16 @@ export interface ArticlePost {
   excerpt: string;
   publishedAt: string;
   updatedAt: string;
-  coverImage: {
-    url: string;
-    height: number;
-    width: number;
-  };
+  coverImage: Thumbnail;
   author: Author;
   tags: Tag[];
   content: string;
   relatedPosts?: ArticlePost[];
+}
+
+export interface Thumbnail {
+  url: string;
+  width?: number;
+  height?: number;
+  alt?: string;
 }
