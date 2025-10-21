@@ -89,14 +89,6 @@ const createBaseMetadata = ({
   };
 };
 
-export const createPageMetadata = (options: PageMetadataOptions): Metadata =>
-  createBaseMetadata({ ...options });
-
-export interface ArticleMetadataOptions {
-  article: ArticlePost;
-  path?: string;
-}
-
 /**
  * ページのメタデータを生成します
  * @param options - メタデータオプション
@@ -108,6 +100,14 @@ export interface ArticleMetadataOptions {
  *   path: '/about',
  * });
  */
+export const createPageMetadata = (options: PageMetadataOptions): Metadata =>
+  createBaseMetadata({ ...options });
+
+export interface ArticleMetadataOptions {
+  article: ArticlePost;
+  path?: string;
+}
+
 export const createArticleMetadata = ({ article, path }: ArticleMetadataOptions): Metadata => {
   const description = article.excerpt || '';
   const image = article.coverImage?.url;

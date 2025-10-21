@@ -34,7 +34,7 @@ const isValidSecret = (candidate: string | null) => {
     return false;
   }
 
-  if (!isAsciiSafe(PREVIEW_SECRET) || !isAsciiSafe(candidate)) {
+  if (!isAsciiSafe(candidate)) {
     return false;
   }
 
