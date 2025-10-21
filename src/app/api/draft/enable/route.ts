@@ -40,12 +40,21 @@ const isValidSecret = (candidate: string | null) => {
 
   const secretBuffer = toUtf8Buffer(PREVIEW_SECRET);
   const candidateBuffer = toUtf8Buffer(candidate);
+  const targetLength = secretBuffer.length;
 
-  try {
-    return timingSafeEqual(secretBuffer, candidateBuffer);
-  } catch {
-    return false;
+  let comparableCandidate: Buffer;
+
+  if (candidateBuffer.length === targetLength) {
+    comparableCandidate = candidateBuffer;
+  } else if (candidateBuffer.length > targetLength) {
+    comparableCandidate = candidateBuffer.subarray(0, targetLength);
+  } else {
+    comparableCandidate = Buffer.alloc(targetLength);
+    candidateBuffer.copy(comparableCandidate);
   }
+
+  const isEqual = timingSafeEqual(secretBuffer, comparableCandidate);
+  return isEqual && candidateBuffer.length === targetLength;
 };
 
 export async function GET(request: Request) {

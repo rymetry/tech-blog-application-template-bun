@@ -15,17 +15,20 @@ const DEFAULT_OG_IMAGE_PATH = '/placeholder.jpg';
 const DEFAULT_LOCALE = 'ja_JP';
 const DEFAULT_FEED_PATH = '/feed.xml';
 
+const trimTrailingSlash = (value: string) => value.replace(/\/+$/, '');
+const normalizeHostname = (value: string) => value.replace(/^https?:\/\//, '').replace(/\/+$/, '');
+
 const resolveSiteUrl = () => {
-  const urlFromEnv = process.env.NEXT_PUBLIC_SITE_URL?.trim() || '';
+  const urlFromEnv = (process.env.NEXT_PUBLIC_SITE_URL || '').trim();
 
   if (urlFromEnv) {
-    return urlFromEnv.replace(/\/+$/, '');
+    return trimTrailingSlash(urlFromEnv);
   }
 
   if (process.env.NODE_ENV === 'production') {
-    const vercelUrl = process.env.VERCEL_URL?.trim();
+    const vercelUrl = (process.env.VERCEL_URL || '').trim();
     if (vercelUrl) {
-      return `https://${vercelUrl.replace(/^https?:\/\//, '').replace(/\/+$/, '')}`;
+      return `https://${normalizeHostname(vercelUrl)}`;
     }
 
     throw new Error(

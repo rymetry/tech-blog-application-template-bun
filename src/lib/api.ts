@@ -87,12 +87,15 @@ const fetchArticlePostFromApi = async (
   slug: string,
   options: { draftKey?: string } = {},
 ) => {
-  const queries = {
+  const queries: Record<string, unknown> = {
     filters: `slug[equals]${slug}`,
     limit: 1,
     depth: 3 as const,
-    ...(options.draftKey ? { draftKey: options.draftKey } : {}),
   };
+
+  if (options.draftKey) {
+    queries.draftKey = options.draftKey;
+  }
 
   const { contents } = await getList(queries);
   const matchedPost = contents[0];
