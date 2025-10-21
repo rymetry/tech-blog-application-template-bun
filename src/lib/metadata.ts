@@ -30,7 +30,7 @@ const resolveSiteUrl = () => {
     }
 
     throw new Error(
-      'Site URL is not set. Please configure NEXT_PUBLIC_SITE_URL or VERCEL_URL.',
+      'Site URL is not set. Please configure NEXT_PUBLIC_SITE_URL for your custom domain. VERCEL_URL is automatically set by Vercel in production deployments and does not need manual configuration.',
     );
   }
 

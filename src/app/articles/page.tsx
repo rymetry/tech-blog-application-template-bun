@@ -7,6 +7,7 @@ import { JsonLd } from '@/components/json-ld';
 import { getTags } from '@/lib/api';
 import { createPageMetadata } from '@/lib/metadata-helpers';
 import { buildBreadcrumbJsonLd } from '@/lib/structured-data';
+import { buildQueryString } from '@/lib/utils';
 import { Suspense } from 'react';
 
 export const revalidate = 300;
@@ -70,24 +71,13 @@ export async function generateMetadata({ searchParams }: ArticlePageProps) {
     descriptionParts.push(`You are viewing page ${pageNumber}.`);
   }
 
-  const canonicalParams = new URLSearchParams();
+  const canonicalQuery = buildQueryString({
+    tag: tagId,
+    q: query,
+    page: pageNumber > 1 ? pageNumber : undefined,
+  });
 
-  if (tagId) {
-    canonicalParams.set('tag', tagId);
-  }
-
-  if (query) {
-    canonicalParams.set('q', query);
-  }
-
-  if (pageNumber > 1) {
-    canonicalParams.set('page', String(pageNumber));
-  }
-
-  const canonicalParamsString = canonicalParams.toString();
-  const canonicalPath = canonicalParamsString
-    ? `/articles?${canonicalParamsString}`
-    : '/articles';
+  const canonicalPath = canonicalQuery ? `/articles${canonicalQuery}` : '/articles';
 
   return createPageMetadata({
     title,
