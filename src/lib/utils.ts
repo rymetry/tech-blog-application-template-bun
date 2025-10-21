@@ -25,7 +25,8 @@ export function truncateForSEO(text: string, maxLength = 160) {
     return '';
   }
 
-  const normalized = text.trim();
+  const normalized = text.replace(/\s+/g, ' ').trim();
+
   if (normalized.length <= maxLength) {
     return normalized;
   }
@@ -34,7 +35,12 @@ export function truncateForSEO(text: string, maxLength = 160) {
     return normalized.slice(0, maxLength);
   }
 
-  const truncated = normalized.trimEnd().slice(0, maxLength - 3);
+  const trimmed = normalized.trimEnd();
+  if (trimmed.length <= maxLength) {
+    return trimmed;
+  }
+
+  const truncated = trimmed.slice(0, maxLength - 3).trimEnd();
   return `${truncated}...`;
 }
 

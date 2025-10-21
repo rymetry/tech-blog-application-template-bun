@@ -20,8 +20,8 @@ export async function GET() {
   articles.forEach((article) => {
     const previewSource =
       article.excerpt ||
-      (article.content ? article.content.slice(0, CONTENT_PREVIEW_LENGTH) : '');
-    const description = truncateForSEO(stripHtml(previewSource));
+      (article.content ? stripHtml(article.content).slice(0, CONTENT_PREVIEW_LENGTH) : '');
+    const description = truncateForSEO(previewSource);
     const url = absoluteUrl(`/articles/${article.slug}`);
 
     feed.item({
