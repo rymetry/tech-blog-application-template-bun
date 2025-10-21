@@ -1,14 +1,14 @@
 import { PageHero } from '@/components/page-hero';
 import { SectionContainer } from '@/components/section-container';
 import { JsonLd } from '@/components/json-ld';
-import { buildPageMetadata } from '@/lib/metadata';
+import { createPageMetadata } from '@/lib/metadata-helpers';
 import { buildBreadcrumbJsonLd } from '@/lib/structured-data';
 import Image from 'next/image';
 
-export const metadata = buildPageMetadata({
+export const metadata = createPageMetadata({
   title: 'About',
   description: 'Learn more about our tech blog and the team behind it.',
-  canonicalPath: '/about',
+  path: '/about',
 });
 
 export default async function AboutPage() {

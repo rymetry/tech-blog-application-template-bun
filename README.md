@@ -38,6 +38,7 @@ Next.js 15 / React 19 / Tailwind CSS v4 で構築した技術ブログ用テン�
 - React 19
 - Tailwind CSS v4 / `@tailwindcss/typography`
 - microcms-js-sdk
+- rss (RSS 2.0 フィード生成)
 - shadcn/ui
 - next-themes
 - Bun / Node.js (任意のパッケージマネージャに対応)
@@ -55,9 +56,10 @@ Next.js 15 / React 19 / Tailwind CSS v4 で構築した技術ブログ用テン�
 - `src/lib`
   - `microcms.ts` microCMS クライアント
   - `api.ts` データ取得ラッパー
-  - `metadata.ts` SEO メタデータ生成
+  - `metadata.ts` サイト定数と URL ユーティリティ
+  - `metadata-helpers.ts` ページ/記事用メタデータ生成ヘルパー
   - `structured-data.ts` JSON-LD ユーティリティ
-  - `utils.ts` 共通ヘルパー（`cn`, `formatDate`, `truncateForSEO`, `escapeForXml` など）
+  - `utils.ts` 共通ヘルパー（`cn`, `formatDate`, `truncateForSEO`, `stripHtml` など）
 - `src/types` ドメイン型定義
 - `public` 静的アセット（プレースホルダー画像など）
 
@@ -86,13 +88,12 @@ MICROCMS_TAGS=https://your-service.microcms.io/api/v1/tags
 
 # 推奨
 NEXT_PUBLIC_SITE_URL=https://example.com
-SITE_URL=https://example.com               # NEXT_PUBLIC_SITE_URL があれば省略可
 MICROCMS_PREVIEW_SECRET=your-preview-secret
 NEXT_PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXXXX # GA4 を利用する場合のみ
 ```
 - `MICROCMS_*` エンドポイント URL は API リスト画面からコピーしてください。
 - プレビュー機能を使う場合は microCMS 側で Web プレビューに上記 `MICROCMS_PREVIEW_SECRET` と Draft Mode エンドポイントを設定します。
-- `NEXT_PUBLIC_SITE_URL` を指定すると canonical / OGP / RSS URL が正しく生成されます。
+- `NEXT_PUBLIC_SITE_URL` を指定すると canonical / OGP / RSS URL が正しく生成されます。未設定の場合は `VERCEL_URL` を自動利用し、それも無い場合はビルド時にエラーになります。
 
 ### 3. 開発サーバー
 ```bash
@@ -118,7 +119,7 @@ npm run dev
 
 SEO / 配信設定
 --------------
-- `buildPageMetadata` がページ固有のメタデータと OGP/Twitter カードを構築します。description は自動で 160 文字にトリミングされます。
+- `createPageMetadata` / `createArticleMetadata` でページ種別に応じたメタデータと OGP/Twitter カードを一元生成します。description は自動で 160 文字にトリミングされます。
 - JSON-LD は `JsonLd` コンポーネント経由で出力。記事には `Article`、一覧には `BreadcrumbList` / `Blog` を付与。
 - RSS フィード: `/feed.xml`（`layout.tsx` で `<link rel="alternate">` も登録済み）
 - サイトマップ: `/sitemap.xml` は静的ページと記事を包含

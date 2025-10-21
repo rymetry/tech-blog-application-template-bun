@@ -5,7 +5,7 @@ import { SectionContainer } from '@/components/section-container';
 import { TagsList } from '@/components/tags-list';
 import { JsonLd } from '@/components/json-ld';
 import { getTags } from '@/lib/api';
-import { buildPageMetadata } from '@/lib/metadata';
+import { createPageMetadata } from '@/lib/metadata-helpers';
 import { buildBreadcrumbJsonLd } from '@/lib/structured-data';
 import { Suspense } from 'react';
 
@@ -89,10 +89,10 @@ export async function generateMetadata({ searchParams }: ArticlePageProps) {
     ? `/articles?${canonicalParamsString}`
     : '/articles';
 
-  return buildPageMetadata({
+  return createPageMetadata({
     title,
     description: descriptionParts.join(' '),
-    canonicalPath,
+    path: canonicalPath,
   });
 }
 

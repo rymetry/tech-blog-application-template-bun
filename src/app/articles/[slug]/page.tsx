@@ -3,7 +3,7 @@ import { PrevNextPosts } from '@/components/prev-next-posts';
 import { RelatedPosts } from '@/components/related-posts';
 import { JsonLd } from '@/components/json-ld';
 import { getArticlePost, getArticlePosts } from '@/lib/api';
-import { buildPageMetadata } from '@/lib/metadata';
+import { createArticleMetadata, createPageMetadata } from '@/lib/metadata-helpers';
 import { buildArticleJsonLd, buildBreadcrumbJsonLd } from '@/lib/structured-data';
 import { formatDate } from '@/lib/utils';
 import { CalendarCheck, RefreshCcw, Tag } from 'lucide-react';
@@ -36,23 +36,12 @@ export async function generateMetadata({ params, searchParams }: ArticlePostPage
   try {
     const post = await getArticlePost(slug, previewOptions);
 
-    return buildPageMetadata({
-      title: post.title,
-      description: post.excerpt,
-      canonicalPath: `/articles/${post.slug}`,
-      imageUrl: post.coverImage?.url,
-      imageAlt: post.title,
-      type: 'article',
-      publishedTime: post.publishedAt,
-      modifiedTime: post.updatedAt,
-      tags: post.tags?.map((tag) => tag.name),
-      authors: post.author?.name ? [post.author.name] : undefined,
-    });
+    return createArticleMetadata({ article: post });
   } catch {
-    return buildPageMetadata({
+    return createPageMetadata({
       title: 'Article Post',
       description: 'Article post not found',
-      canonicalPath: `/articles/${slug}`,
+      path: `/articles/${slug}`,
     });
   }
 }

@@ -1,6 +1,3 @@
-import type { Metadata } from 'next';
-import { truncateForSEO } from '@/lib/utils';
-
 const DEFAULT_SITE_NAME = 'tech-blog-application-bun';
 const DEFAULT_DESCRIPTION =
   'A modern tech blog for sharing knowledge and insights on web development, programming, and technology and quality assurance.';
@@ -77,80 +74,5 @@ export const buildOgImage = (imageUrl?: string, altText?: string) => {
     width: 1200,
     height: 630,
     alt,
-  };
-};
-
-type MetadataBuilderOptions = {
-  title?: string;
-  description?: string;
-  canonicalPath?: string;
-  imageUrl?: string;
-  imageAlt?: string;
-  type?: 'website' | 'article';
-  publishedTime?: string;
-  modifiedTime?: string;
-  tags?: string[];
-  authors?: string[];
-};
-
-export const buildPageMetadata = (options: MetadataBuilderOptions = {}): Metadata => {
-  const {
-    title,
-    description,
-    canonicalPath = '/',
-    imageUrl,
-    imageAlt,
-    type = 'website',
-    publishedTime,
-    modifiedTime,
-    tags,
-    authors,
-  } = options;
-
-  const metadataTitle = title ? SITE_TITLE_TEMPLATE.replace('%s', title) : siteMetadata.name;
-  const metadataDescription = truncateForSEO(description ?? siteMetadata.description);
-  const canonicalUrl = absoluteUrl(canonicalPath);
-  const ogImageAlt = imageAlt || title || siteMetadata.name;
-  const ogImage = buildOgImage(imageUrl, ogImageAlt);
-
-  return {
-    title: metadataTitle,
-    description: metadataDescription,
-    alternates: {
-      canonical: canonicalUrl,
-      types: {
-        'application/rss+xml': feedUrl,
-      },
-    },
-    openGraph: {
-      type,
-      locale: siteMetadata.locale,
-      siteName: siteMetadata.name,
-      title: metadataTitle,
-      description: metadataDescription,
-      url: canonicalUrl,
-      images: [ogImage],
-      ...(type === 'article'
-        ? {
-            publishedTime,
-            modifiedTime,
-            authors: authors?.length ? authors : [siteMetadata.name],
-            tags,
-          }
-        : {}),
-    },
-    twitter: {
-      card: siteMetadata.twitter.cardType,
-      site: siteMetadata.twitter.site,
-      creator: siteMetadata.twitter.creator,
-      title: metadataTitle,
-      description: metadataDescription,
-      images: [
-        {
-          url: ogImage.url,
-          alt: ogImage.alt,
-        },
-      ],
-    },
   };
 };

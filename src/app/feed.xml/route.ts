@@ -1,51 +1,41 @@
+import RSS from 'rss';
 import { getAllArticles } from '@/lib/api';
-import { absoluteUrl, feedUrl, siteMetadata } from '@/lib/metadata';
-import { escapeForXml, stripHtml, truncateForSEO } from '@/lib/utils';
+import { feedUrl, siteMetadata, absoluteUrl } from '@/lib/metadata';
+import { stripHtml, truncateForSEO } from '@/lib/utils';
 
 export const revalidate = 3600; // 1 hour
 const CONTENT_PREVIEW_LENGTH = 1000;
 
-const buildItem = (article: Awaited<ReturnType<typeof getAllArticles>>[number]) => {
-  const url = absoluteUrl(`/articles/${article.slug}`);
-  const source =
-    article.excerpt ||
-    (article.content ? article.content.slice(0, CONTENT_PREVIEW_LENGTH) : '');
-  const rawDescription = stripHtml(source);
-  const description = escapeForXml(truncateForSEO(rawDescription));
-  const title = escapeForXml(article.title);
-
-  return `
-    <item>
-      <title>${title}</title>
-      <link>${url}</link>
-      <description>${description}</description>
-      <pubDate>${new Date(article.publishedAt).toUTCString()}</pubDate>
-      <guid>${url}</guid>
-    </item>
-  `;
-};
-
 export async function GET() {
   const articles = await getAllArticles();
 
-  const items = articles.map(buildItem).join('');
+  const feed = new RSS({
+    title: siteMetadata.name,
+    description: siteMetadata.description,
+    site_url: siteMetadata.url,
+    feed_url: feedUrl,
+    language: siteMetadata.locale,
+  });
 
-  const channelTitle = escapeForXml(siteMetadata.name);
-  const channelDescription = escapeForXml(siteMetadata.description);
+  articles.forEach((article) => {
+    const previewSource =
+      article.excerpt ||
+      (article.content ? article.content.slice(0, CONTENT_PREVIEW_LENGTH) : '');
+    const description = truncateForSEO(stripHtml(previewSource));
+    const url = absoluteUrl(`/articles/${article.slug}`);
 
-  const rss = `<?xml version="1.0" encoding="UTF-8"?>
-<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
-  <channel>
-    <title>${channelTitle}</title>
-    <link>${siteMetadata.url}</link>
-    <description>${channelDescription}</description>
-    <language>ja</language>
-    <atom:link href="${feedUrl}" rel="self" type="application/rss+xml" />
-    ${items}
-  </channel>
-</rss>`;
+    feed.item({
+      title: article.title,
+      description,
+      url,
+      guid: url,
+      date: new Date(article.publishedAt),
+      author: article.author?.name,
+      categories: article.tags?.map((tag) => tag.name).filter(Boolean),
+    });
+  });
 
-  return new Response(rss, {
+  return new Response(feed.xml({ indent: true }), {
     headers: {
       'Content-Type': 'application/xml; charset=utf-8',
       'Cache-Control': 'public, max-age=3600, s-maxage=3600',

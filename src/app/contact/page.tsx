@@ -2,13 +2,13 @@ import { PageHero } from '@/components/page-hero';
 import { SectionContainer } from '@/components/section-container';
 import { ContactForm } from '@/components/contact-form';
 import { JsonLd } from '@/components/json-ld';
-import { buildPageMetadata } from '@/lib/metadata';
+import { createPageMetadata } from '@/lib/metadata-helpers';
 import { buildBreadcrumbJsonLd } from '@/lib/structured-data';
 
-export const metadata = buildPageMetadata({
+export const metadata = createPageMetadata({
   title: 'Contact',
   description: "Have a question or feedback? We'd love to hear from you.",
-  canonicalPath: '/contact',
+  path: '/contact',
 });
 
 export default async function ContactPage() {

@@ -44,16 +44,3 @@ export function stripHtml(value: string | undefined | null) {
 
   return value.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
 }
-
-export function escapeForXml(value: string | undefined | null) {
-  if (!value) {
-    return '';
-  }
-
-  return value
-    .replace(/&/g, '&amp;')
-    .replace(/</g, '&lt;')
-    .replace(/>/g, '&gt;')
-    .replace(/"/g, '&quot;')
-    .replace(/'/g, '&apos;');
-}

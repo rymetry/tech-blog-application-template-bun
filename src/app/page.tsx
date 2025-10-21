@@ -3,18 +3,18 @@ import { PageHero } from '@/components/page-hero';
 import { SectionContainer } from '@/components/section-container';
 import { Button } from '@/components/ui/button';
 import { JsonLd } from '@/components/json-ld';
-import { buildPageMetadata } from '@/lib/metadata';
+import { createPageMetadata } from '@/lib/metadata-helpers';
 import { buildBlogListJsonLd } from '@/lib/structured-data';
 import Link from 'next/link';
 import { Suspense } from 'react';
 
 export const revalidate = 300;
 
-export const metadata = buildPageMetadata({
+export const metadata = createPageMetadata({
   title: 'Home',
-  canonicalPath: '/',
   description:
     'Discover the latest trends, deep dives, and practical knowledge in software engineering and technology from tech-blog-application-bun.',
+  path: '/',
 });
 
 export default function Home() {
