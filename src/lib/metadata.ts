@@ -14,6 +14,7 @@ const DEFAULT_KEYWORDS = [
 const DEFAULT_OG_IMAGE_PATH = '/placeholder.jpg';
 const DEFAULT_LOCALE = 'ja_JP';
 const DEFAULT_FEED_PATH = '/feed.xml';
+export const SITE_TITLE_TEMPLATE = `%s | ${DEFAULT_SITE_NAME}`;
 
 const trimTrailingSlash = (value: string) => value.replace(/\/+$/, '');
 const normalizeHostname = (value: string) => value.replace(/^https?:\/\//, '').replace(/\/+$/, '');
@@ -106,7 +107,7 @@ export const buildPageMetadata = (options: MetadataBuilderOptions = {}): Metadat
     authors,
   } = options;
 
-  const metadataTitle = title ? `${title} | ${siteMetadata.name}` : siteMetadata.name;
+  const metadataTitle = title ? SITE_TITLE_TEMPLATE.replace('%s', title) : siteMetadata.name;
   const metadataDescription = truncateForSEO(description ?? siteMetadata.description);
   const canonicalUrl = absoluteUrl(canonicalPath);
   const ogImageAlt = imageAlt || title || siteMetadata.name;

@@ -3,7 +3,7 @@ import Header from '@/components/header';
 import DraftModeIndicator from '@/components/draft-mode-indicator';
 import { ThemeProvider } from '@/components/theme-provider';
 import { sanitizeMeasurementId } from '@/lib/constants';
-import { buildOgImage, feedUrl, metadataBase, siteMetadata } from '@/lib/metadata';
+import { SITE_TITLE_TEMPLATE, buildOgImage, feedUrl, metadataBase, siteMetadata } from '@/lib/metadata';
 import { cn } from '@/lib/utils';
 import type { Metadata } from 'next';
 import { draftMode } from 'next/headers';
@@ -35,7 +35,7 @@ export const metadata: Metadata = {
   metadataBase,
   title: {
     default: siteMetadata.name,
-    template: `%s | ${siteMetadata.name}`,
+    template: SITE_TITLE_TEMPLATE,
   },
   description: siteMetadata.description,
   keywords: siteMetadata.keywords,
