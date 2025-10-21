@@ -30,10 +30,12 @@ export const buildArticleJsonLd = (article: ArticlePost) => ({
     '@type': 'WebPage',
     '@id': absoluteUrl(`/articles/${article.slug}`),
   },
-  author: {
-    '@type': 'Person',
-    name: article.author?.name ?? 'Anonymous',
-  },
+  ...(article.author?.name && {
+    author: {
+      '@type': 'Person',
+      name: article.author.name,
+    },
+  }),
   publisher: {
     '@type': 'Organization',
     name: siteMetadata.name,

@@ -2,7 +2,7 @@ import { getAllArticles } from '@/lib/api';
 import { absoluteUrl, feedUrl, siteMetadata } from '@/lib/metadata';
 import { escapeForXml, stripHtml, truncateForSEO } from '@/lib/utils';
 
-export const revalidate = 3600;
+export const revalidate = 3600; // 1 hour
 
 const buildItem = (article: Awaited<ReturnType<typeof getAllArticles>>[number]) => {
   const url = absoluteUrl(`/articles/${article.slug}`);

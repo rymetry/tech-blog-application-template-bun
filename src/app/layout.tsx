@@ -28,6 +28,7 @@ const fontUi = Inter({
 
 const defaultOgImage = buildOgImage();
 const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
+const GA_MEASUREMENT_ID_JSON = GA_MEASUREMENT_ID ? JSON.stringify(GA_MEASUREMENT_ID) : null;
 
 export const metadata: Metadata = {
   metadataBase,
@@ -96,7 +97,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           </div>
           {isEnabled && <DraftModeIndicator />}
         </ThemeProvider>
-        {GA_MEASUREMENT_ID ? (
+        {GA_MEASUREMENT_ID_JSON ? (
           <>
             <Script
               src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
@@ -104,10 +105,11 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             />
             <Script id="ga4" strategy="afterInteractive">
               {`
+                const GA_MEASUREMENT_ID = ${GA_MEASUREMENT_ID_JSON};
                 window.dataLayer = window.dataLayer || [];
                 function gtag(){dataLayer.push(arguments);}
                 gtag('js', new Date());
-                gtag('config', '${GA_MEASUREMENT_ID}', {
+                gtag('config', GA_MEASUREMENT_ID, {
                   page_path: window.location.pathname,
                 });
               `}

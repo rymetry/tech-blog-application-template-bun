@@ -1,4 +1,5 @@
 import { absoluteUrl } from '@/lib/metadata';
+import { timingSafeEqual } from 'node:crypto';
 import { draftMode } from 'next/headers';
 import { NextResponse } from 'next/server';
 
@@ -17,11 +18,26 @@ const resolveRedirectUrl = (path?: string | null) => {
   return absoluteUrl(normalizedPath);
 };
 
+const isValidSecret = (candidate: string | null) => {
+  if (!PREVIEW_SECRET || !candidate) {
+    return false;
+  }
+
+  const secretBuffer = Buffer.from(PREVIEW_SECRET);
+  const candidateBuffer = Buffer.from(candidate);
+
+  if (secretBuffer.length !== candidateBuffer.length) {
+    return false;
+  }
+
+  return timingSafeEqual(secretBuffer, candidateBuffer);
+};
+
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const secret = searchParams.get('secret');
 
-  if (!PREVIEW_SECRET || secret !== PREVIEW_SECRET) {
+  if (!isValidSecret(secret)) {
     return new NextResponse('Invalid preview secret', { status: 401 });
   }
 

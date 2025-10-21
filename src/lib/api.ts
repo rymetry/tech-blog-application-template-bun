@@ -243,17 +243,17 @@ export async function getAllArticles(): Promise<ArticlePost[]> {
   const allArticles: ArticlePost[] = [];
   const limit = 100;
   let offset = 0;
-  let totalCount = Infinity;
+  let totalCount = 0;
 
   try {
-    while (offset < totalCount) {
+    while (totalCount === 0 || offset < totalCount) {
       const { contents, totalCount: fetchedTotalCount } = await getArticlePosts({
         limit,
         offset,
         orders: '-publishedAt',
       });
 
-      if (totalCount === Infinity) {
+      if (totalCount === 0) {
         totalCount = fetchedTotalCount;
       }
 
