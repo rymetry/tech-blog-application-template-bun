@@ -176,7 +176,7 @@ export default async function ArticlePostPage({ params, searchParams }: ArticleP
           </Suspense>
 
           <Suspense fallback={<div className="py-8 text-center">Loading navigation...</div>}>
-            <PrevNextPosts postSlug={post.slug} publishedAt={post.publishedAt} />
+            <PrevNextPosts postSlug={post.slug} />
           </Suspense>
         </article>
       </>

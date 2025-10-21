@@ -1,6 +1,7 @@
 import { ArticleCard } from '@/components/article-card';
 import { Pagination } from '@/components/pagination';
 import { getArticlePosts } from '@/lib/api';
+import { PAGINATION_LIMITS } from '@/lib/constants';
 
 type SearchParams = {
   page?: string;
@@ -10,7 +11,7 @@ type SearchParams = {
 
 export async function ArticlePostsList({ searchParams }: { searchParams: SearchParams }) {
   const page = searchParams.page ? Number.parseInt(searchParams.page) : 1;
-  const limit = 10;
+  const limit = PAGINATION_LIMITS.ARTICLES_LIST;
   const offset = (page - 1) * limit;
 
   const filters: string[] = [];
@@ -18,11 +19,13 @@ export async function ArticlePostsList({ searchParams }: { searchParams: SearchP
     filters.push(`tags[contains]${searchParams.tag}`);
   }
 
+  // NOTE: MicroCMSのデフォルト順序と同じ順序を明示的に指定
   const { contents: posts, totalCount } = await getArticlePosts({
     offset,
     limit,
     filters: filters.length > 0 ? filters.join('[and]') : undefined,
     q: searchParams.q,
+    orders: '-publishedAt',
   });
 
   const totalPages = Math.ceil(totalCount / limit);
