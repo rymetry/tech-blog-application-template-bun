@@ -30,7 +30,13 @@ export async function GET() {
       url,
       guid: url,
       date: new Date(article.publishedAt),
-      author: article.author?.name,
+      ...(article.author?.email
+        ? {
+            author: article.author.name
+              ? `${article.author.email} (${article.author.name})`
+              : article.author.email,
+          }
+        : {}),
       categories: article.tags?.map((tag) => tag.name).filter(Boolean),
     });
   });

@@ -5,6 +5,7 @@ Next.js 15 / React 19 / Tailwind CSS v4 で構築した技術ブログ用テン�
 
 主な機能
 --------
+
 - microCMS 連携
   - 記事 / タグ / 著者の取得を `src/lib/api.ts` に集約
   - アダプターで API スキーマをアプリ内型へマッピング
@@ -33,7 +34,8 @@ Next.js 15 / React 19 / Tailwind CSS v4 で構築した技術ブログ用テン�
   - アクセシビリティ対応（Skip Link、ARIA 属性など）
 
 技術スタック
--------------
+------------
+
 - Next.js 15 (App Router)
 - React 19
 - Tailwind CSS v4 / `@tailwindcss/typography`
@@ -45,6 +47,7 @@ Next.js 15 / React 19 / Tailwind CSS v4 で構築した技術ブログ用テン�
 
 ディレクトリ概要
 ----------------
+
 - `src/app`
   - `page.tsx` トップページ
   - `articles/` 一覧・記事詳細ルート
@@ -65,21 +68,9 @@ Next.js 15 / React 19 / Tailwind CSS v4 で構築した技術ブログ用テン�
 
 セットアップ
 ------------
-### 1. 依存関係のインストール
-任意のパッケージマネージャを利用できます。例として Bun:
-```bash
-bun install
-```
-その他:
-```bash
-npm install
-# または
-pnpm install
-yarn install
-```
 
-### 2. 環境変数の設定
 ルートに `.env.local` を作成し、最低限以下を設定します。
+
 ```env
 MICROCMS_API_KEY=your-api-key
 MICROCMS_ARTICLES=https://your-service.microcms.io/api/v1/articles
@@ -91,20 +82,39 @@ NEXT_PUBLIC_SITE_URL=https://example.com
 MICROCMS_PREVIEW_SECRET=your-preview-secret
 NEXT_PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXXXX # GA4 を利用する場合のみ
 ```
+
 - `MICROCMS_*` エンドポイント URL は API リスト画面からコピーしてください。
 - プレビュー機能を使う場合は microCMS 側で Web プレビューに上記 `MICROCMS_PREVIEW_SECRET` と Draft Mode エンドポイントを設定します。
 - `NEXT_PUBLIC_SITE_URL` を指定すると canonical / OGP / RSS URL が正しく生成されます。未設定の場合は `VERCEL_URL` を自動利用し、それも無い場合はビルド時にエラーになります。
 
-### 3. 開発サーバー
+任意のパッケージマネージャを利用できます。例として Bun:
+
+```bash
+bun install
+```
+
+その他:
+
+```bash
+npm install
+# または
+pnpm install
+yarn install
+```
+
+開発サーバーを起動:
+
 ```bash
 bun run dev
 # もしくは
 npm run dev
 ```
+
 ブラウザで <http://localhost:3000> を開きます。
 
 スクリプト
 ----------
+
 - `bun run dev` / `npm run dev` 開発サーバー (Turbopack)
 - `bun run lint` / `npm run lint` ESLint + 型チェック
 - `bun run build` / `npm run build` 本番ビルド
@@ -113,12 +123,14 @@ npm run dev
 
 コンテンツモデリングのヒント
 ----------------------------
+
 - 記事コンテンツには `title`, `slug`, `excerpt`, `content`（リッチテキスト or HTML）, `ogpImage`, `tags`, `authors`, `relatedArticles` といったフィールドを想定しています。
 - タグと著者は microCMS のリレーション機能で記事と紐付けます。
 - OGP 画像は 1200x630 を推奨。未設定の場合はプレースホルダーが使用されます。
 
 SEO / 配信設定
 --------------
+
 - `createPageMetadata` / `createArticleMetadata` でページ種別に応じたメタデータと OGP/Twitter カードを一元生成します。description は自動で 160 文字にトリミングされます。
 - JSON-LD は `JsonLd` コンポーネント経由で出力。記事には `Article`、一覧には `BreadcrumbList` / `Blog` を付与。
 - RSS フィード: `/feed.xml`（`layout.tsx` で `<link rel="alternate">` も登録済み）
@@ -128,32 +140,37 @@ SEO / 配信設定
 
 Draft Mode プレビュー
 ----------------------
-1. microCMS でプレビュー用 URL に
-   ```
-   https://your-domain/api/draft/enable?secret=MICROCMS_PREVIEW_SECRET&contentId=...&draftKey=...&path=/articles/slug
-   ```
-   を設定
-2. 上記リンクからアクセスすると Draft Mode が有効になり、最新の下書きデータでページが表示されます。
-3. 画面右下のバナー（`DraftModeIndicator`）から `/api/draft/disable` を呼び出して終了できます。
+
+microCMS でプレビュー用 URL に以下を設定:
+
+```text
+https://your-domain/api/draft/enable?secret=MICROCMS_PREVIEW_SECRET&contentId=...&draftKey=...&path=/articles/slug
+```
+
+上記リンクからアクセスすると Draft Mode が有効になり、最新の下書きデータでページが表示されます。画面右下のバナー（`DraftModeIndicator`）から `/api/draft/disable` を呼び出して終了できます。
 
 品質管理
 --------
+
 - ESLint (flat config) + TypeScript による静的解析を `bun run lint` で実行
 - 本番ビルド確認: `bun run build`
 - RSS やサイトマップはビルド時に生成されるため、デプロイ前に実ファイルをブラウザ / バリデータで確認すると安心です。
 
 トラブルシューティング
 ----------------------
+
 - **microCMS のデータが取得できない**: 環境変数のエンドポイント URL や API Key が正しいか確認してください。
 - **Prettier で `prettier-plugin-organize-imports` が見つからない**: `bun add -d prettier-plugin-organize-imports` で追加するか `.prettierrc` から plugins を削除してください。
 - **Draft Mode が有効にならない**: `MICROCMS_PREVIEW_SECRET` と microCMS 側のプレビュー設定を再確認してください。
 
 デプロイ
 --------
+
 - Vercel など標準的な Next.js デプロイフローに対応しています。
 - 本番環境にも `.env.local` と同じ環境変数を設定してください。
 - microCMS Webhook を公開エンドポイントに連携することで、記事更新時に `revalidate` をトリガーできます（必要に応じて `/api/revalidate` を実装してください）。
 
 ライセンス
 ----------
+
 このテンプレートの利用条件はリポジトリのポリシーに従います。

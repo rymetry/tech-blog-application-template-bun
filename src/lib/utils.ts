@@ -35,12 +35,7 @@ export function truncateForSEO(text: string, maxLength = 160) {
     return normalized.slice(0, maxLength);
   }
 
-  const trimmed = normalized.trimEnd();
-  if (trimmed.length <= maxLength) {
-    return trimmed;
-  }
-
-  const truncated = trimmed.slice(0, maxLength - 3).trimEnd();
+  const truncated = normalized.slice(0, maxLength - 3).trimEnd();
   return `${truncated}...`;
 }
 
