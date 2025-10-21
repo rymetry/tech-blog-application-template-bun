@@ -16,13 +16,24 @@ const DEFAULT_LOCALE = 'ja_JP';
 const DEFAULT_FEED_PATH = '/feed.xml';
 
 const resolveSiteUrl = () => {
-  const urlFromEnv = process.env.NEXT_PUBLIC_SITE_URL || '';
+  const urlFromEnv = process.env.NEXT_PUBLIC_SITE_URL?.trim() || '';
 
-  if (!urlFromEnv) {
-    return 'http://localhost:3000';
+  if (urlFromEnv) {
+    return urlFromEnv.replace(/\/+$/, '');
   }
 
-  return urlFromEnv.replace(/\/+$/, '');
+  if (process.env.NODE_ENV === 'production') {
+    const vercelUrl = process.env.VERCEL_URL?.trim();
+    if (vercelUrl) {
+      return `https://${vercelUrl.replace(/^https?:\/\//, '').replace(/\/+$/, '')}`;
+    }
+
+    throw new Error(
+      'Site URL is not set. Please configure NEXT_PUBLIC_SITE_URL or VERCEL_URL.',
+    );
+  }
+
+  return 'http://localhost:3000';
 };
 
 export const siteMetadata = {

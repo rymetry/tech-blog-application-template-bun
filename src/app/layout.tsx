@@ -108,15 +108,15 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               id="ga4"
               strategy="afterInteractive"
               dangerouslySetInnerHTML={{
-                __html: [
-                  'const GA_MEASUREMENT_ID = ' + GA_MEASUREMENT_ID_JSON + ';',
-                  'window.dataLayer = window.dataLayer || [];',
-                  'function gtag(){dataLayer.push(arguments);}',
-                  "gtag('js', new Date());",
-                  "gtag('config', GA_MEASUREMENT_ID, {",
-                  '  page_path: window.location.pathname,',
-                  '});',
-                ].join('\n'),
+                __html: `
+                  const GA_MEASUREMENT_ID = ${GA_MEASUREMENT_ID_JSON};
+                  window.dataLayer = window.dataLayer || [];
+                  function gtag(){dataLayer.push(arguments);}
+                  gtag('js', new Date());
+                  gtag('config', GA_MEASUREMENT_ID, {
+                    page_path: window.location.pathname,
+                  });
+                `,
               }}
             />
           </>

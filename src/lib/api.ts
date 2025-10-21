@@ -83,22 +83,31 @@ const fetchArticlePostsCached = async (params: ArticlePostParams = {}): Promise<
   )();
 
 // 記事詳細はslugごとにキャッシュを分離し、ISRの恩恵を保ちつつ取り違いを防ぐ。
+const fetchArticlePostFromApi = async (
+  slug: string,
+  options: { draftKey?: string } = {},
+) => {
+  const queries = {
+    filters: `slug[equals]${slug}`,
+    limit: 1,
+    depth: 3 as const,
+    ...(options.draftKey ? { draftKey: options.draftKey } : {}),
+  };
+
+  const { contents } = await getList(queries);
+  const matchedPost = contents[0];
+
+  if (!matchedPost) {
+    throw new Error(`Article post not found for slug: ${slug}`);
+  }
+
+  return adaptArticle(matchedPost);
+};
+
 const fetchArticlePostCached = async (slug: string): Promise<ArticlePost> =>
   unstable_cache(
     async () => {
-      const { contents } = await getList({
-        filters: `slug[equals]${slug}`,
-        limit: 1,
-        depth: 3 as const,
-      });
-
-      const matchedPost = contents[0];
-
-      if (!matchedPost) {
-        throw new Error(`Article post not found for slug: ${slug}`);
-      }
-
-      return adaptArticle(matchedPost);
+      return fetchArticlePostFromApi(slug);
     },
     ['microcms', 'article-post', slug],
     {
@@ -110,22 +119,7 @@ const fetchArticlePostCached = async (slug: string): Promise<ArticlePost> =>
   )();
 
 const fetchArticlePostPreview = async (slug: string, draftKey?: string): Promise<ArticlePost> => {
-  const queries = {
-    filters: `slug[equals]${slug}`,
-    limit: 1,
-    depth: 3 as const,
-    ...(draftKey ? { draftKey } : {}),
-  };
-
-  const { contents } = await getList(queries);
-
-  const matchedPost = contents[0];
-
-  if (!matchedPost) {
-    throw new Error(`Preview article post not found for slug: ${slug}`);
-  }
-
-  return adaptArticle(matchedPost);
+  return fetchArticlePostFromApi(slug, { draftKey });
 };
 
 const fetchTagsCached = unstable_cache(

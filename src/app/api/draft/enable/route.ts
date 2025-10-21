@@ -1,5 +1,5 @@
 import { isAsciiSafe, toUtf8Buffer } from '@/lib/constants';
-import { absoluteUrl } from '@/lib/metadata';
+import { absoluteUrl, metadataBase } from '@/lib/metadata';
 import { timingSafeEqual } from 'crypto';
 import { draftMode } from 'next/headers';
 import { NextResponse } from 'next/server';
@@ -12,7 +12,17 @@ const resolveRedirectUrl = (path?: string | null) => {
   }
 
   if (path.startsWith('http://') || path.startsWith('https://')) {
-    return path;
+    try {
+      const target = new URL(path);
+
+      if (target.origin === metadataBase.origin) {
+        return target.toString();
+      }
+    } catch (error) {
+      console.error('Failed to parse redirect URL:', error);
+    }
+
+    return absoluteUrl('/');
   }
 
   const normalizedPath = path.startsWith('/') ? path : `/${path}`;
