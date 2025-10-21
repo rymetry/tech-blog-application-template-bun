@@ -3,10 +3,12 @@ import { absoluteUrl, feedUrl, siteMetadata } from '@/lib/metadata';
 import { escapeForXml, stripHtml, truncateForSEO } from '@/lib/utils';
 
 export const revalidate = 3600; // 1 hour
+const CONTENT_PREVIEW_LENGTH = 1000;
 
 const buildItem = (article: Awaited<ReturnType<typeof getAllArticles>>[number]) => {
   const url = absoluteUrl(`/articles/${article.slug}`);
-  const rawDescription = stripHtml(article.excerpt || article.content);
+  const source = article.excerpt || article.content.slice(0, CONTENT_PREVIEW_LENGTH);
+  const rawDescription = stripHtml(source);
   const description = escapeForXml(truncateForSEO(rawDescription));
   const title = escapeForXml(article.title);
 

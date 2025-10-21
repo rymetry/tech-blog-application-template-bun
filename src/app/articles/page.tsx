@@ -84,8 +84,9 @@ export async function generateMetadata({ searchParams }: ArticlePageProps) {
     canonicalParams.set('page', String(pageNumber));
   }
 
-  const canonicalPath = canonicalParams.toString()
-    ? `/articles?${canonicalParams.toString()}`
+  const canonicalParamsString = canonicalParams.toString();
+  const canonicalPath = canonicalParamsString
+    ? `/articles?${canonicalParamsString}`
     : '/articles';
 
   return buildPageMetadata({

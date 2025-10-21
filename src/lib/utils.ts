@@ -31,7 +31,11 @@ export function truncateForSEO(text: string, maxLength = 160) {
     return normalized;
   }
 
-  return `${normalized.slice(0, Math.max(0, maxLength - 3)).trim()}...`;
+  if (maxLength <= 3) {
+    return normalized.slice(0, maxLength);
+  }
+
+  return `${normalized.slice(0, maxLength - 3).trim()}...`;
 }
 
 export function stripHtml(value: string | undefined | null) {

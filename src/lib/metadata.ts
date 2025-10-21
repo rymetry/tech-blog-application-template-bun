@@ -16,7 +16,7 @@ const DEFAULT_LOCALE = 'ja_JP';
 const DEFAULT_FEED_PATH = '/feed.xml';
 
 const resolveSiteUrl = () => {
-  const urlFromEnv = process.env.NEXT_PUBLIC_SITE_URL || process.env.SITE_URL || '';
+  const urlFromEnv = process.env.NEXT_PUBLIC_SITE_URL || '';
 
   if (!urlFromEnv) {
     return 'http://localhost:3000';
