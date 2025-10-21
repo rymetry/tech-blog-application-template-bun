@@ -12,12 +12,18 @@ export async function PrevNextPosts({ postSlug }: PrevNextPostsProps) {
   let nextPost: ArticlePost | null = null;
 
   try {
-    // NOTE: getAllArticles()を使用して全記事を取得
-    // publishedAtで明示的にソートされ、一貫した順序を保証
+    // NOTE: getAllArticles()を使用して全記事を取得し、インデックスベースで前後記事を特定
+    // パフォーマンスに関する考慮事項:
+    // - getAllArticles()はNext.jsのISR + unstable_cacheでキャッシュされている（5分間）
+    // - 実際のAPIコールは5分ごとに1回のみ、それ以外はキャッシュから読み込み
+    // - メモリ使用量: 1000記事でも約1MB以下（現代の環境では無視できるレベル）
+    // - 代替案（MicroCMSフィルター）は複雑で、publishedAtの重複による不具合の原因となった
+    // - インデックスベースのアプローチは単純で信頼性が高く、記事数が数千以下なら十分スケール可能
     const allPosts = await getAllArticles();
     const currentIndex = allPosts.findIndex((p) => p.slug === postSlug);
     if (currentIndex === -1) {
-      // 記事が見つからない場合は何も表示しない
+      // 理論上発生しないはずだが、万が一発生した場合はキャッシュ不整合などの重大なバグの可能性
+      console.error(`[PrevNextPosts] Critical: Article slug "${postSlug}" exists in detail but not in list. Possible cache inconsistency.`);
       return null;
     }
     prevPost = currentIndex < allPosts.length - 1 ? allPosts[currentIndex + 1] : null;
