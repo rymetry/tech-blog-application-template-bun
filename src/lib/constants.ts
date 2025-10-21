@@ -18,3 +18,8 @@ export const sanitizeMeasurementId = (value: string | undefined | null) => {
 export const isAsciiSafe = (value: string) => ASCII_SAFE_PATTERN.test(value);
 
 export const toUtf8Buffer = (value: string) => Buffer.from(value, 'utf8');
+
+export const PAGINATION_LIMITS = {
+  ARTICLES_LIST: 10,
+  LATEST_POSTS: 3
+} as const;

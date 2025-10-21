@@ -1,11 +1,16 @@
 import { ArticleCard } from '@/components/article-card';
 import { getArticlePosts } from '@/lib/api';
+import { PAGINATION_LIMITS } from '@/lib/constants';
 
 export async function LatestPosts() {
   let latestPosts = [] as Awaited<ReturnType<typeof getArticlePosts>>['contents'];
 
   try {
-    const response = await getArticlePosts({ limit: 3 });
+    // NOTE: MicroCMSのデフォルト順序と同じ順序を明示的に指定
+    const response = await getArticlePosts({
+      limit: PAGINATION_LIMITS.LATEST_POSTS,
+      orders: '-publishedAt'
+    });
     latestPosts = response.contents || [];
   } catch (error) {
     console.error('Error fetching article posts:', error);

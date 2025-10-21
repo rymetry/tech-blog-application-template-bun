@@ -1,33 +1,27 @@
 import { ArticleCard } from '@/components/article-card';
-import { getArticlePosts } from '@/lib/api';
+import { getAllArticles } from '@/lib/api';
 import type { ArticlePost } from '@/types';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
 
 interface PrevNextPostsProps {
   postSlug: string;
-  publishedAt: string;
 }
 
-export async function PrevNextPosts({ postSlug, publishedAt }: PrevNextPostsProps) {
+export async function PrevNextPosts({ postSlug }: PrevNextPostsProps) {
   let prevPost: ArticlePost | null = null;
   let nextPost: ArticlePost | null = null;
 
   try {
-    const [olderPosts, newerPosts] = await Promise.all([
-      getArticlePosts({
-        limit: 1,
-        orders: '-publishedAt',
-        filters: `slug[not_equals]${postSlug}[and]publishedAt[less_than]${publishedAt}`,
-      }),
-      getArticlePosts({
-        limit: 1,
-        orders: 'publishedAt',
-        filters: `slug[not_equals]${postSlug}[and]publishedAt[greater_than]${publishedAt}`,
-      }),
-    ]);
-
-    prevPost = olderPosts.contents[0] ?? null;
-    nextPost = newerPosts.contents[0] ?? null;
+    // NOTE: getAllArticles()を使用して全記事を取得
+    // publishedAtで明示的にソートされ、一貫した順序を保証
+    const allPosts = await getAllArticles();
+    const currentIndex = allPosts.findIndex((p) => p.slug === postSlug);
+    if (currentIndex === -1) {
+      // 記事が見つからない場合は何も表示しない
+      return null;
+    }
+    prevPost = currentIndex < allPosts.length - 1 ? allPosts[currentIndex + 1] : null;
+    nextPost = currentIndex > 0 ? allPosts[currentIndex - 1] : null;
   } catch (error) {
     console.error('Error fetching adjacent posts:', error);
   }
