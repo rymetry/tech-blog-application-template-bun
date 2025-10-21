@@ -1,6 +1,7 @@
 import { adaptAuthor, adaptArticle, adaptTag } from '@/lib/adapters';
 import type { Author, ArticlePost, Tag } from '@/types';
 import {
+  getDetail,
   getList,
   getAuthors as getMicroCMSAuthors,
   getTags as getMicroCMSTags,
@@ -82,22 +83,36 @@ const fetchArticlePostsCached = async (params: ArticlePostParams = {}): Promise<
   )();
 
 // 記事詳細はslugごとにキャッシュを分離し、ISRの恩恵を保ちつつ取り違いを防ぐ。
+const fetchArticlePostFromApi = async (
+  slug: string,
+  options: { draftKey?: string } = {},
+) => {
+  const queries: Record<string, unknown> = {
+    filters: `slug[equals]${slug}`,
+    limit: 1,
+    depth: 3 as const,
+  };
+
+  if (options.draftKey) {
+    // NOTE: microCMS の preview API は draftKey をクエリに含めるだけで利用できる。
+    // キャッシュ経由の取得と処理を揃えるため、ここで統一的にセットしている。
+    queries.draftKey = options.draftKey;
+  }
+
+  const { contents } = await getList(queries);
+  const matchedPost = contents[0];
+
+  if (!matchedPost) {
+    throw new Error(`Article post not found for slug: ${slug}`);
+  }
+
+  return adaptArticle(matchedPost);
+};
+
 const fetchArticlePostCached = async (slug: string): Promise<ArticlePost> =>
   unstable_cache(
     async () => {
-      const { contents } = await getList({
-        filters: `slug[equals]${slug}`,
-        limit: 1,
-        depth: 3 as const,
-      });
-
-      const matchedPost = contents[0];
-
-      if (!matchedPost) {
-        throw new Error(`Article post not found for slug: ${slug}`);
-      }
-
-      return adaptArticle(matchedPost);
+      return fetchArticlePostFromApi(slug);
     },
     ['microcms', 'article-post', slug],
     {
@@ -107,6 +122,10 @@ const fetchArticlePostCached = async (slug: string): Promise<ArticlePost> =>
       tags: ['microcms', MICROCMS_CACHE_TAGS.ARTICLES],
     },
   )();
+
+const fetchArticlePostPreview = async (slug: string, draftKey?: string): Promise<ArticlePost> => {
+  return fetchArticlePostFromApi(slug, { draftKey });
+};
 
 const fetchTagsCached = unstable_cache(
   async (): Promise<TagResponse> => {
@@ -166,8 +185,27 @@ export async function getArticlePosts(
  * ブログ記事詳細を取得する
  * depthパラメータを使用して関連コンテンツの詳細も取得する
  */
-export async function getArticlePost(slug: string): Promise<ArticlePost> {
+type GetArticlePostOptions = {
+  draftKey?: string;
+  contentId?: string;
+};
+
+export async function getArticlePost(
+  slug: string,
+  options: GetArticlePostOptions = {},
+): Promise<ArticlePost> {
   try {
+    const { draftKey, contentId } = options;
+
+    if (draftKey && contentId) {
+      const detail = await getDetail(contentId, { draftKey, depth: 3 as const });
+      return adaptArticle(detail);
+    }
+
+    if (draftKey) {
+      return await fetchArticlePostPreview(slug, draftKey);
+    }
+
     // キャッシュされた記事詳細を取得
     return await fetchArticlePostCached(slug);
   } catch (error) {
@@ -198,4 +236,36 @@ export async function getAuthors(): Promise<AuthorResponse> {
     console.error('Error in getAuthors:', error);
     return { contents: [], totalCount: 0, offset: 0, limit: DEFAULT_AUTHOR_LIMIT };
   }
+}
+
+export async function getAllArticles(): Promise<ArticlePost[]> {
+  const allArticles: ArticlePost[] = [];
+  const limit = 100;
+  let offset = 0;
+  let totalCount = 0;
+
+  try {
+    while (totalCount === 0 || offset < totalCount) {
+      const { contents, totalCount: fetchedTotalCount } = await getArticlePosts({
+        limit,
+        offset,
+        orders: '-publishedAt',
+      });
+
+      if (totalCount === 0) {
+        totalCount = fetchedTotalCount;
+      }
+
+      if (!contents.length) {
+        break;
+      }
+
+      allArticles.push(...contents);
+      offset += limit;
+    }
+  } catch (error) {
+    console.error('Error fetching all articles:', error);
+  }
+
+  return allArticles;
 }
