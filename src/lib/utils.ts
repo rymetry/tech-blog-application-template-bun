@@ -34,7 +34,8 @@ export function truncateForSEO(text: string, maxLength = 160) {
     return normalized.slice(0, maxLength);
   }
 
-  return `${normalized.slice(0, maxLength - 3).trim()}...`;
+  const truncated = normalized.trimEnd().slice(0, maxLength - 3);
+  return `${truncated}...`;
 }
 
 export function stripHtml(value: string | undefined | null) {

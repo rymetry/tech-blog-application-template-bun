@@ -94,6 +94,8 @@ const fetchArticlePostFromApi = async (
   };
 
   if (options.draftKey) {
+    // NOTE: microCMS の preview API は draftKey をクエリに含めるだけで利用できる。
+    // キャッシュ経由の取得と処理を揃えるため、ここで統一的にセットしている。
     queries.draftKey = options.draftKey;
   }
 

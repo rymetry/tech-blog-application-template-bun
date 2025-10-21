@@ -58,7 +58,13 @@ export async function GET(request: Request) {
 
   const draftKey = searchParams.get('draftKey') || undefined;
   const contentId = searchParams.get('contentId') || undefined;
-  const path = searchParams.get('path') || searchParams.get('slug') || '/';
+
+  const rawPath = searchParams.get('path');
+  const rawSlug = searchParams.get('slug');
+  const path =
+    rawPath ||
+    (rawSlug ? `/articles/${rawSlug.replace(/^\/+/, '')}` : undefined) ||
+    '/';
   const redirectUrl = new URL(resolveRedirectUrl(path));
 
   if (draftKey) {
