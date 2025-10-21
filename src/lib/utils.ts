@@ -1,5 +1,4 @@
 import { format } from 'date-fns';
-import { ja } from 'date-fns/locale';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
@@ -18,7 +17,7 @@ export function formatDate(date: string | Date) {
     return '';
   }
 
-  return format(parsed, 'yyyy-MM-dd', { locale: ja });
+  return format(parsed, 'yyyy-MM-dd');
 }
 
 export function truncateForSEO(text: string, maxLength = 160) {

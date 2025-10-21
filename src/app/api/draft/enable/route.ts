@@ -1,3 +1,4 @@
+import { isAsciiSafe, toUtf8Buffer } from '@/lib/constants';
 import { absoluteUrl } from '@/lib/metadata';
 import { timingSafeEqual } from 'crypto';
 import { draftMode } from 'next/headers';
@@ -23,8 +24,12 @@ const isValidSecret = (candidate: string | null) => {
     return false;
   }
 
-  const secretBuffer = Buffer.from(PREVIEW_SECRET);
-  const candidateBuffer = Buffer.from(candidate);
+  if (!isAsciiSafe(PREVIEW_SECRET) || !isAsciiSafe(candidate)) {
+    return false;
+  }
+
+  const secretBuffer = toUtf8Buffer(PREVIEW_SECRET);
+  const candidateBuffer = toUtf8Buffer(candidate);
 
   if (secretBuffer.length !== candidateBuffer.length) {
     return false;
