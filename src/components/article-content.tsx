@@ -137,16 +137,16 @@ function rehypeLineNumbers() {
         return;
       }
 
-      const code = node.children?.find(
+      const codeElement = node.children?.find(
         (child): child is Element => child.type === 'element' && child.tagName === 'code',
       );
-      if (!code) {
+      if (!codeElement) {
         return;
       }
 
       // Prism のハイライト用属性を pre に引き継ぐ
       for (const attr of ALLOWED_PRISM_ATTRS) {
-        const value = (code.properties as Record<string, unknown> | undefined)?.[attr];
+        const value = (codeElement.properties as Record<string, unknown> | undefined)?.[attr];
         if (value === undefined) {
           continue;
         }
@@ -171,9 +171,6 @@ function rehypeLineNumbers() {
           className: ['line-numbers'],
         };
       }
-
-      // 既に取得済みの code 要素を再利用
-      const codeElement = code;
 
       let codeText = toString(codeElement);
       codeText = codeText.replace(/\n+$/u, '');
@@ -280,7 +277,11 @@ export async function ArticleContent({ content }: ArticleContentProps) {
       />
     );
   } catch (error) {
-    console.error('Error processing article content:', error);
+    console.error('Error processing article content:', {
+      error,
+      contentPreview: content.slice(0, 200),
+      contentLength: content.length,
+    });
     // フォールバック: 元のHTMLをそのまま表示（エラーメッセージ付き）
     return (
       <div>
