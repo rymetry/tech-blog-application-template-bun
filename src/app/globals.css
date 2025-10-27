@@ -232,12 +232,201 @@
   @apply rounded-lg mx-auto my-6 sm:my-8 md:my-10 lg:my-12;
 }
 
+/* コードブロックのスタイル */
 .prose pre {
-  @apply bg-muted p-3 sm:p-4 md:p-5 lg:p-6 rounded-lg overflow-x-auto my-4 sm:my-5 md:my-6;
+  @apply relative bg-gray-900 dark:bg-gray-950 p-0 rounded-lg overflow-hidden my-6 sm:my-8 md:my-10;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
+.prose pre[class*='language-'] {
+  @apply m-0 overflow-x-auto;
+  padding: 1rem 1rem 1rem 4rem; /* 上 右 下 左（行番号のスペース） */
+}
+
+.prose pre.line-numbers {
+  counter-reset: linenumber;
+}
+
+/* 行番号エリア */
+.prose .line-numbers-rows {
+  @apply absolute left-0 top-0 text-right select-none;
+  width: 3.5rem;
+  padding: 1rem 0.75rem 1rem 0.5rem; /* 上 右 下 左 */
+  pointer-events: none;
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.2);
+  user-select: none;
+}
+
+.prose .line-numbers-rows > span {
+  @apply block text-gray-500 dark:text-gray-600;
+  font-size: 0.875rem;
+  line-height: 1.5rem;
+}
+
+.prose .line-numbers-rows > span::before {
+  counter-increment: linenumber;
+  content: counter(linenumber);
+}
+
+/* rehype-prism-plusが生成するクラスのスタイルリセット */
+.prose pre .code-line {
+  display: inline;
+  background: transparent !important;
+}
+
+.prose pre .code-highlight {
+  background: transparent !important;
+}
+
+/* 特定の行をハイライトする場合のスタイル（必要に応じて使用） */
+.prose pre .code-line.highlight-line {
+  background: rgba(255, 255, 255, 0.1) !important;
+  display: block;
+  margin: 0 -1rem;
+  padding: 0 1rem;
+}
+
+/* コードタイトル（ファイル名/言語名） */
+.prose .rehype-code-title {
+  @apply bg-gray-800 dark:bg-gray-900 text-gray-200 dark:text-gray-300 px-4 sm:px-5 md:px-6 py-2 sm:py-2.5 text-xs sm:text-sm font-mono rounded-t-lg;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: none;
+  margin-bottom: 0;
+}
+
+.prose .rehype-code-title + pre {
+  @apply rounded-t-none mt-0;
+  border-top: none;
+}
+
+/* インラインコード */
 .prose code {
-  @apply bg-muted px-1 py-0.5 rounded text-sm;
+  @apply bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-sm font-mono;
+  color: #e83e8c;
+}
+
+/* Tailwind Typographyが追加するバッククォートを削除 */
+.prose :where(code):not(:where([class~="not-prose"], [class~="not-prose"] *))::before,
+.prose :where(code):not(:where([class~="not-prose"], [class~="not-prose"] *))::after {
+  content: none !important;
+}
+
+.prose pre code {
+  @apply bg-transparent p-0 text-sm sm:text-base;
+  color: inherit;
+}
+
+/* Prism トークンのカラーリング（ライトモード） */
+.prose .token.comment,
+.prose .token.prolog,
+.prose .token.doctype,
+.prose .token.cdata {
+  color: #6a9955;
+}
+
+.prose .token.punctuation {
+  color: #d4d4d4;
+}
+
+.prose .token.property,
+.prose .token.tag,
+.prose .token.boolean,
+.prose .token.number,
+.prose .token.constant,
+.prose .token.symbol,
+.prose .token.deleted {
+  color: #b5cea8;
+}
+
+.prose .token.selector,
+.prose .token.attr-name,
+.prose .token.string,
+.prose .token.char,
+.prose .token.builtin,
+.prose .token.inserted {
+  color: #ce9178;
+}
+
+.prose .token.operator,
+.prose .token.entity,
+.prose .token.url,
+.prose .language-css .token.string,
+.prose .style .token.string {
+  color: #d4d4d4;
+}
+
+.prose .token.atrule,
+.prose .token.attr-value,
+.prose .token.keyword {
+  color: #c586c0;
+}
+
+.prose .token.function,
+.prose .token.class-name {
+  color: #dcdcaa;
+}
+
+.prose .token.regex,
+.prose .token.important,
+.prose .token.variable {
+  color: #d16969;
+}
+
+/* ダークモード用の調整 */
+.dark .prose .token.comment,
+.dark .prose .token.prolog,
+.dark .prose .token.doctype,
+.dark .prose .token.cdata {
+  color: #7c9d7c;
+}
+
+.dark .prose .token.punctuation {
+  color: #d4d4d4;
+}
+
+.dark .prose .token.property,
+.dark .prose .token.tag,
+.dark .prose .token.boolean,
+.dark .prose .token.number,
+.dark .prose .token.constant,
+.dark .prose .token.symbol,
+.dark .prose .token.deleted {
+  color: #b5cea8;
+}
+
+.dark .prose .token.selector,
+.dark .prose .token.attr-name,
+.dark .prose .token.string,
+.dark .prose .token.char,
+.dark .prose .token.builtin,
+.dark .prose .token.inserted {
+  color: #ce9178;
+}
+
+.dark .prose .token.operator,
+.dark .prose .token.entity,
+.dark .prose .token.url,
+.dark .prose .language-css .token.string,
+.dark .prose .style .token.string {
+  color: #d4d4d4;
+}
+
+.dark .prose .token.atrule,
+.dark .prose .token.attr-value,
+.dark .prose .token.keyword {
+  color: #c586c0;
+}
+
+.dark .prose .token.function,
+.dark .prose .token.class-name {
+  color: #dcdcaa;
+}
+
+.dark .prose .token.regex,
+.dark .prose .token.important,
+.dark .prose .token.variable {
+  color: #d16969;
 }
 
 .prose a {
