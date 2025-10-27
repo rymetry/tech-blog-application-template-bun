@@ -234,8 +234,7 @@
 
 /* コードブロックのスタイル */
 .prose pre {
-  @apply relative bg-gray-900 dark:bg-gray-950 p-0 rounded-lg overflow-hidden my-6 sm:my-8 md:my-10;
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  @apply relative bg-gray-900 dark:bg-gray-950 p-0 rounded-lg overflow-hidden my-6 sm:my-8 md:my-10 border border-white/10;
 }
 
 .prose pre[class*='language-'] {
@@ -249,11 +248,10 @@
 
 /* 行番号エリア */
 .prose .line-numbers-rows {
-  @apply absolute left-0 top-0 text-right select-none;
+  @apply absolute left-0 top-0 text-right select-none border-r border-white/10;
   width: 3.5rem;
   padding: 1rem 0.75rem 1rem 0.5rem; /* 上 右 下 左 */
   pointer-events: none;
-  border-right: 1px solid rgba(255, 255, 255, 0.1);
   background: rgba(0, 0, 0, 0.2);
   user-select: none;
 }
@@ -289,21 +287,17 @@
 
 /* コードタイトル（ファイル名/言語名） */
 .prose .rehype-code-title {
-  @apply bg-gray-800 dark:bg-gray-900 text-gray-200 dark:text-gray-300 px-4 sm:px-5 md:px-6 py-2 sm:py-2.5 text-xs sm:text-sm font-mono rounded-t-lg;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-bottom: none;
+  @apply bg-gray-800 dark:bg-gray-900 text-gray-200 dark:text-gray-300 px-4 sm:px-5 md:px-6 py-2 sm:py-2.5 text-xs sm:text-sm font-mono rounded-t-lg border border-white/10 border-b-0;
   margin-bottom: 0;
 }
 
 .prose .rehype-code-title + pre {
-  @apply rounded-t-none mt-0;
-  border-top: none;
+  @apply rounded-t-none mt-0 border-t-0;
 }
 
 /* インラインコード */
 .prose code {
-  @apply bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-sm font-mono;
-  color: #e83e8c;
+  @apply bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-sm font-mono text-pink-500;
 }
 
 /* Tailwind Typographyが追加するバッククォートを削除 */

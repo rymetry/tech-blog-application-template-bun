@@ -125,11 +125,12 @@ function rehypeAddCodeTitle() {
   };
 }
 
+const ALLOWED_PRISM_ATTRS = ['data-line', 'dataLine', 'data-highlight', 'dataHighlight'];
+
 /**
  * カスタムrehypeプラグイン: 行番号を追加
  */
 function rehypeLineNumbers() {
-  const ALLOWED_PRISM_ATTRS = ['data-line', 'dataLine', 'data-highlight', 'dataHighlight'];
 
   return (tree: Root) => {
     visit(tree, 'element', (node: Element) => {
@@ -263,7 +264,7 @@ export async function ArticleContent({ content }: ArticleContentProps) {
       .use(rehypeSanitize, extendedSchema)
       .use(rehypeExtractFilenameWrapper)
       .use(rehypePrismPlus, { ignoreMissing: true })
-      .use(rehypeAddCodeTitle) // タイトル要素を挿入
+      .use(rehypeAddCodeTitle) // Insert title element
       .use(rehypeLineNumbers)
       .use(rehypeStringify)
       .process(content);
