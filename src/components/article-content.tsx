@@ -131,7 +131,6 @@ const ALLOWED_PRISM_ATTRS = ['data-line', 'dataLine', 'data-highlight', 'dataHig
  * カスタムrehypeプラグイン: 行番号を追加
  */
 function rehypeLineNumbers() {
-
   return (tree: Root) => {
     visit(tree, 'element', (node: Element) => {
       if (node.tagName !== 'pre') {
@@ -173,8 +172,7 @@ function rehypeLineNumbers() {
         };
       }
 
-      let codeText = toString(codeElement);
-      codeText = codeText.replace(/\n+$/u, '');
+      const codeText = toString(codeElement).replace(/\n+$/u, '');
       const lineCount = codeText === '' ? 1 : codeText.split('\n').length;
 
       const lineNumbersSpan: Element = {
