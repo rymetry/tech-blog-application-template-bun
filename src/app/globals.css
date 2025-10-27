@@ -215,6 +215,12 @@
 /* ブログ記事のスタイル */
 .prose {
   @apply max-w-none;
+  --rehype-code-gutter-width: 3.5rem;
+  --rehype-code-gutter-pad-left: 0.5rem;
+  --rehype-code-gutter-pad-right: 0.75rem;
+  --rehype-code-gutter-total: calc(
+    var(--rehype-code-gutter-width) + var(--rehype-code-gutter-pad-left) + var(--rehype-code-gutter-pad-right)
+  );
 }
 
 /* Hero/section decorative background used across pages */
@@ -239,7 +245,7 @@
 
 .prose pre[class*='language-'] {
   @apply m-0 overflow-x-auto;
-  padding: 1rem 1rem 1rem 4rem; /* 上 右 下 左（行番号のスペース） */
+  padding: 1rem 1rem 1rem var(--rehype-code-gutter-total); /* 上 右 下 左（行番号のスペース） */
 }
 
 .prose pre.line-numbers {
@@ -249,8 +255,8 @@
 /* 行番号エリア */
 .prose .line-numbers-rows {
   @apply absolute left-0 top-0 text-right select-none border-r border-white/10;
-  width: 3.5rem;
-  padding: 1rem 0.75rem 1rem 0.5rem; /* 上 右 下 左 */
+  width: var(--rehype-code-gutter-width);
+  padding: 1rem var(--rehype-code-gutter-pad-right) 1rem var(--rehype-code-gutter-pad-left); /* 上 右 下 左 */
   pointer-events: none;
   background: rgba(0, 0, 0, 0.2);
   user-select: none;
