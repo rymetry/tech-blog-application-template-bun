@@ -101,10 +101,8 @@ function rehypeAddCodeTitle() {
               },
             ],
           };
-          
           // タイトル要素をpreの前に挿入
           parent.children.splice(index, 0, titleElement);
-          return index + 2; // 次のインデックスをスキップ（タイトル要素とpre要素）
         }
       }
     });
