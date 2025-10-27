@@ -37,9 +37,11 @@ function rehypeExtractFilenameWrapper() {
             // pre内のcodeタグを探す
             visit(child, 'element', (codeNode: Element) => {
               if (codeNode.tagName === 'code') {
-                // ファイル名をdata-file属性として追加
-                codeNode.properties = codeNode.properties || {};
-                codeNode.properties.dataFile = filename;
+                // ファイル名をdata-file属性として追加（イミュータブルな更新）
+                codeNode.properties = {
+                  ...(codeNode.properties ?? {}),
+                  dataFile: filename,
+                };
               }
             });
           }
@@ -57,6 +59,13 @@ function rehypeExtractFilenameWrapper() {
  */
 function rehypeAddCodeTitle() {
   return (tree: Root) => {
+    const nodesToProcess: Array<{
+      parent: Parents;
+      index: number;
+      titleElement: Element;
+    }> = [];
+
+    // まず全てのpreタグを収集
     visit(tree, 'element', (node: Element, index: number | undefined, parent: Parents | undefined) => {
       if (
         node.tagName === 'pre' &&
@@ -86,7 +95,7 @@ function rehypeAddCodeTitle() {
           }
         });
 
-        // タイトルがある場合、タイトル要素を生成してpreの前に挿入
+        // タイトルがある場合、後で挿入するために記録
         if (title) {
           const titleElement: Element = {
             type: 'element',
@@ -101,20 +110,27 @@ function rehypeAddCodeTitle() {
               },
             ],
           };
-          // タイトル要素をpreの前に挿入
-          parent.children.splice(index, 0, titleElement);
+          nodesToProcess.push({ parent, index, titleElement });
         }
       }
     });
+
+    // 逆順で挿入（インデックスのずれを防ぐ）
+    for (let i = nodesToProcess.length - 1; i >= 0; i--) {
+      const { parent, index, titleElement } = nodesToProcess[i];
+      if ('children' in parent) {
+        parent.children.splice(index, 0, titleElement);
+      }
+    }
   };
 }
 
 /**
  * カスタムrehypeプラグイン: 行番号を追加
  */
-const ALLOWED_PRISM_ATTRS = ['data-line', 'dataLine', 'data-highlight', 'dataHighlight'];
-
 function rehypeLineNumbers() {
+  const ALLOWED_PRISM_ATTRS = ['data-line', 'dataLine', 'data-highlight', 'dataHighlight'];
+
   return (tree: Root) => {
     visit(tree, 'element', (node: Element) => {
       if (node.tagName !== 'pre') {
@@ -156,16 +172,8 @@ function rehypeLineNumbers() {
         };
       }
 
-      let codeElement: Element | undefined;
-      visit(node, 'element', (child: Element) => {
-        if (child.tagName === 'code') {
-          codeElement = child;
-        }
-      });
-
-      if (!codeElement) {
-        return;
-      }
+      // 既に取得済みの code 要素を再利用
+      const codeElement = code;
 
       let codeText = toString(codeElement);
       codeText = codeText.replace(/\n+$/u, '');
@@ -273,12 +281,17 @@ export async function ArticleContent({ content }: ArticleContentProps) {
     );
   } catch (error) {
     console.error('Error processing article content:', error);
-    // フォールバック: 元のHTMLをそのまま表示
+    // フォールバック: 元のHTMLをそのまま表示（エラーメッセージ付き）
     return (
-      <div
-        className="prose prose-gray dark:prose-invert"
-        dangerouslySetInnerHTML={{ __html: content }}
-      />
+      <div>
+        <div className="mb-4 p-3 rounded bg-red-100 text-red-800 border border-red-300 dark:bg-red-900/20 dark:text-red-200 dark:border-red-800">
+          コンテンツの処理中にエラーが発生しました。元のHTMLを表示しています。
+        </div>
+        <div
+          className="prose prose-gray dark:prose-invert"
+          dangerouslySetInnerHTML={{ __html: content }}
+        />
+      </div>
     );
   }
 }
