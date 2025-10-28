@@ -17,7 +17,7 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  /* font vars are provided by next/font as --font-sans and --font-ui */
+  /* font vars are provided by next/font as --font-sans and --font-mono */
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -128,63 +128,104 @@
   * {
     @apply border-border outline-ring/50;
   }
+  
   body {
     @apply bg-background text-foreground;
-    font-feature-settings:
-      "rlig" 1,
-      "calt" 1,
-      "ss01" 1,
-      "ss02" 1,
-      "zero" 1,
-      "tnum" 1,
-      "kern" 1;
     font-family:
       var(--font-sans),
-      var(--font-ui),
+      "Noto Sans JP",
       system-ui,
       -apple-system,
-      Segoe UI,
-      Roboto,
-      "Noto Sans JP",
+      BlinkMacSystemFont,
+      "Segoe UI",
+      "Hiragino Sans",
+      "Hiragino Kaku Gothic ProN",
+      "Yu Gothic",
       sans-serif;
+    font-feature-settings: "kern" 1;
+  }
+
+  /* サイト全体（本文・見出し・UI すべて同じフォント） */
+  h1, h2, h3, h4, h5, h6,
+  p, li, blockquote,
+  button, input, label, select, textarea {
+    font-family: inherit; /* body から継承 */
+  }
+
+  /* 日本語イタリック問題の対策 */
+  em, i {
+    font-weight: 500;
+    font-style: normal; /* 斜体を無効化 */
+  }
+
+  strong, b {
+    font-weight: 700;
+  }
+
+  /* コードブロック */
+  code, pre, kbd, samp {
+    font-family:
+      var(--font-mono),
+      ui-monospace,
+      "SF Mono",
+      "Cascadia Code",
+      "Consolas",
+      "Liberation Mono",
+      monospace;
   }
 
   /* Base fluid type (16px to 20px) */
   html {
     font-size: clamp(16px, 1.4vw, 20px);
+    line-height: 1.6;
   }
 
-  /* レスポンシブな見出しサイズ */
+  /* レスポンシブな見出しサイズ（clamp形式） */
   h1 {
-    @apply text-2xl sm:text-3xl md:text-4xl lg:text-5xl;
+    font-size: clamp(2rem, 3vw + 0.5rem, 3rem);
+    line-height: 1.2;
+    font-weight: 700;
   }
 
   h2 {
-    @apply text-xl sm:text-2xl md:text-3xl lg:text-4xl;
+    font-size: clamp(1.5rem, 2.5vw + 0.25rem, 2.25rem);
+    line-height: 1.25;
+    font-weight: 700;
   }
 
   h3 {
-    @apply text-lg sm:text-xl md:text-2xl;
+    font-size: clamp(1.25rem, 2vw + 0.25rem, 1.75rem);
+    line-height: 1.3;
+    font-weight: 600;
   }
 
   h4 {
-    @apply text-base sm:text-lg md:text-xl;
+    font-size: clamp(1.125rem, 1.5vw + 0.25rem, 1.5rem);
+    line-height: 1.35;
+    font-weight: 600;
   }
 
   h5 {
-    @apply text-sm sm:text-base md:text-lg;
+    font-size: clamp(1rem, 1.2vw + 0.25rem, 1.25rem);
+    line-height: 1.4;
+    font-weight: 500;
   }
 
   h6 {
-    @apply text-xs sm:text-sm md:text-base;
+    font-size: clamp(0.875rem, 1vw + 0.25rem, 1.125rem);
+    line-height: 1.45;
+    font-weight: 500;
   }
 
-  p {
-    @apply text-base sm:text-base md:text-[17px] lg:text-lg;
+  p, li {
+    font-size: 1rem;
+    line-height: 1.7;
+    letter-spacing: 0.01em;
   }
 
-  li {
-    @apply text-base sm:text-base md:text-[17px] lg:text-lg;
+  ul, ol {
+    margin: 1.25rem 0;
+    padding-left: 1.5rem;
   }
 
   /* Ensure interactive elements show pointer cursor */
@@ -264,8 +305,16 @@
 
 .prose .line-numbers-rows > span {
   @apply block text-gray-500 dark:text-gray-600;
+  font-family:
+    var(--font-mono),
+    ui-monospace,
+    "SF Mono",
+    "Cascadia Code",
+    "Consolas",
+    "Liberation Mono",
+    monospace;
   font-size: 0.875rem;
-  line-height: 1.5rem;
+  line-height: 1.6; /* pre code と統一 */
 }
 
 .prose .line-numbers-rows > span::before {
@@ -303,7 +352,17 @@
 
 /* インラインコード */
 .prose code {
-  @apply bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-sm font-mono text-pink-500;
+  @apply bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-pink-500;
+  font-family:
+    var(--font-mono),
+    ui-monospace,
+    "SF Mono",
+    "Cascadia Code",
+    "Consolas",
+    "Liberation Mono",
+    monospace;
+  font-size: 0.9em;
+  letter-spacing: -0.005em;
 }
 
 /* Tailwind Typographyが追加するバッククォートを削除 */
@@ -313,7 +372,18 @@
 }
 
 .prose pre code {
-  @apply bg-transparent p-0 text-sm sm:text-base;
+  @apply bg-transparent p-0;
+  font-family:
+    var(--font-mono),
+    ui-monospace,
+    "SF Mono",
+    "Cascadia Code",
+    "Consolas",
+    "Liberation Mono",
+    monospace;
+  font-size: 0.875rem;
+  line-height: 1.6; /* 日本語対応: 行間を広めに */
+  letter-spacing: -0.01em;
   color: inherit;
 }
 
