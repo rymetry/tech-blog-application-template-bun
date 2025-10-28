@@ -31,6 +31,11 @@ Next.js 15 / React 19 / Tailwind CSS v4 で構築した技術ブログ用テン�
   - Tailwind CSS v4（Typography プラグイン）
   - shadcn/ui コンポーネント
   - `next-themes` によるダークモード
+  - 日本語最適化フォント
+    - **Noto Sans JP**（Google Fonts）: サイト全体（本文・見出し・UI）
+    - **PlemolJP HS版**（ローカルフォント）: コードブロック専用
+    - clamp() による流動的なフォントサイズでレスポンシブ対応
+    - 日本語イタリック問題への対策済み
   - アクセシビリティ対応（Skip Link、ARIA 属性など）
 
 技術スタック
@@ -89,13 +94,13 @@ NEXT_PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXXXX # GA4 を利用する場合のみ
 
 任意のパッケージマネージャを利用できます。例として Bun:
 
-```bash
+```sh
 bun install
 ```
 
 その他:
 
-```bash
+```sh
 npm install
 # または
 pnpm install
@@ -104,7 +109,7 @@ yarn install
 
 開発サーバーを起動:
 
-```bash
+```sh
 bun run dev
 # もしくは
 npm run dev

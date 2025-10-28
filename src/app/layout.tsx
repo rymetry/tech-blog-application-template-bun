@@ -7,24 +7,36 @@ import { SITE_TITLE_TEMPLATE, buildOgImage, feedUrl, metadataBase, siteMetadata 
 import { cn } from '@/lib/utils';
 import type { Metadata } from 'next';
 import { draftMode } from 'next/headers';
-import { Inter, Noto_Sans_JP } from 'next/font/google';
+import { Noto_Sans_JP } from 'next/font/google';
+import localFont from 'next/font/local';
 import Script from 'next/script';
 import './globals.css';
 
+// サイト全体用（本文・見出し・UI）
 const fontSans = Noto_Sans_JP({
+  weight: ['400', '500', '600', '700'],
+  subsets: ['latin'],
+  preload: true,
   variable: '--font-sans',
   display: 'swap',
-  preload: true,
-  weight: ['400', '500', '700'],
-  subsets: ['latin'],
 });
 
-const fontUi = Inter({
-  variable: '--font-ui',
+// コードブロック用（PlemolJP HS版 - 全角スペース非表示）
+const fontMono = localFont({
+  src: [
+    {
+      path: './fonts/PlemolJPHS-Regular.woff2',
+      weight: '400',
+      style: 'normal',
+    },
+    {
+      path: './fonts/PlemolJPHS-SemiBold.woff2',
+      weight: '600',
+      style: 'normal',
+    },
+  ],
+  variable: '--font-mono',
   display: 'swap',
-  preload: true,
-  weight: ['400', '600'],
-  subsets: ['latin'],
 });
 
 const defaultOgImage = buildOgImage();
@@ -82,7 +94,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         className={cn(
           'min-h-screen bg-background font-sans antialiased',
           fontSans.variable,
-          fontUi.variable,
+          fontMono.variable,
         )}
       >
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem>

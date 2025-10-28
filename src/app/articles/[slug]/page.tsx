@@ -2,6 +2,7 @@ import { Author } from '@/components/author';
 import { PrevNextPosts } from '@/components/prev-next-posts';
 import { RelatedPosts } from '@/components/related-posts';
 import { JsonLd } from '@/components/json-ld';
+import { ArticleContent } from '@/components/article-content';
 import { getArticlePost, getArticlePosts } from '@/lib/api';
 import { createArticleMetadata, createPageMetadata } from '@/lib/metadata-helpers';
 import { buildArticleJsonLd, buildBreadcrumbJsonLd } from '@/lib/structured-data';
@@ -164,10 +165,7 @@ export default async function ArticlePostPage({ params, searchParams }: ArticleP
 
         <article className="container py-8 sm:py-10 md:py-12 max-w-[1024px]">
           <div className="max-w-[1024px] mx-auto">
-            <div
-              className="prose prose-gray dark:prose-invert"
-              dangerouslySetInnerHTML={{ __html: post.content }}
-            />
+            <ArticleContent content={post.content} />
           </div>
 
           {/* 関連記事と前後の記事を並列で取得 */}
