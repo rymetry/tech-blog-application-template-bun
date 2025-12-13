@@ -17,7 +17,7 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  /* font vars are provided by next/font as --font-sans and --font-ui */
+  /* font vars are provided by next/font as --font-sans and --font-mono */
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -128,63 +128,104 @@
   * {
     @apply border-border outline-ring/50;
   }
+  
   body {
     @apply bg-background text-foreground;
-    font-feature-settings:
-      "rlig" 1,
-      "calt" 1,
-      "ss01" 1,
-      "ss02" 1,
-      "zero" 1,
-      "tnum" 1,
-      "kern" 1;
     font-family:
       var(--font-sans),
-      var(--font-ui),
+      "Noto Sans JP",
       system-ui,
       -apple-system,
-      Segoe UI,
-      Roboto,
-      "Noto Sans JP",
+      BlinkMacSystemFont,
+      "Segoe UI",
+      "Hiragino Sans",
+      "Hiragino Kaku Gothic ProN",
+      "Yu Gothic",
       sans-serif;
+    font-feature-settings: "kern" 1;
+  }
+
+  /* サイト全体（本文・見出し・UI すべて同じフォント） */
+  h1, h2, h3, h4, h5, h6,
+  p, li, blockquote,
+  button, input, label, select, textarea {
+    font-family: inherit; /* body から継承 */
+  }
+
+  /* 日本語イタリック問題の対策 */
+  em, i {
+    font-weight: 500;
+    font-style: normal; /* 斜体を無効化 */
+  }
+
+  strong, b {
+    font-weight: 700;
+  }
+
+  /* コードブロック */
+  code, pre, kbd, samp {
+    font-family:
+      var(--font-mono),
+      ui-monospace,
+      "SF Mono",
+      "Cascadia Code",
+      "Consolas",
+      "Liberation Mono",
+      monospace;
   }
 
   /* Base fluid type (16px to 20px) */
   html {
     font-size: clamp(16px, 1.4vw, 20px);
+    line-height: 1.6;
   }
 
-  /* レスポンシブな見出しサイズ */
+  /* レスポンシブな見出しサイズ（clamp形式） */
   h1 {
-    @apply text-2xl sm:text-3xl md:text-4xl lg:text-5xl;
+    font-size: clamp(2rem, 3vw + 0.5rem, 3rem);
+    line-height: 1.2;
+    font-weight: 700;
   }
 
   h2 {
-    @apply text-xl sm:text-2xl md:text-3xl lg:text-4xl;
+    font-size: clamp(1.5rem, 2.5vw + 0.25rem, 2.25rem);
+    line-height: 1.25;
+    font-weight: 700;
   }
 
   h3 {
-    @apply text-lg sm:text-xl md:text-2xl;
+    font-size: clamp(1.25rem, 2vw + 0.25rem, 1.75rem);
+    line-height: 1.3;
+    font-weight: 600;
   }
 
   h4 {
-    @apply text-base sm:text-lg md:text-xl;
+    font-size: clamp(1.125rem, 1.5vw + 0.25rem, 1.5rem);
+    line-height: 1.35;
+    font-weight: 600;
   }
 
   h5 {
-    @apply text-sm sm:text-base md:text-lg;
+    font-size: clamp(1rem, 1.2vw + 0.25rem, 1.25rem);
+    line-height: 1.4;
+    font-weight: 500;
   }
 
   h6 {
-    @apply text-xs sm:text-sm md:text-base;
+    font-size: clamp(0.875rem, 1vw + 0.25rem, 1.125rem);
+    line-height: 1.45;
+    font-weight: 500;
   }
 
-  p {
-    @apply text-base sm:text-base md:text-[17px] lg:text-lg;
+  p, li {
+    font-size: 1rem;
+    line-height: 1.7;
+    letter-spacing: 0.01em;
   }
 
-  li {
-    @apply text-base sm:text-base md:text-[17px] lg:text-lg;
+  ul, ol {
+    margin: 1.25rem 0;
+    padding-left: 1.5rem;
   }
 
   /* Ensure interactive elements show pointer cursor */
@@ -215,6 +256,12 @@
 /* ブログ記事のスタイル */
 .prose {
   @apply max-w-none;
+  --rehype-code-gutter-width: 3.5rem;
+  --rehype-code-gutter-pad-left: 0.5rem;
+  --rehype-code-gutter-pad-right: 0.75rem;
+  --rehype-code-gutter-total: calc(
+    var(--rehype-code-gutter-width) + var(--rehype-code-gutter-pad-left) + var(--rehype-code-gutter-pad-right)
+  );
 }
 
 /* Hero/section decorative background used across pages */
@@ -232,12 +279,224 @@
   @apply rounded-lg mx-auto my-6 sm:my-8 md:my-10 lg:my-12;
 }
 
+/* コードブロックのスタイル */
 .prose pre {
-  @apply bg-muted p-3 sm:p-4 md:p-5 lg:p-6 rounded-lg overflow-x-auto my-4 sm:my-5 md:my-6;
+  @apply relative bg-gray-900 dark:bg-gray-950 p-0 rounded-lg overflow-hidden my-6 sm:my-8 md:my-10 border border-white/10;
 }
 
+.prose pre[class*='language-'] {
+  @apply m-0 overflow-x-auto;
+  padding: 1rem 1rem 1rem var(--rehype-code-gutter-total); /* 上 右 下 左（行番号のスペース） */
+}
+
+.prose pre.line-numbers {
+  counter-reset: linenumber;
+}
+
+/* 行番号エリア */
+.prose .line-numbers-rows {
+  @apply absolute left-0 top-0 text-right select-none border-r border-white/10;
+  width: var(--rehype-code-gutter-width);
+  padding: 1rem var(--rehype-code-gutter-pad-right) 1rem var(--rehype-code-gutter-pad-left); /* 上 右 下 左 */
+  pointer-events: none;
+  background: rgba(0, 0, 0, 0.2);
+  user-select: none;
+}
+
+.prose .line-numbers-rows > span {
+  @apply block text-gray-500 dark:text-gray-600;
+  font-family:
+    var(--font-mono),
+    ui-monospace,
+    "SF Mono",
+    "Cascadia Code",
+    "Consolas",
+    "Liberation Mono",
+    monospace;
+  font-size: 0.875rem;
+  line-height: 1.6; /* pre code と統一 */
+}
+
+.prose .line-numbers-rows > span::before {
+  counter-increment: linenumber;
+  content: counter(linenumber);
+}
+
+/* rehype-prism-plusが生成するクラスのスタイルリセット */
+.prose pre .code-line {
+  display: inline;
+  background: transparent !important;
+}
+
+.prose pre .code-highlight {
+  background: transparent !important;
+}
+
+/* 特定の行をハイライトする場合のスタイル（必要に応じて使用） */
+.prose pre .code-line.highlight-line {
+  background: rgba(255, 255, 255, 0.1) !important;
+  display: block;
+  margin: 0 -1rem;
+  padding: 0 1rem;
+}
+
+/* コードタイトル（ファイル名/言語名） */
+.prose .rehype-code-title {
+  @apply bg-gray-800 dark:bg-gray-900 text-gray-200 dark:text-gray-300 px-4 sm:px-5 md:px-6 py-2 sm:py-2.5 text-xs sm:text-sm font-mono rounded-t-lg border border-white/10 border-b-0;
+  margin-bottom: 0;
+}
+
+.prose .rehype-code-title + pre {
+  @apply rounded-t-none mt-0 border-t-0;
+}
+
+/* インラインコード */
 .prose code {
-  @apply bg-muted px-1 py-0.5 rounded text-sm;
+  @apply bg-gray-100 dark:bg-gray-800 px-1.5 py-0.5 rounded text-pink-500;
+  font-family:
+    var(--font-mono),
+    ui-monospace,
+    "SF Mono",
+    "Cascadia Code",
+    "Consolas",
+    "Liberation Mono",
+    monospace;
+  font-size: 0.9em;
+  letter-spacing: -0.005em;
+}
+
+/* Tailwind Typographyが追加するバッククォートを削除 */
+.prose :where(code):not(:where([class~="not-prose"], [class~="not-prose"] *))::before,
+.prose :where(code):not(:where([class~="not-prose"], [class~="not-prose"] *))::after {
+  content: none !important;
+}
+
+.prose pre code {
+  @apply bg-transparent p-0;
+  font-family:
+    var(--font-mono),
+    ui-monospace,
+    "SF Mono",
+    "Cascadia Code",
+    "Consolas",
+    "Liberation Mono",
+    monospace;
+  font-size: 0.875rem;
+  line-height: 1.6; /* 日本語対応: 行間を広めに */
+  letter-spacing: -0.01em;
+  color: inherit;
+}
+
+/* Prism トークンのカラーリング（ライトモード） */
+.prose .token.comment,
+.prose .token.prolog,
+.prose .token.doctype,
+.prose .token.cdata {
+  color: #6a9955;
+}
+
+.prose .token.punctuation {
+  color: #d4d4d4;
+}
+
+.prose .token.property,
+.prose .token.tag,
+.prose .token.boolean,
+.prose .token.number,
+.prose .token.constant,
+.prose .token.symbol,
+.prose .token.deleted {
+  color: #b5cea8;
+}
+
+.prose .token.selector,
+.prose .token.attr-name,
+.prose .token.string,
+.prose .token.char,
+.prose .token.builtin,
+.prose .token.inserted {
+  color: #ce9178;
+}
+
+.prose .token.operator,
+.prose .token.entity,
+.prose .token.url,
+.prose .language-css .token.string,
+.prose .style .token.string {
+  color: #d4d4d4;
+}
+
+.prose .token.atrule,
+.prose .token.attr-value,
+.prose .token.keyword {
+  color: #c586c0;
+}
+
+.prose .token.function,
+.prose .token.class-name {
+  color: #dcdcaa;
+}
+
+.prose .token.regex,
+.prose .token.important,
+.prose .token.variable {
+  color: #d16969;
+}
+
+/* ダークモード用の調整 */
+.dark .prose .token.comment,
+.dark .prose .token.prolog,
+.dark .prose .token.doctype,
+.dark .prose .token.cdata {
+  color: #7c9d7c;
+}
+
+.dark .prose .token.punctuation {
+  color: #d4d4d4;
+}
+
+.dark .prose .token.property,
+.dark .prose .token.tag,
+.dark .prose .token.boolean,
+.dark .prose .token.number,
+.dark .prose .token.constant,
+.dark .prose .token.symbol,
+.dark .prose .token.deleted {
+  color: #b5cea8;
+}
+
+.dark .prose .token.selector,
+.dark .prose .token.attr-name,
+.dark .prose .token.string,
+.dark .prose .token.char,
+.dark .prose .token.builtin,
+.dark .prose .token.inserted {
+  color: #ce9178;
+}
+
+.dark .prose .token.operator,
+.dark .prose .token.entity,
+.dark .prose .token.url,
+.dark .prose .language-css .token.string,
+.dark .prose .style .token.string {
+  color: #d4d4d4;
+}
+
+.dark .prose .token.atrule,
+.dark .prose .token.attr-value,
+.dark .prose .token.keyword {
+  color: #c586c0;
+}
+
+.dark .prose .token.function,
+.dark .prose .token.class-name {
+  color: #dcdcaa;
+}
+
+.dark .prose .token.regex,
+.dark .prose .token.important,
+.dark .prose .token.variable {
+  color: #d16969;
 }
 
 .prose a {
