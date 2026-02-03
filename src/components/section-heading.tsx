@@ -5,6 +5,8 @@ interface SectionHeadingProps {
   description?: string;
   align?: 'left' | 'center';
   className?: string;
+  titleClassName?: string;
+  descriptionClassName?: string;
 }
 
 export function SectionHeading({
@@ -12,18 +14,19 @@ export function SectionHeading({
   description,
   align = 'center',
   className,
+  titleClassName,
+  descriptionClassName,
 }: SectionHeadingProps) {
   return (
     <div className={cn('space-y-2', align === 'center' ? 'text-center' : 'text-left', className)}>
-      <h2 className="font-bold tracking-tight">
+      <h2 className={cn('font-bold tracking-tight', titleClassName)}>
         {title}
       </h2>
       {description ? (
-        <p className="subtitle-description text-muted-foreground">
+        <p className={cn('subtitle-description text-muted-foreground', descriptionClassName)}>
           {description}
         </p>
       ) : null}
     </div>
   );
 }
-

@@ -21,6 +21,9 @@ export default function Header() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const isActivePath = (href: string) => (href === '/' ? pathname === '/' : pathname.startsWith(href));
+  const activeLinkClass =
+    'text-primary font-medium relative after:content-[""] after:absolute after:left-2 after:right-2 after:-bottom-1 after:h-[2px] after:bg-primary/70 after:rounded-full';
+  const inactiveLinkClass = 'text-muted-foreground';
 
   return (
     <header className="border-b border-border/20 bg-background/80 backdrop-blur-sm fixed top-0 left-0 right-0 z-50">
@@ -40,7 +43,8 @@ export default function Header() {
                 href={item.href}
                 className={cn(
                   'nav-link transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded-md px-2 py-1',
-                  isActive ? 'text-primary font-medium' : 'text-muted-foreground',
+                  'hover:bg-primary/5',
+                  isActive ? activeLinkClass : inactiveLinkClass,
                 )}
                 aria-current={isActive ? 'page' : undefined}
               >
@@ -92,7 +96,8 @@ export default function Header() {
                       href={item.href}
                       className={cn(
                         'text-base sm:text-lg transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded-md px-2 py-1',
-                        isActive ? 'text-primary font-medium' : 'text-muted-foreground',
+                        'hover:bg-primary/5',
+                        isActive ? 'text-primary font-medium bg-primary/10' : 'text-muted-foreground',
                       )}
                       onClick={() => setOpen(false)}
                       aria-current={isActive ? 'page' : undefined}

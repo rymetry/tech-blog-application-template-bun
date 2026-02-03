@@ -9,7 +9,7 @@ interface StatusPillProps {
 }
 
 const toneStyles: Record<StatusPillTone, string> = {
-  success: 'border-emerald-500/30 bg-emerald-500/10 text-emerald-200',
+  success: 'border-emerald-500/30 bg-emerald-500/10 text-emerald-700 dark:text-emerald-200',
   info: 'border-primary/30 bg-primary/10 text-primary',
   neutral: 'border-border/40 bg-card/40 text-muted-foreground',
 };
@@ -27,4 +27,3 @@ export function StatusPill({ label, tone = 'info', className }: StatusPillProps)
     </span>
   );
 }
-

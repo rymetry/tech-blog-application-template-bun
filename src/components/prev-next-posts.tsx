@@ -39,7 +39,7 @@ export async function PrevNextPosts({ postSlug }: PrevNextPostsProps) {
     >
       <h2
         id="pagination-heading"
-        className="font-bold mb-6 text-center tracking-tight"
+        className="font-bold mb-6 text-left tracking-tight"
       >
         Continue Reading
       </h2>

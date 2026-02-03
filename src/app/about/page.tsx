@@ -1,5 +1,6 @@
 import { JsonLd } from '@/components/json-ld';
 import { PageHero } from '@/components/page-hero';
+import { SectionHeading } from '@/components/section-heading';
 import { SectionContainer } from '@/components/section-container';
 import { Button } from '@/components/ui/button';
 import { portfolioConfig } from '@/lib/portfolio-config';
@@ -23,14 +24,17 @@ export default async function AboutPage() {
   return (
     <>
       <JsonLd data={breadcrumbJsonLd} id="about-breadcrumb-jsonld" />
-      <PageHero title="About" description="How I approach quality engineering—from strategy to automation." />
+      <PageHero
+        title="About"
+        description="How I approach quality engineering—from strategy to automation."
+        background="qa"
+        align="left"
+      />
 
       <SectionContainer className="py-8 sm:py-10 md:py-12">
         <div className="grid gap-12 sm:gap-16">
           <section>
-            <h2 className="text-center font-bold tracking-tight mb-6">
-              Profile
-            </h2>
+            <SectionHeading title="Profile" align="left" className="mb-6" />
             <div className="grid gap-8 lg:grid-cols-[200px_1fr] items-start">
               <div className="relative w-40 h-40 rounded-full overflow-hidden mx-auto lg:mx-0 shadow-md">
                 <Image
@@ -45,7 +49,7 @@ export default async function AboutPage() {
                   <h3 className="font-medium text-center lg:text-left">{portfolioConfig.ownerName}</h3>
                   <p className="text-muted-foreground text-center lg:text-left">{portfolioConfig.ownerTitle}</p>
                 </div>
-                <p className="text-muted-foreground leading-relaxed">
+                <p className="text-muted-foreground leading-relaxed max-w-2xl">
                   I help teams ship with confidence by connecting quality strategy, automation, and engineering
                   signals. I care about fast feedback, reliable tests, and clear release criteria that developers
                   can trust.
@@ -65,11 +69,9 @@ export default async function AboutPage() {
           </section>
 
           <section>
-            <h2 className="text-center font-bold tracking-tight mb-6">
-              How I work
-            </h2>
+            <SectionHeading title="How I work" align="left" className="mb-6" />
             <div className="space-y-5">
-              <p className="text-muted-foreground leading-relaxed">
+              <p className="text-muted-foreground leading-relaxed max-w-2xl">
                 I start by aligning on product risk and user impact. Then I design layered coverage and automation
                 so the team gets actionable signals quickly.
               </p>
@@ -110,12 +112,13 @@ export default async function AboutPage() {
           </section>
 
           <section>
-            <h2 className="text-center font-bold tracking-tight mb-6">
-              Toolbox
-            </h2>
+            <SectionHeading title="Toolbox" align="left" className="mb-6" />
             <div className="grid gap-6 md:grid-cols-3">
               <div className="rounded-xl border border-border/40 bg-card/40 p-4 sm:p-6">
                 <h3 className="font-medium mb-3">Testing</h3>
+                <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed max-w-[22rem] mb-3">
+                  Strategy-first automation, resilient test design, and flake reduction.
+                </p>
                 <div className="flex flex-wrap gap-2">
                   {['Playwright', 'API testing', 'Test design', 'Flake triage'].map((item) => (
                     <span key={item} className="tag-text bg-primary/10 text-primary px-2 py-0.5 rounded-full">
@@ -126,6 +129,9 @@ export default async function AboutPage() {
               </div>
               <div className="rounded-xl border border-border/40 bg-card/40 p-4 sm:p-6">
                 <h3 className="font-medium mb-3">CI / Delivery</h3>
+                <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed max-w-[22rem] mb-3">
+                  Quality gates, actionable signals, and safe, repeatable releases.
+                </p>
                 <div className="flex flex-wrap gap-2">
                   {['GitHub Actions', 'Quality gates', 'Release checks', 'Artifacts'].map((item) => (
                     <span key={item} className="tag-text bg-primary/10 text-primary px-2 py-0.5 rounded-full">
@@ -136,6 +142,9 @@ export default async function AboutPage() {
               </div>
               <div className="rounded-xl border border-border/40 bg-card/40 p-4 sm:p-6">
                 <h3 className="font-medium mb-3">Engineering</h3>
+                <p className="text-xs sm:text-sm text-muted-foreground leading-relaxed max-w-[22rem] mb-3">
+                  Product-minded engineering with performance and observability in mind.
+                </p>
                 <div className="flex flex-wrap gap-2">
                   {['TypeScript', 'Next.js', 'Observability', 'Performance'].map((item) => (
                     <span key={item} className="tag-text bg-primary/10 text-primary px-2 py-0.5 rounded-full">

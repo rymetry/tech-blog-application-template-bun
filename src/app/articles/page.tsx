@@ -1,6 +1,7 @@
 import { ArticlePostsList } from '@/components/article-posts-list';
 import { PageHero } from '@/components/page-hero';
 import { SearchForm } from '@/components/search-form';
+import { SectionHeading } from '@/components/section-heading';
 import { SectionContainer } from '@/components/section-container';
 import { TagsList } from '@/components/tags-list';
 import { JsonLd } from '@/components/json-ld';
@@ -99,18 +100,30 @@ export default async function ArticlePage(props: ArticlePageProps) {
       <PageHero
         title="Writing"
         description="Notes on engineering, automation, and building quality into products."
+        background="qa"
+        align="left"
       />
 
       <SectionContainer className="py-8 sm:py-10 md:py-12">
         <div className="grid gap-8 sm:gap-10 md:grid-cols-[240px_1fr]">
-          <div className="space-y-8">
+          <div className="space-y-8 md:sticky md:top-24 md:self-start h-fit">
             <div>
-              <h2 className="text-lg sm:text-xl md:text-2xl font-medium mb-4">Search</h2>
+              <SectionHeading
+                title="Search"
+                align="left"
+                className="mb-4"
+                titleClassName="text-lg sm:text-xl md:text-2xl font-medium"
+              />
               <SearchForm />
             </div>
 
             <div>
-              <h2 className="text-lg sm:text-xl md:text-2xl font-medium mb-4">Tags</h2>
+              <SectionHeading
+                title="Tags"
+                align="left"
+                className="mb-4"
+                titleClassName="text-lg sm:text-xl md:text-2xl font-medium"
+              />
               <Suspense fallback={<div>Loading tags...</div>}>
                 <TagsList />
               </Suspense>

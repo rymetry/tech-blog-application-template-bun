@@ -24,12 +24,17 @@ export default async function ProjectsPage() {
       <PageHero
         title="Projects"
         description="Selected work across test strategy, automation, and quality engineering."
+        background="qa"
+        align="left"
       />
 
       <SectionContainer className="py-8 sm:py-10 md:py-12">
+        <p className="text-sm sm:text-base text-muted-foreground max-w-2xl mb-6">
+          Selected initiatives that improved release confidence, reduced test flakiness, and
+          tightened engineering feedback loops.
+        </p>
         <ProjectsGrid projects={projects} />
       </SectionContainer>
     </>
   );
 }
-

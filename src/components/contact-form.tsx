@@ -84,7 +84,7 @@ export function ContactForm() {
           </Alert>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-4" aria-label="Contact form">
+        <form id="contact-form" onSubmit={handleSubmit} className="space-y-4" aria-label="Contact form">
           <div className="space-y-2">
             <Label htmlFor="name" className="form-label text-foreground">
               Name
@@ -164,7 +164,8 @@ export function ContactForm() {
       </CardContent>
       <CardFooter>
         <Button
-          onClick={handleSubmit}
+          type="submit"
+          form="contact-form"
           disabled={formState === 'submitting'}
           className="w-full btn-text focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
           aria-busy={formState === 'submitting'}

@@ -7,6 +7,7 @@ interface PageHeroProps {
   className?: string;
   background?: 'diagonal' | 'qa' | 'none';
   variant?: 'center' | 'split';
+  align?: 'center' | 'left';
   aside?: ReactNode;
   children?: ReactNode;
   titleClassName?: string;
@@ -19,6 +20,7 @@ export function PageHero({
   className,
   background = 'diagonal',
   variant = 'center',
+  align = 'center',
   aside,
   children,
   titleClassName,
@@ -30,6 +32,8 @@ export function PageHero({
       : background === 'qa'
         ? 'qa-hero-background'
         : null;
+  const alignClassName = align === 'center' ? 'text-center' : 'text-left';
+  const contentWidthClassName = align === 'center' ? 'max-w-3xl mx-auto' : 'max-w-4xl';
 
   return (
     <section
@@ -66,8 +70,8 @@ export function PageHero({
             {aside ? <div className="max-w-2xl mx-auto md:mx-0 w-full">{aside}</div> : null}
           </div>
         ) : (
-          <div className="text-center">
-            <div className="max-w-3xl mx-auto space-y-4">
+          <div className={alignClassName}>
+            <div className={cn('space-y-4', contentWidthClassName)}>
               <h1
                 className={cn(
                   'text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-bold tracking-tight',

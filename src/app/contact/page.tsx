@@ -24,6 +24,8 @@ export default async function ContactPage() {
       <PageHero
         title="Contact"
         description="Interested in collaboration or opportunities? I'd love to hear from you."
+        background="qa"
+        align="left"
       />
 
       <SectionContainer className="py-8 sm:py-10 md:py-12">

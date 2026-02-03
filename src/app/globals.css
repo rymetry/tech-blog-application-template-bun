@@ -300,7 +300,7 @@
 
 /* コードブロックのスタイル */
 .prose pre {
-  @apply relative bg-gray-900 dark:bg-gray-950 p-0 rounded-lg overflow-hidden my-6 sm:my-8 md:my-10 border border-white/10;
+  @apply relative bg-slate-800 dark:bg-slate-950 p-0 rounded-lg overflow-hidden my-6 sm:my-8 md:my-10 border border-white/10;
 }
 
 .prose pre[class*='language-'] {
@@ -519,7 +519,12 @@
 }
 
 .prose a {
-  @apply text-primary underline underline-offset-4 font-medium;
+  @apply underline underline-offset-4 font-medium;
+  color: color-mix(in srgb, var(--primary) 85%, var(--foreground));
+}
+
+.dark .prose a {
+  color: color-mix(in srgb, var(--primary) 70%, white);
 }
 
 .prose blockquote {

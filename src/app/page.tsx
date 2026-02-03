@@ -4,6 +4,7 @@ import { ProjectCard } from '@/components/project-card';
 import { QualityPipeline } from '@/components/quality-pipeline';
 import { SectionHeading } from '@/components/section-heading';
 import { SectionContainer } from '@/components/section-container';
+import { StatusPill } from '@/components/status-pill';
 import { Button } from '@/components/ui/button';
 import { JsonLd } from '@/components/json-ld';
 import { portfolioConfig } from '@/lib/portfolio-config';
@@ -39,8 +40,9 @@ export default function Home() {
         background="qa"
         className="pb-12 sm:pb-16 md:pb-20 lg:pb-24"
         aside={<QualityPipeline />}
+        descriptionClassName="text-xs sm:text-sm uppercase tracking-[0.3em] text-muted-foreground/80"
       >
-        <p className="text-base sm:text-[17px] md:text-lg lg:text-xl text-muted-foreground">
+        <p className="text-lg sm:text-xl md:text-2xl text-foreground/80 leading-relaxed max-w-[32rem]">
           {portfolioConfig.tagline}
         </p>
 
@@ -64,6 +66,7 @@ export default function Home() {
             <SectionHeading
               title="What I do"
               description="A practical approach to quality engineering, from strategy to automation."
+              align="left"
             />
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -98,6 +101,7 @@ export default function Home() {
             <SectionHeading
               title="Featured projects"
               description="A few highlights that showcase strategy, automation, and quality signals."
+              align="left"
             />
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
@@ -123,6 +127,7 @@ export default function Home() {
             <SectionHeading
               title="Latest writing"
               description="Notes on engineering, automation, and building quality into products."
+              align="left"
             />
 
             <Suspense fallback={<div className="text-center py-12">Loading latest posts...</div>}>
@@ -142,19 +147,28 @@ export default function Home() {
 
       <section className="w-full py-12 sm:py-16 md:py-20 lg:py-24 bg-secondary/20">
         <SectionContainer>
-          <div className="rounded-2xl border border-border/40 bg-card/40 p-6 sm:p-8 text-center">
-            <h2 className="font-bold tracking-tight">
-              Let&apos;s ship with confidence.
-            </h2>
-            <p className="subtitle-description text-muted-foreground mt-2">
-              Interested in collaboration or opportunities? I&apos;d love to hear from you.
-            </p>
-            <div className="mt-6 flex justify-center">
-              <Link href="/contact" className="block w-full max-w-96 sm:max-w-56">
-                <Button size="lg" className="btn-text w-full">
-                  Contact
-                </Button>
-              </Link>
+          <div className="relative overflow-hidden rounded-2xl border border-primary/30 bg-card/50 p-6 sm:p-8 text-center shadow-[0_20px_60px_-40px_color-mix(in_srgb,var(--primary)_60%,transparent)]">
+            <div
+              className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(34,211,238,0.12),transparent_60%)]"
+              aria-hidden="true"
+            />
+            <div className="relative">
+              <div className="flex justify-center mb-3">
+                <StatusPill label="Open to collaboration" tone="info" />
+              </div>
+              <h2 className="font-bold tracking-tight">
+                Let&apos;s ship with confidence.
+              </h2>
+              <p className="subtitle-description text-muted-foreground mt-2">
+                Interested in collaboration or opportunities? I&apos;d love to hear from you.
+              </p>
+              <div className="mt-6 flex justify-center">
+                <Link href="/contact" className="block w-full max-w-96 sm:max-w-56">
+                  <Button size="lg" className="btn-text w-full">
+                    Contact
+                  </Button>
+                </Link>
+              </div>
             </div>
           </div>
         </SectionContainer>

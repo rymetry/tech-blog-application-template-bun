@@ -92,7 +92,7 @@ function PaginationContent({ totalPages, currentPage }: PaginationProps) {
           return (
             <span
               key={`ellipsis-${i}`}
-              className="px-3 py-2 text-sm text-muted-foreground"
+              className="min-w-8 px-2 py-2 text-sm text-muted-foreground text-center opacity-60"
               aria-hidden="true"
             >
               ...

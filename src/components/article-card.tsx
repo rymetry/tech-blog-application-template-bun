@@ -1,4 +1,5 @@
 import { Author } from '@/components/author';
+import { TagPill } from '@/components/tag-pill';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { formatDate } from '@/lib/utils';
 import type { ArticlePost } from '@/types';
@@ -39,18 +40,22 @@ export function ArticleCard({ post, priority = false }: ArticleCardProps) {
           </h3>
           <div className="flex flex-wrap gap-2" aria-label="Tags">
             {post.tags.slice(0, 2).map((tag) => (
-              <span
+              <TagPill
                 key={tag.id}
-                className="tag-text bg-primary/10 text-primary px-2 py-0.5 rounded-full flex items-center gap-1"
               >
                 <Tag className="h-3 w-3" aria-hidden="true" />
                 {tag.name}
-              </span>
+              </TagPill>
             ))}
             {post.tags.length > 2 && (
-              <span className="tag-text bg-secondary/80 text-secondary-foreground px-2 py-1 rounded-full flex items-center gap-1">
+              <TagPill
+                variant="neutral"
+                size="md"
+                title={`${post.tags.length - 2} more tags`}
+                aria-label={`+${post.tags.length - 2} more tags`}
+              >
                 +{post.tags.length - 2}
-              </span>
+              </TagPill>
             )}
           </div>
         </CardContent>

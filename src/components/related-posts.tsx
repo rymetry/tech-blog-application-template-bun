@@ -11,7 +11,7 @@ export async function RelatedPosts({ relatedPosts }: { relatedPosts: ArticlePost
     >
       <h2
         id="related-posts-heading"
-        className="font-bold mb-6 text-center tracking-tight"
+        className="font-bold mb-6 text-left tracking-tight"
       >
         Related Posts
       </h2>

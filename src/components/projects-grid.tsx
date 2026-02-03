@@ -10,14 +10,16 @@ interface ProjectsGridProps {
 }
 
 export function ProjectsGrid({ projects }: ProjectsGridProps) {
-  const tags = useMemo(() => {
-    const tagSet = new Set<string>();
+  const tagData = useMemo(() => {
+    const tagMap = new Map<string, number>();
     for (const project of projects) {
       for (const tag of project.tags) {
-        tagSet.add(tag);
+        tagMap.set(tag, (tagMap.get(tag) ?? 0) + 1);
       }
     }
-    return Array.from(tagSet).sort((a, b) => a.localeCompare(b));
+    return Array.from(tagMap.entries())
+      .map(([name, count]) => ({ name, count }))
+      .sort((a, b) => a.name.localeCompare(b.name));
   }, [projects]);
 
   const [activeTag, setActiveTag] = useState<string>('All');
@@ -35,6 +37,7 @@ export function ProjectsGrid({ projects }: ProjectsGridProps) {
         <button
           type="button"
           onClick={() => setActiveTag('All')}
+          aria-pressed={activeTag === 'All'}
           className={cn(
             'rounded-full border px-3 py-1 text-xs sm:text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2',
             activeTag === 'All'
@@ -42,23 +45,28 @@ export function ProjectsGrid({ projects }: ProjectsGridProps) {
               : 'border-border/40 bg-card/40 text-muted-foreground hover:text-foreground',
           )}
         >
-          All
+          All ({projects.length})
         </button>
-        {tags.map((tag) => (
+        {tagData.map((tag) => (
           <button
-            key={tag}
+            key={tag.name}
             type="button"
-            onClick={() => setActiveTag(tag)}
+            onClick={() => setActiveTag(tag.name)}
+            aria-pressed={activeTag === tag.name}
             className={cn(
               'rounded-full border px-3 py-1 text-xs sm:text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2',
-              activeTag === tag
+              activeTag === tag.name
                 ? 'border-primary/40 bg-primary/10 text-primary'
                 : 'border-border/40 bg-card/40 text-muted-foreground hover:text-foreground',
             )}
           >
-            {tag}
+            {tag.name} ({tag.count})
           </button>
         ))}
+      </div>
+
+      <div className="text-xs sm:text-sm text-muted-foreground" role="status" aria-live="polite">
+        Showing {filteredProjects.length} of {projects.length} projects
       </div>
 
       {filteredProjects.length === 0 ? (
@@ -75,4 +83,3 @@ export function ProjectsGrid({ projects }: ProjectsGridProps) {
     </div>
   );
 }
-
