@@ -2,6 +2,7 @@ import { JsonLd } from '@/components/json-ld';
 import { PageHero } from '@/components/page-hero';
 import { SectionHeading } from '@/components/section-heading';
 import { SectionContainer } from '@/components/section-container';
+import { TagPill } from '@/components/tag-pill';
 import { Button } from '@/components/ui/button';
 import { portfolioConfig } from '@/lib/portfolio-config';
 import { createPageMetadata } from '@/lib/metadata-helpers';
@@ -29,6 +30,7 @@ export default async function AboutPage() {
         description="How I approach quality engineering—from strategy to automation."
         background="qa"
         align="left"
+        className="pt-24 pb-10 md:pt-32 md:pb-12 qa-hero-soft"
       />
 
       <SectionContainer className="py-8 sm:py-10 md:py-12">
@@ -55,14 +57,12 @@ export default async function AboutPage() {
                   can trust.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-3 pt-2">
-                  <Link href="/projects" className="block w-full sm:w-auto">
-                    <Button variant="outline" className="btn-text w-full sm:w-auto">
-                      View Projects
-                    </Button>
-                  </Link>
-                  <Link href="/contact" className="block w-full sm:w-auto">
-                    <Button className="btn-text w-full sm:w-auto">Contact</Button>
-                  </Link>
+                  <Button asChild className="btn-text w-full sm:w-auto">
+                    <Link href="/projects">View Projects</Link>
+                  </Button>
+                  <Button asChild variant="outline" className="btn-text w-full sm:w-auto">
+                    <Link href="/contact">Contact</Link>
+                  </Button>
                 </div>
               </div>
             </div>
@@ -121,9 +121,9 @@ export default async function AboutPage() {
                 </p>
                 <div className="flex flex-wrap gap-2">
                   {['Playwright', 'API testing', 'Test design', 'Flake triage'].map((item) => (
-                    <span key={item} className="tag-text bg-primary/10 text-primary px-2 py-0.5 rounded-full">
+                    <TagPill key={item} variant="muted" className="cursor-default">
                       {item}
-                    </span>
+                    </TagPill>
                   ))}
                 </div>
               </div>
@@ -134,9 +134,9 @@ export default async function AboutPage() {
                 </p>
                 <div className="flex flex-wrap gap-2">
                   {['GitHub Actions', 'Quality gates', 'Release checks', 'Artifacts'].map((item) => (
-                    <span key={item} className="tag-text bg-primary/10 text-primary px-2 py-0.5 rounded-full">
+                    <TagPill key={item} variant="muted" className="cursor-default">
                       {item}
-                    </span>
+                    </TagPill>
                   ))}
                 </div>
               </div>
@@ -147,9 +147,9 @@ export default async function AboutPage() {
                 </p>
                 <div className="flex flex-wrap gap-2">
                   {['TypeScript', 'Next.js', 'Observability', 'Performance'].map((item) => (
-                    <span key={item} className="tag-text bg-primary/10 text-primary px-2 py-0.5 rounded-full">
+                    <TagPill key={item} variant="muted" className="cursor-default">
                       {item}
-                    </span>
+                    </TagPill>
                   ))}
                 </div>
               </div>

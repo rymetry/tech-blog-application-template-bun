@@ -34,7 +34,7 @@ export async function PrevNextPosts({ postSlug }: PrevNextPostsProps) {
 
   return (
     <nav
-      className="mt-12 sm:mt-16 pt-8 border-t dark:border-primary/30 border-primary/20 max-w-[1024px] mx-auto"
+      className="mt-12 sm:mt-16 pt-8 border-t dark:border-primary/30 border-primary/20 max-w-[1024px] mx-auto w-full"
       aria-labelledby="pagination-heading"
     >
       <h2
@@ -43,7 +43,7 @@ export async function PrevNextPosts({ postSlug }: PrevNextPostsProps) {
       >
         Continue Reading
       </h2>
-      <div className="flex justify-between">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <h3 className="text-base sm:text-lg md:text-xl font-medium mb-3 flex gap-2 items-center text-primary">
             <ArrowLeft className="h-4 w-4" aria-hidden="true" />
@@ -51,7 +51,7 @@ export async function PrevNextPosts({ postSlug }: PrevNextPostsProps) {
           </h3>
         </div>
         <div>
-          <h3 className="text-base sm:text-lg md:text-xl font-medium mb-3 flex gap-2 items-center justify-end text-primary">
+          <h3 className="text-base sm:text-lg md:text-xl font-medium mb-3 flex gap-2 items-center sm:justify-end text-primary">
             Next Article
             <ArrowRight className="h-4 w-4" aria-hidden="true" />
           </h3>

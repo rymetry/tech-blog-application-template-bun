@@ -86,7 +86,7 @@ const fetchArticlePostsCached = async (params: ArticlePostParams = {}): Promise<
 const fetchArticlePostFromApi = async (
   slug: string,
   options: { draftKey?: string } = {},
-) => {
+): Promise<ArticlePost | null> => {
   const queries: Record<string, unknown> = {
     filters: `slug[equals]${slug}`,
     limit: 1,
@@ -103,13 +103,13 @@ const fetchArticlePostFromApi = async (
   const matchedPost = contents[0];
 
   if (!matchedPost) {
-    throw new Error(`Article post not found for slug: ${slug}`);
+    return null;
   }
 
   return adaptArticle(matchedPost);
 };
 
-const fetchArticlePostCached = async (slug: string): Promise<ArticlePost> =>
+const fetchArticlePostCached = async (slug: string): Promise<ArticlePost | null> =>
   unstable_cache(
     async () => {
       return fetchArticlePostFromApi(slug);
@@ -123,7 +123,7 @@ const fetchArticlePostCached = async (slug: string): Promise<ArticlePost> =>
     },
   )();
 
-const fetchArticlePostPreview = async (slug: string, draftKey?: string): Promise<ArticlePost> => {
+const fetchArticlePostPreview = async (slug: string, draftKey?: string): Promise<ArticlePost | null> => {
   return fetchArticlePostFromApi(slug, { draftKey });
 };
 
@@ -193,7 +193,7 @@ type GetArticlePostOptions = {
 export async function getArticlePost(
   slug: string,
   options: GetArticlePostOptions = {},
-): Promise<ArticlePost> {
+): Promise<ArticlePost | null> {
   try {
     const { draftKey, contentId } = options;
 
@@ -210,7 +210,7 @@ export async function getArticlePost(
     return await fetchArticlePostCached(slug);
   } catch (error) {
     console.error(`Error in getArticlePost for slug ${slug}:`, error);
-    throw error;
+    return null;
   }
 }
 

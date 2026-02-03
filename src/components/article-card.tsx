@@ -19,7 +19,7 @@ export function ArticleCard({ post, priority = false }: ArticleCardProps) {
       className="group block focus-visible:outline-none h-full"
       aria-labelledby={`article-title-${post.slug}`}
     >
-      <Card className="h-full overflow-hidden border-border/30 bg-card/60 hover:border-primary/50 focus-within:border-primary/50 transition-all duration-300 group-hover:scale-98 group-active:scale-95 group-focus-visible:ring-2 group-focus-visible:ring-primary group-focus-visible:ring-offset-2 shadow-sm py-0">
+      <Card className="h-full overflow-hidden card-surface card-surface-hover group-focus-visible:ring-2 group-focus-visible:ring-primary group-focus-visible:ring-offset-2 py-0">
         <div className="relative w-full aspect-[8/5] overflow-hidden">
           <Image
             src={post.coverImage.url || '/placeholder.svg'}
@@ -34,7 +34,7 @@ export function ArticleCard({ post, priority = false }: ArticleCardProps) {
         <CardContent className="p-4 space-y-3">
           <h3
             id={`article-title-${post.slug}`}
-            className="card-title group-hover:text-primary transition-colors line-clamp-2"
+            className="card-title-sm group-hover:text-primary transition-colors line-clamp-2"
           >
             {post.title}
           </h3>

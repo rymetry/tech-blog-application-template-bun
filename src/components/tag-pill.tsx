@@ -13,6 +13,7 @@ const tagPillVariants = cva(
         selected: 'bg-primary text-primary-foreground border-primary/40',
         muted: 'bg-card/50 text-muted-foreground border-border/40',
         neutral: 'bg-secondary/80 text-secondary-foreground border-border/40',
+        link: 'bg-card/40 text-muted-foreground border-border/40 hover:text-primary hover:border-primary/40',
       },
       size: {
         sm: 'px-2 py-0.5',

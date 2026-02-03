@@ -102,6 +102,7 @@ export default async function ArticlePage(props: ArticlePageProps) {
         description="Notes on engineering, automation, and building quality into products."
         background="qa"
         align="left"
+        className="pt-24 pb-10 md:pt-32 md:pb-12 qa-hero-soft"
       />
 
       <SectionContainer className="py-8 sm:py-10 md:py-12">
@@ -111,9 +112,12 @@ export default async function ArticlePage(props: ArticlePageProps) {
               <SectionHeading
                 title="Search"
                 align="left"
-                className="mb-4"
+                className="mb-2"
                 titleClassName="text-lg sm:text-xl md:text-2xl font-medium"
               />
+              <p className="text-xs text-muted-foreground mb-4">
+                Search by keyword, title, or topic.
+              </p>
               <SearchForm />
             </div>
 
@@ -121,9 +125,12 @@ export default async function ArticlePage(props: ArticlePageProps) {
               <SectionHeading
                 title="Tags"
                 align="left"
-                className="mb-4"
+                className="mb-2"
                 titleClassName="text-lg sm:text-xl md:text-2xl font-medium"
               />
+              <p className="text-xs text-muted-foreground mb-4">
+                Filter by topic to narrow the list.
+              </p>
               <Suspense fallback={<div>Loading tags...</div>}>
                 <TagsList />
               </Suspense>

@@ -14,7 +14,7 @@ export function QualityPipeline() {
       <div className="flex items-center justify-between gap-3">
         <div className="space-y-1">
           <div className="text-sm font-medium text-foreground">Quality Pipeline</div>
-          <div className="text-xs text-muted-foreground">Last run: 2h ago</div>
+          <div className="text-xs text-muted-foreground">Sample data • Updated weekly</div>
         </div>
         <StatusPill label="Green build" tone="success" />
       </div>

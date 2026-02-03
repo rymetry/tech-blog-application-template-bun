@@ -14,17 +14,17 @@ export function ProjectCard({ project }: ProjectCardProps) {
   const { github, demo, writeup } = project.links ?? {};
 
   return (
-    <Card className="h-full border-border/40 bg-card/50 shadow-sm overflow-hidden transition-all duration-300 hover:border-primary/40 hover:-translate-y-0.5 hover:shadow-lg">
+    <Card className="h-full overflow-hidden card-surface card-surface-hover">
       <CardHeader className="space-y-3">
-        <CardTitle className="text-lg sm:text-xl font-semibold tracking-tight">
+        <CardTitle className="card-title-lg tracking-tight">
           {project.name}
         </CardTitle>
-        <p className="text-sm sm:text-base text-muted-foreground">
+        <p className="text-sm sm:text-base text-foreground/80">
           {project.summary}
         </p>
         <div className="flex flex-wrap gap-2" aria-label="Project tags">
           {project.tags.map((tag) => (
-            <TagPill key={tag} variant="primary">
+            <TagPill key={tag} variant="primary" className="cursor-default">
               {tag}
             </TagPill>
           ))}
@@ -53,7 +53,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
           <div className="text-xs uppercase tracking-wide text-muted-foreground">Stack</div>
           <div className="flex flex-wrap gap-2">
             {project.stack.map((item) => (
-              <TagPill key={item} variant="muted">
+              <TagPill key={item} variant="muted" className="cursor-default">
                 {item}
               </TagPill>
             ))}
@@ -64,37 +64,43 @@ export function ProjectCard({ project }: ProjectCardProps) {
       {(isRealLink(github) || isRealLink(demo) || isRealLink(writeup)) ? (
         <CardFooter className="flex flex-wrap gap-3">
           {isRealLink(github) ? (
-            <Link
-              href={github!}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 text-xs sm:text-sm font-medium text-muted-foreground border border-border/40 bg-card/40 px-3 py-1 rounded-full hover:text-primary hover:border-primary/40 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
-            >
-              <Github className="h-4 w-4" aria-hidden="true" />
-              GitHub
-            </Link>
+            <TagPill asChild variant="link" size="md" className="px-3 py-1">
+              <Link
+                href={github!}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2"
+              >
+                <Github className="h-4 w-4" aria-hidden="true" />
+                GitHub
+              </Link>
+            </TagPill>
           ) : null}
           {isRealLink(demo) ? (
-            <Link
-              href={demo!}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 text-xs sm:text-sm font-medium text-muted-foreground border border-border/40 bg-card/40 px-3 py-1 rounded-full hover:text-primary hover:border-primary/40 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
-            >
-              <ExternalLink className="h-4 w-4" aria-hidden="true" />
-              Demo
-            </Link>
+            <TagPill asChild variant="link" size="md" className="px-3 py-1">
+              <Link
+                href={demo!}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2"
+              >
+                <ExternalLink className="h-4 w-4" aria-hidden="true" />
+                Demo
+              </Link>
+            </TagPill>
           ) : null}
           {isRealLink(writeup) ? (
-            <Link
-              href={writeup!}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 text-xs sm:text-sm font-medium text-muted-foreground border border-border/40 bg-card/40 px-3 py-1 rounded-full hover:text-primary hover:border-primary/40 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
-            >
-              <FileText className="h-4 w-4" aria-hidden="true" />
-              Write-up
-            </Link>
+            <TagPill asChild variant="link" size="md" className="px-3 py-1">
+              <Link
+                href={writeup!}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2"
+              >
+                <FileText className="h-4 w-4" aria-hidden="true" />
+                Write-up
+              </Link>
+            </TagPill>
           ) : null}
         </CardFooter>
       ) : null}

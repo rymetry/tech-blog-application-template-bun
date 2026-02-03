@@ -1,6 +1,7 @@
 'use client';
 
 import { ProjectCard } from '@/components/project-card';
+import { TagPill } from '@/components/tag-pill';
 import { cn } from '@/lib/utils';
 import type { Project } from '@/types';
 import { useMemo, useState } from 'react';
@@ -34,34 +35,38 @@ export function ProjectsGrid({ projects }: ProjectsGridProps) {
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap gap-2">
-        <button
-          type="button"
-          onClick={() => setActiveTag('All')}
-          aria-pressed={activeTag === 'All'}
-          className={cn(
-            'rounded-full border px-3 py-1 text-xs sm:text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2',
-            activeTag === 'All'
-              ? 'border-primary/40 bg-primary/10 text-primary'
-              : 'border-border/40 bg-card/40 text-muted-foreground hover:text-foreground',
-          )}
+        <TagPill
+          asChild
+          size="md"
+          variant={activeTag === 'All' ? 'selected' : 'muted'}
+          className={cn(activeTag === 'All' ? '' : 'hover:text-foreground hover:border-primary/30')}
         >
-          All ({projects.length})
-        </button>
-        {tagData.map((tag) => (
           <button
-            key={tag.name}
             type="button"
-            onClick={() => setActiveTag(tag.name)}
-            aria-pressed={activeTag === tag.name}
-            className={cn(
-              'rounded-full border px-3 py-1 text-xs sm:text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2',
-              activeTag === tag.name
-                ? 'border-primary/40 bg-primary/10 text-primary'
-                : 'border-border/40 bg-card/40 text-muted-foreground hover:text-foreground',
-            )}
+            onClick={() => setActiveTag('All')}
+            aria-pressed={activeTag === 'All'}
+            className="cursor-pointer"
           >
-            {tag.name} ({tag.count})
+            All ({projects.length})
           </button>
+        </TagPill>
+        {tagData.map((tag) => (
+          <TagPill
+            key={tag.name}
+            asChild
+            size="md"
+            variant={activeTag === tag.name ? 'selected' : 'muted'}
+            className={cn(activeTag === tag.name ? '' : 'hover:text-foreground hover:border-primary/30')}
+          >
+            <button
+              type="button"
+              onClick={() => setActiveTag(tag.name)}
+              aria-pressed={activeTag === tag.name}
+              className="cursor-pointer"
+            >
+              {tag.name} ({tag.count})
+            </button>
+          </TagPill>
         ))}
       </div>
 

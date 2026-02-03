@@ -5,6 +5,7 @@ import { QualityPipeline } from '@/components/quality-pipeline';
 import { SectionHeading } from '@/components/section-heading';
 import { SectionContainer } from '@/components/section-container';
 import { StatusPill } from '@/components/status-pill';
+import { TagPill } from '@/components/tag-pill';
 import { Button } from '@/components/ui/button';
 import { JsonLd } from '@/components/json-ld';
 import { portfolioConfig } from '@/lib/portfolio-config';
@@ -38,25 +39,24 @@ export default function Home() {
         description={portfolioConfig.ownerTitle}
         variant="split"
         background="qa"
-        className="pb-12 sm:pb-16 md:pb-20 lg:pb-24"
+        className="pb-12 sm:pb-16 md:pb-20 lg:pb-24 qa-hero-strong"
         aside={<QualityPipeline />}
         descriptionClassName="text-xs sm:text-sm uppercase tracking-[0.3em] text-muted-foreground/80"
       >
         <p className="text-lg sm:text-xl md:text-2xl text-foreground/80 leading-relaxed max-w-[32rem]">
           {portfolioConfig.tagline}
         </p>
+        <p className="text-sm sm:text-base text-foreground/70 max-w-[32rem]">
+          {portfolioConfig.taglineHighlight}
+        </p>
 
         <div className="flex flex-col sm:flex-row items-center md:items-start justify-center md:justify-start gap-4 mt-10 sm:mt-12">
-          <Link href="/projects" className="block w-full max-w-96 sm:max-w-44">
-            <Button size="lg" className="gap-1 btn-text w-full">
-              View Projects
-            </Button>
-          </Link>
-          <Link href="/contact" className="block w-full max-w-96 sm:max-w-44">
-            <Button size="lg" variant="outline" className="btn-text w-full">
-              Contact
-            </Button>
-          </Link>
+          <Button asChild size="lg" className="gap-1 btn-text w-full max-w-96 sm:max-w-44">
+            <Link href="/projects">View Projects</Link>
+          </Button>
+          <Button asChild size="lg" variant="outline" className="btn-text w-full max-w-96 sm:max-w-44">
+            <Link href="/contact">Contact</Link>
+          </Button>
         </div>
       </PageHero>
 
@@ -111,11 +111,9 @@ export default function Home() {
             </div>
 
             <div className="flex justify-center mt-4">
-              <Link href="/projects" className="block w-full max-w-96">
-                <Button size="lg" variant="outline" className="btn-text w-full">
-                  View all projects
-                </Button>
-              </Link>
+              <Button asChild size="lg" className="btn-text w-full max-w-96">
+                <Link href="/projects">View all projects</Link>
+              </Button>
             </div>
           </div>
         </SectionContainer>
@@ -130,16 +128,22 @@ export default function Home() {
               align="left"
             />
 
+            <div className="flex flex-wrap gap-2">
+              {portfolioConfig.writingTopics.map((topic) => (
+                <TagPill key={topic} variant="muted" className="cursor-default">
+                  {topic}
+                </TagPill>
+              ))}
+            </div>
+
             <Suspense fallback={<div className="text-center py-12">Loading latest posts...</div>}>
               <LatestPosts />
             </Suspense>
 
             <div className="flex justify-center mt-4">
-              <Link href="/articles" className="block w-full max-w-96">
-                <Button size="lg" className="gap-1 btn-text w-full">
-                  View all writing
-                </Button>
-              </Link>
+              <Button asChild size="lg" className="gap-1 btn-text w-full max-w-96">
+                <Link href="/articles">View all writing</Link>
+              </Button>
             </div>
           </div>
         </SectionContainer>
@@ -147,13 +151,13 @@ export default function Home() {
 
       <section className="w-full py-12 sm:py-16 md:py-20 lg:py-24 bg-secondary/20">
         <SectionContainer>
-          <div className="relative overflow-hidden rounded-2xl border border-primary/30 bg-card/50 p-6 sm:p-8 text-center shadow-[0_20px_60px_-40px_color-mix(in_srgb,var(--primary)_60%,transparent)]">
+          <div className="relative overflow-hidden rounded-2xl border border-primary/30 bg-card/50 p-6 sm:p-8 text-center sm:text-left shadow-[0_20px_60px_-40px_color-mix(in_srgb,var(--primary)_60%,transparent)]">
             <div
               className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(34,211,238,0.12),transparent_60%)]"
               aria-hidden="true"
             />
             <div className="relative">
-              <div className="flex justify-center mb-3">
+              <div className="flex justify-center sm:justify-start mb-3">
                 <StatusPill label="Open to collaboration" tone="info" />
               </div>
               <h2 className="font-bold tracking-tight">
@@ -162,12 +166,10 @@ export default function Home() {
               <p className="subtitle-description text-muted-foreground mt-2">
                 Interested in collaboration or opportunities? I&apos;d love to hear from you.
               </p>
-              <div className="mt-6 flex justify-center">
-                <Link href="/contact" className="block w-full max-w-96 sm:max-w-56">
-                  <Button size="lg" className="btn-text w-full">
-                    Contact
-                  </Button>
-                </Link>
+              <div className="mt-6 flex justify-center sm:justify-start">
+                <Button asChild size="lg" className="btn-text w-full max-w-96 sm:max-w-56">
+                  <Link href="/contact">Contact</Link>
+                </Button>
               </div>
             </div>
           </div>

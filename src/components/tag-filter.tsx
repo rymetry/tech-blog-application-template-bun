@@ -3,8 +3,8 @@
 import type { Tag } from '@/types';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useCallback, useMemo } from 'react';
-import { Tag as TagIcon } from 'lucide-react';
 import { TagPill } from '@/components/tag-pill';
+import { cn } from '@/lib/utils';
 
 interface TagFilterProps {
   tags: Tag[];
@@ -40,14 +40,16 @@ export function TagFilter({ tags }: TagFilterProps) {
   }, [router, searchParams]);
 
   const renderedTags = useMemo(() => {
-    const items = tags.map((tag) => {
+    const sortedTags = [...tags].sort((a, b) => a.name.localeCompare(b.name));
+    const items = sortedTags.map((tag) => {
       const isSelected = currentTag === tag.id;
       return (
         <TagPill
           key={tag.id}
           asChild
-          variant={isSelected ? 'selected' : 'primary'}
+          variant={isSelected ? 'selected' : 'muted'}
           size="md"
+          className={cn(isSelected ? '' : 'hover:text-foreground hover:border-primary/30')}
         >
           <button
             onClick={() => handleTagClick(tag.id)}
@@ -55,7 +57,6 @@ export function TagFilter({ tags }: TagFilterProps) {
             aria-pressed={isSelected}
             aria-label={`Filter by tag: ${tag.name}`}
           >
-            <TagIcon className="h-3 w-3" aria-hidden="true" />
             {tag.name}
           </button>
         </TagPill>
@@ -66,8 +67,9 @@ export function TagFilter({ tags }: TagFilterProps) {
       <TagPill
         key="all-tags"
         asChild
-        variant={isAllSelected ? 'selected' : 'primary'}
+        variant={isAllSelected ? 'selected' : 'muted'}
         size="md"
+        className={cn(isAllSelected ? '' : 'hover:text-foreground hover:border-primary/30')}
       >
         <button
           onClick={handleAllClick}
@@ -75,7 +77,6 @@ export function TagFilter({ tags }: TagFilterProps) {
           aria-pressed={isAllSelected}
           aria-label="Show all tags"
         >
-          <TagIcon className="h-3 w-3" aria-hidden="true" />
           All
         </button>
       </TagPill>,

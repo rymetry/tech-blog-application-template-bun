@@ -1,6 +1,7 @@
 import { ArticleCard } from '@/components/article-card';
 import { Pagination } from '@/components/pagination';
-import { getArticlePosts } from '@/lib/api';
+import { TagPill } from '@/components/tag-pill';
+import { getArticlePosts, getTags } from '@/lib/api';
 import { PAGINATION_LIMITS } from '@/lib/constants';
 
 type SearchParams = {
@@ -28,7 +29,23 @@ export async function ArticlePostsList({ searchParams }: { searchParams: SearchP
     orders: '-publishedAt',
   });
 
+  let tagLabel: string | undefined;
+  if (searchParams.tag) {
+    try {
+      const { contents } = await getTags();
+      tagLabel = contents.find((tag) => tag.id === searchParams.tag)?.name;
+    } catch (error) {
+      console.error('Error resolving tag label:', error);
+    }
+  }
+
   const totalPages = Math.ceil(totalCount / limit);
+  const activeFilters = [
+    ...(searchParams.q ? [{ key: 'q', label: `Search: ${searchParams.q}` }] : []),
+    ...(searchParams.tag
+      ? [{ key: 'tag', label: `Tag: ${tagLabel ?? searchParams.tag}` }]
+      : []),
+  ];
 
   if (posts.length === 0) {
     return (
@@ -37,6 +54,18 @@ export async function ArticlePostsList({ searchParams }: { searchParams: SearchP
         <p className="text-base sm:text-lg text-muted-foreground mt-2">
           Try adjusting your search or filter criteria
         </p>
+        {activeFilters.length > 0 && (
+          <div className="mt-4 space-y-2">
+            <p className="text-xs text-muted-foreground">Active filters</p>
+            <div className="flex flex-wrap justify-center gap-2">
+              {activeFilters.map((filter) => (
+                <TagPill key={filter.key} variant="muted" className="cursor-default">
+                  {filter.label}
+                </TagPill>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     );
   }

@@ -6,7 +6,7 @@ export async function RelatedPosts({ relatedPosts }: { relatedPosts: ArticlePost
 
   return (
     <section
-      className="mt-12 sm:mt-16 pt-8 border-t dark:border-primary/30 border-primary/20 max-w-[1024px] mx-auto"
+      className="mt-12 sm:mt-16 pt-8 border-t dark:border-primary/30 border-primary/20 max-w-[1024px] mx-auto w-full"
       aria-labelledby="related-posts-heading"
     >
       <h2
