@@ -37,7 +37,7 @@ export async function generateMetadata({ searchParams }: ArticlePageProps) {
     }
   }
 
-  const titleSegments = ['Blog'];
+  const titleSegments = ['Writing'];
 
   if (tagLabel) {
     titleSegments.push(`Tag: ${tagLabel}`);
@@ -90,15 +90,15 @@ export default async function ArticlePage(props: ArticlePageProps) {
   const searchParams = await props.searchParams;
   const breadcrumbJsonLd = buildBreadcrumbJsonLd([
     { name: 'Home', path: '/' },
-    { name: 'Blog', path: '/articles' },
+    { name: 'Writing', path: '/articles' },
   ]);
 
   return (
     <>
       <JsonLd data={breadcrumbJsonLd} id="articles-breadcrumb-jsonld" />
       <PageHero
-        title="Blog"
-        description="Explore our collection of articles, tutorials, and insights"
+        title="Writing"
+        description="Notes on engineering, automation, and building quality into products."
       />
 
       <SectionContainer className="py-8 sm:py-10 md:py-12">

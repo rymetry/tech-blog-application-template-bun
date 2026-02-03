@@ -2,6 +2,7 @@
 
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { portfolioConfig } from '@/lib/portfolio-config';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -10,7 +11,8 @@ import { ModeToggle } from './mode-toggle';
 
 const navItems = [
   { name: 'Home', href: '/' },
-  { name: 'Blog', href: '/articles' },
+  { name: 'Projects', href: '/projects' },
+  { name: 'Writing', href: '/articles' },
   { name: 'About', href: '/about' },
   { name: 'Contact', href: '/contact' },
 ];
@@ -18,30 +20,34 @@ const navItems = [
 export default function Header() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const isActivePath = (href: string) => (href === '/' ? pathname === '/' : pathname.startsWith(href));
 
   return (
     <header className="border-b border-border/20 bg-background/80 backdrop-blur-sm fixed top-0 left-0 right-0 z-50">
       <div className="container flex h-16 items-center justify-between max-w-[1280px] mx-auto">
         <div className="flex items-center gap-6 md:gap-10">
-          <Link href="/" className="logo-text" aria-label="Tech Blog Home">
-            Tech Blog
+          <Link href="/" className="logo-text" aria-label={`${portfolioConfig.ownerName} Home`}>
+            {portfolioConfig.ownerName}
           </Link>
         </div>
 
         <nav aria-label="Main Navigation" className="hidden md:flex gap-6 items-center">
-          {navItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={cn(
-                'nav-link transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded-md px-2 py-1',
-                pathname === item.href ? 'text-primary font-medium' : 'text-muted-foreground',
-              )}
-              aria-current={pathname === item.href ? 'page' : undefined}
-            >
-              {item.name}
-            </Link>
-          ))}
+          {navItems.map((item) => {
+            const isActive = isActivePath(item.href);
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={cn(
+                  'nav-link transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded-md px-2 py-1',
+                  isActive ? 'text-primary font-medium' : 'text-muted-foreground',
+                )}
+                aria-current={isActive ? 'page' : undefined}
+              >
+                {item.name}
+              </Link>
+            );
+          })}
           <ModeToggle />
         </nav>
 
@@ -78,20 +84,23 @@ export default function Header() {
             </SheetTrigger>
             <SheetContent side="right" id="mobile-menu" title="Mobile Navigation">
               <nav className="flex flex-col gap-4 mt-8" aria-label="Mobile Navigation">
-                {navItems.map((item) => (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    className={cn(
-                      'text-base sm:text-lg transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded-md px-2 py-1',
-                      pathname === item.href ? 'text-primary font-medium' : 'text-muted-foreground',
-                    )}
-                    onClick={() => setOpen(false)}
-                    aria-current={pathname === item.href ? 'page' : undefined}
-                  >
-                    {item.name}
-                  </Link>
-                ))}
+                {navItems.map((item) => {
+                  const isActive = isActivePath(item.href);
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      className={cn(
+                        'text-base sm:text-lg transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded-md px-2 py-1',
+                        isActive ? 'text-primary font-medium' : 'text-muted-foreground',
+                      )}
+                      onClick={() => setOpen(false)}
+                      aria-current={isActive ? 'page' : undefined}
+                    >
+                      {item.name}
+                    </Link>
+                  );
+                })}
               </nav>
             </SheetContent>
           </Sheet>

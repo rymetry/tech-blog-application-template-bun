@@ -1,12 +1,17 @@
-const DEFAULT_SITE_NAME = 'tech-blog-application-bun';
+import { portfolioConfig } from '@/lib/portfolio-config';
+
+const DEFAULT_SITE_NAME = portfolioConfig.ownerName;
 const DEFAULT_DESCRIPTION =
-  'A modern tech blog for sharing knowledge and insights on web development, programming, and technology and quality assurance.';
+  'Portfolio of a Versatilist (QA & SDET) focused on test strategy, automation, and quality engineering.';
 const DEFAULT_KEYWORDS = [
-  'tech-blog-application-bun',
-  'web development',
-  'programming',
-  'technology',
+  'portfolio',
   'quality assurance',
+  'quality engineering',
+  'sdet',
+  'test automation',
+  'test strategy',
+  'ci',
+  'observability',
 ];
 const DEFAULT_OG_IMAGE_PATH = '/placeholder.jpg';
 const DEFAULT_LOCALE = 'ja_JP';
@@ -45,8 +50,8 @@ export const siteMetadata = {
   locale: DEFAULT_LOCALE,
   feedPath: DEFAULT_FEED_PATH,
   twitter: {
-    site: '@tech_blog_application_bun',
-    creator: '@tech_blog_application_bun',
+    site: '@your_handle',
+    creator: '@your_handle',
     cardType: 'summary_large_image' as const,
   },
   defaultOgImagePath: DEFAULT_OG_IMAGE_PATH,

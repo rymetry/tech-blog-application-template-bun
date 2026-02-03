@@ -157,7 +157,7 @@ export function ContactForm() {
               aria-invalid={formData.message === ''}
             />
             <p id="message-help" className="sr-only">
-              メッセージ欄です。500文字以内で入力してください。
+              Message field. Please keep it within 500 characters.
             </p>
           </div>
         </form>
@@ -175,4 +175,3 @@ export function ContactForm() {
     </Card>
   );
 }
-

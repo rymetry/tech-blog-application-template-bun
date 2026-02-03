@@ -93,7 +93,7 @@ export default async function ArticlePostPage({ params, searchParams }: ArticleP
     const post = await getArticlePost(slug, previewOptions);
     const breadcrumbJsonLd = buildBreadcrumbJsonLd([
       { name: 'Home', path: '/' },
-      { name: 'Blog', path: '/articles' },
+      { name: 'Writing', path: '/articles' },
       { name: post.title, path: `/articles/${post.slug}` },
     ]);
     const articleJsonLd = buildArticleJsonLd(post);

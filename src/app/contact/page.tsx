@@ -7,7 +7,7 @@ import { buildBreadcrumbJsonLd } from '@/lib/structured-data';
 
 export const metadata = createPageMetadata({
   title: 'Contact',
-  description: "Have a question or feedback? We'd love to hear from you.",
+  description: "Interested in collaboration or opportunities? I'd love to hear from you.",
   path: '/contact',
 });
 
@@ -23,7 +23,7 @@ export default async function ContactPage() {
 
       <PageHero
         title="Contact"
-        description="Have a question or feedback? We'd love to hear from you."
+        description="Interested in collaboration or opportunities? I'd love to hear from you."
       />
 
       <SectionContainer className="py-8 sm:py-10 md:py-12">

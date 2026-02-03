@@ -41,7 +41,7 @@ export function SearchForm() {
       onSubmit={handleSubmit}
       className="flex w-full items-center space-x-2"
       role="search"
-      aria-label="Search articles"
+      aria-label="Search writing"
     >
       <div className="relative flex-1">
         <Search
@@ -50,11 +50,11 @@ export function SearchForm() {
         />
         <Input
           type="search"
-          placeholder="Search articles..."
+          placeholder="Search writing..."
           value={query}
           onChange={handleChange}
           className="pl-8 bg-background border-primary/20 focus:border-primary/50 focus:ring-primary/30 form-input"
-          aria-label="Search articles"
+          aria-label="Search writing"
         />
       </div>
       <Button type="submit" size="sm" className="shrink-0 btn-text">

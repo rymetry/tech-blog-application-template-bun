@@ -285,7 +285,7 @@ export async function ArticleContent({ content }: ArticleContentProps) {
     return (
       <div>
         <div className="mb-4 p-3 rounded bg-red-100 text-red-800 border border-red-300 dark:bg-red-900/20 dark:text-red-200 dark:border-red-800">
-          コンテンツの処理中にエラーが発生しました。元のHTMLを表示しています。
+          An error occurred while processing this content. Showing the original HTML.
         </div>
         <div
           className="prose prose-gray dark:prose-invert"
