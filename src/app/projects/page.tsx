@@ -9,7 +9,8 @@ import { buildBreadcrumbJsonLd } from '@/lib/structured-data';
 
 export const metadata = createPageMetadata({
   title: 'Projects',
-  description: 'Selected work across test strategy, automation, and quality engineering.',
+  description:
+    'Selected software engineering projects across product development, developer experience, and reliability.',
   path: '/projects',
 });
 
@@ -24,7 +25,7 @@ export default async function ProjectsPage() {
       <JsonLd data={breadcrumbJsonLd} id="projects-breadcrumb-jsonld" />
       <PageHero
         title="Projects"
-        description="Selected work across test strategy, automation, and quality engineering."
+        description="Selected software engineering projects across product development, developer experience, and reliability."
         background="qa"
         align="left"
         className="pt-24 pb-10 md:pt-32 md:pb-12 qa-hero-soft"
@@ -33,7 +34,7 @@ export default async function ProjectsPage() {
       <SectionContainer className="py-8 sm:py-10 md:py-12">
         <SectionHeading
           title="Focus Areas"
-          description="Selected initiatives that improved release confidence, reduced test flakiness, and tightened engineering feedback loops."
+          description="Initiatives that improved delivery speed, product quality, and team effectiveness."
           align="left"
           className="mb-6"
         />

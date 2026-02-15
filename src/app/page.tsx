@@ -1,7 +1,7 @@
 import { LatestPosts } from '@/components/latest-posts';
 import { PageHero } from '@/components/page-hero';
 import { ProjectCard } from '@/components/project-card';
-import { QualityPipeline } from '@/components/quality-pipeline';
+import { EngineeringWorkflow } from '@/components/engineering-workflow';
 import { SectionHeading } from '@/components/section-heading';
 import { SectionContainer } from '@/components/section-container';
 import { StatusPill } from '@/components/status-pill';
@@ -20,7 +20,7 @@ export const revalidate = 300;
 export const metadata = createPageMetadata({
   title: 'Home',
   description:
-    'Portfolio of a Versatilist (QA & SDET) focused on test strategy, automation, and quality engineering.',
+    'Portfolio of a Software Engineer focused on product development, system design, and reliable delivery.',
   path: '/',
 });
 
@@ -40,7 +40,7 @@ export default function Home() {
         variant="split"
         background="qa"
         className="pb-12 sm:pb-16 md:pb-20 lg:pb-24 qa-hero-strong"
-        aside={<QualityPipeline />}
+        aside={<EngineeringWorkflow />}
         descriptionClassName="text-xs sm:text-sm uppercase tracking-[0.3em] text-muted-foreground/80"
       >
         <p className="text-lg sm:text-xl md:text-2xl text-foreground/80 leading-relaxed max-w-[32rem]">
@@ -65,29 +65,30 @@ export default function Home() {
           <div className="flex flex-col gap-8 md:gap-12">
             <SectionHeading
               title="What I do"
-              description="A practical approach to quality engineering, from strategy to automation."
+              description="A practical software engineering approach spanning design, implementation, and operations."
               align="left"
             />
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div className="bg-card/50 border border-border/40 p-4 sm:p-6 rounded-xl shadow-sm">
-                <h3 className="font-medium mb-2">Test Strategy</h3>
+                <h3 className="font-medium mb-2">Product Development</h3>
                 <p className="text-muted-foreground">
-                  Risk-based coverage planning, clear test boundaries, and measurable feedback
-                  loops.
+                  Build user-facing features with clear scope, strong defaults, and measurable
+                  outcomes.
                 </p>
               </div>
               <div className="bg-card/50 border border-border/40 p-4 sm:p-6 rounded-xl shadow-sm">
-                <h3 className="font-medium mb-2">Automation</h3>
+                <h3 className="font-medium mb-2">System Design</h3>
                 <p className="text-muted-foreground">
-                  Reliable E2E/API automation with maintainable architecture and fast triage.
+                  Design maintainable services and interfaces that scale with team and product
+                  complexity.
                 </p>
               </div>
               <div className="bg-card/50 border border-border/40 p-4 sm:p-6 rounded-xl shadow-sm">
-                <h3 className="font-medium mb-2">Quality Gates</h3>
+                <h3 className="font-medium mb-2">Delivery Excellence</h3>
                 <p className="text-muted-foreground">
-                  CI signals, observability, and release criteria that help teams ship with
-                  confidence.
+                  Improve release reliability with observability, safe rollouts, and fast incident
+                  response.
                 </p>
               </div>
             </div>
@@ -100,7 +101,7 @@ export default function Home() {
           <div className="flex flex-col gap-8 md:gap-12">
             <SectionHeading
               title="Featured projects"
-              description="A few highlights that showcase strategy, automation, and quality signals."
+              description="A selection of projects across product delivery, developer experience, and reliability."
               align="left"
             />
 
@@ -124,7 +125,7 @@ export default function Home() {
           <div className="flex flex-col gap-8 md:gap-12">
             <SectionHeading
               title="Latest writing"
-              description="Notes on engineering, automation, and building quality into products."
+              description="Notes on software engineering, architecture decisions, and pragmatic product delivery."
               align="left"
             />
 
@@ -161,7 +162,7 @@ export default function Home() {
                 <StatusPill label="Open to collaboration" tone="info" />
               </div>
               <h2 className="font-bold tracking-tight">
-                Let&apos;s ship with confidence.
+                Let&apos;s build and ship reliable software.
               </h2>
               <p className="subtitle-description text-muted-foreground mt-2">
                 Interested in collaboration or opportunities? I&apos;d love to hear from you.

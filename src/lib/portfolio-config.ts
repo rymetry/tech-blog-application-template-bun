@@ -1,15 +1,19 @@
 export const portfolioConfig = {
   ownerName: 'Your Name',
-  ownerTitle: 'Versatilist (QA & SDET)',
+  ownerTitle: 'Software Engineer',
   tagline:
-    'I build confidence in software through test strategy, automation, and quality engineering.',
+    'I build products end-to-end, from system design to implementation and iterative delivery.',
   taglineHighlight:
-    'Reduced flaky tests by 30% and shortened release triage from days to hours.',
+    'Shipped cross-functional features, improved lead time, and reduced production regressions through practical engineering workflows.',
   links: {
     email: 'mailto:you@example.com',
     github: 'https://github.com',
     linkedin: 'https://www.linkedin.com/',
   },
-  writingTopics: ['Test strategy', 'Automation', 'Quality gates', 'Observability'],
-  featuredProjectIds: ['ci-quality-gates', 'e2e-test-platform', 'web-performance-tooling'],
+  writingTopics: ['Software architecture', 'Product development', 'Performance', 'Developer experience'],
+  featuredProjectIds: [
+    'subscription-billing-revamp',
+    'developer-onboarding-portal',
+    'release-observability-console',
+  ],
 } as const;

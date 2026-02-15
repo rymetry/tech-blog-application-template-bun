@@ -2,16 +2,18 @@ import { portfolioConfig } from '@/lib/portfolio-config';
 
 const DEFAULT_SITE_NAME = portfolioConfig.ownerName;
 const DEFAULT_DESCRIPTION =
-  'Portfolio of a Versatilist (QA & SDET) focused on test strategy, automation, and quality engineering.';
+  'Portfolio of a Software Engineer focused on product development, system design, and reliable delivery.';
 const DEFAULT_KEYWORDS = [
   'portfolio',
-  'quality assurance',
-  'quality engineering',
-  'sdet',
-  'test automation',
-  'test strategy',
-  'ci',
+  'software engineer',
+  'product engineering',
+  'system design',
+  'web development',
+  'typescript',
+  'next.js',
+  'developer experience',
   'observability',
+  'performance',
 ];
 const DEFAULT_OG_IMAGE_PATH = '/placeholder.jpg';
 const DEFAULT_LOCALE = 'ja_JP';

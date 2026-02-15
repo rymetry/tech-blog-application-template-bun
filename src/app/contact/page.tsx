@@ -49,7 +49,7 @@ export default async function ContactPage() {
               <div className="rounded-xl border border-border/40 bg-card/40 p-4">
                 <h3 className="font-medium mb-1">Focus areas</h3>
                 <p className="text-sm text-muted-foreground">
-                  Test strategy, automation, quality gates, and engineering signals.
+                  Product development, system design, delivery workflows, and engineering enablement.
                 </p>
               </div>
               <div className="rounded-xl border border-border/40 bg-card/40 p-4">

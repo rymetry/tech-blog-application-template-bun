@@ -99,7 +99,7 @@ export default async function ArticlePage(props: ArticlePageProps) {
       <JsonLd data={breadcrumbJsonLd} id="articles-breadcrumb-jsonld" />
       <PageHero
         title="Writing"
-        description="Notes on engineering, automation, and building quality into products."
+        description="Notes on software engineering, architecture, and product delivery."
         background="qa"
         align="left"
         className="pt-24 pb-10 md:pt-32 md:pb-12 qa-hero-soft"

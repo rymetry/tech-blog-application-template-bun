@@ -1,22 +1,22 @@
 import { StatusPill } from '@/components/status-pill';
 
 const steps = [
-  { title: 'Risk', description: 'Define what matters' },
-  { title: 'Coverage', description: 'Design test strategy' },
-  { title: 'Automation', description: 'Build reliable tests' },
-  { title: 'Signals', description: 'CI + observability' },
-  { title: 'Release', description: 'Ship with confidence' },
+  { title: 'Discover', description: 'Align goals and constraints' },
+  { title: 'Design', description: 'Plan architecture and interfaces' },
+  { title: 'Build', description: 'Implement and iterate quickly' },
+  { title: 'Observe', description: 'Track behavior and reliability' },
+  { title: 'Iterate', description: 'Refine based on outcomes' },
 ] as const;
 
-export function QualityPipeline() {
+export function EngineeringWorkflow() {
   return (
     <div className="w-full rounded-2xl border border-border/40 bg-card/40 backdrop-blur-sm shadow-sm p-5 sm:p-6">
       <div className="flex items-center justify-between gap-3">
         <div className="space-y-1">
-          <div className="text-sm font-medium text-foreground">Quality Pipeline</div>
-          <div className="text-xs text-muted-foreground">Sample data • Updated weekly</div>
+          <div className="text-sm font-medium text-foreground">Engineering Workflow</div>
+          <div className="text-xs text-muted-foreground">Sample flow • Updated weekly</div>
         </div>
-        <StatusPill label="Green build" tone="success" />
+        <StatusPill label="Weekly release cadence" tone="success" />
       </div>
 
       <div className="mt-5">
