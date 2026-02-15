@@ -152,7 +152,7 @@ export default async function ArticlePostPage({ params, searchParams }: ArticleP
       <JsonLd data={breadcrumbJsonLd} id="article-breadcrumb-jsonld" />
       <JsonLd data={articleJsonLd} id="article-structured-jsonld" />
       <section className="w-full pt-24 pb-10 md:pt-32 md:pb-12 qa-hero-background qa-hero-soft article-hero-compact">
-        <div className="mx-auto w-full max-w-[1280px] px-4 sm:px-6 lg:px-8">
+        <div className="container w-full">
           <div className="w-full space-y-6 text-center">
             <div className="flex justify-center">
               {post.hasCoverImage ? (
@@ -207,7 +207,7 @@ export default async function ArticlePostPage({ params, searchParams }: ArticleP
         <div
           className={`mx-auto grid gap-8 sm:gap-10 ${
             shouldShowToc
-              ? 'max-w-[1280px] lg:grid-cols-[minmax(0,960px)_280px] lg:items-start'
+              ? 'lg:grid-cols-[minmax(0,960px)_280px] lg:items-start'
               : 'max-w-[1024px]'
           }`}
         >

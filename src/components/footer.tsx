@@ -5,7 +5,7 @@ import { portfolioConfig } from '@/lib/portfolio-config';
 export default function Footer() {
   return (
     <footer className="border-t border-border/20 bg-background">
-      <div className="container py-8 md:py-12 max-w-[1280px] mx-auto">
+      <div className="container py-8 md:py-12">
         <div className="flex flex-col md:flex-row justify-between items-center gap-6">
           <div>
             <Link href="/" className="logo-text" aria-label={`${portfolioConfig.ownerName} Home`}>

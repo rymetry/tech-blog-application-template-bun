@@ -62,7 +62,7 @@ export default function Header() {
       ref={headerRef}
       className="border-b border-border/20 bg-background/80 backdrop-blur-sm fixed top-0 left-0 right-0 z-50"
     >
-      <div className="container flex h-16 items-center justify-between max-w-[1280px] mx-auto">
+      <div className="container flex h-16 items-center justify-between">
         <div className="flex items-center gap-6 md:gap-10">
           <Link href="/" className="logo-text" aria-label={`${portfolioConfig.ownerName} Home`}>
             {portfolioConfig.ownerName}

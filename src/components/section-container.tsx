@@ -7,5 +7,5 @@ interface SectionContainerProps {
 }
 
 export function SectionContainer({ children, className }: SectionContainerProps) {
-  return <section className={cn('container max-w-[1024px]', className)}>{children}</section>;
+  return <section className={cn('container', className)}>{children}</section>;
 }
