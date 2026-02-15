@@ -9,9 +9,11 @@ export interface ArticlePost {
   publishedAt: string;
   updatedAt: string;
   coverImage: Thumbnail;
+  hasCoverImage: boolean;
   author: Author;
   tags: Tag[];
   content: string;
+  showToc?: boolean | null;
   relatedPosts?: ArticlePost[];
 }
 

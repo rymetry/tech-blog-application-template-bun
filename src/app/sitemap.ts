@@ -2,7 +2,7 @@ import type { MetadataRoute } from 'next';
 import { getAllArticles } from '@/lib/api';
 import { absoluteUrl } from '@/lib/metadata';
 
-const STATIC_ROUTES = ['/', '/articles', '/about', '/contact'];
+const STATIC_ROUTES = ['/', '/projects', '/articles', '/about', '/contact'];
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const routes: MetadataRoute.Sitemap = STATIC_ROUTES.map((route) => ({

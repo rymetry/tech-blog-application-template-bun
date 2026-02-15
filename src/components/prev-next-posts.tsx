@@ -1,4 +1,4 @@
-import { ArticleCard } from '@/components/article-card';
+import { CompactArticleCard } from '@/components/compact-article-card';
 import { getAllArticles } from '@/lib/api';
 import type { ArticlePost } from '@/types';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
@@ -34,49 +34,43 @@ export async function PrevNextPosts({ postSlug }: PrevNextPostsProps) {
 
   return (
     <nav
-      className="mt-12 sm:mt-16 pt-8 border-t dark:border-primary/30 border-primary/20 max-w-[1024px] mx-auto"
+      className="mt-12 sm:mt-16 pt-8 border-t dark:border-primary/30 border-primary/20 w-full"
       aria-labelledby="pagination-heading"
     >
       <h2
         id="pagination-heading"
-        className="font-bold mb-6 text-center tracking-tight"
+        className="font-bold mb-6 text-left tracking-tight"
       >
         Continue Reading
       </h2>
-      <div className="flex justify-between">
-        <div>
-          <h3 className="text-base sm:text-lg md:text-xl font-medium mb-3 flex gap-2 items-center text-primary">
+      <div className="grid grid-cols-1 gap-x-6 gap-y-14 md:grid-cols-2 md:gap-y-6">
+        <div className="h-full space-y-4 md:col-start-1 md:space-y-3">
+          <h3 className="flex items-center gap-2 text-base font-medium tracking-tight text-primary sm:text-lg md:text-xl">
             <ArrowLeft className="h-4 w-4" aria-hidden="true" />
             Previous Article
           </h3>
+          {prevPost ? (
+            <CompactArticleCard post={prevPost} />
+          ) : (
+            <div className="flex h-full min-h-[108px] items-center justify-center rounded-xl border border-dashed border-border/40 bg-card/30 p-4 text-center text-muted-foreground">
+              No previous articles
+            </div>
+          )}
         </div>
-        <div>
-          <h3 className="text-base sm:text-lg md:text-xl font-medium mb-3 flex gap-2 items-center justify-end text-primary">
+
+        <div className="h-full space-y-4 pt-2 sm:pt-3 md:col-start-2 md:space-y-3 md:pt-0">
+          <h3 className="flex items-center gap-2 text-base font-medium tracking-tight text-primary sm:text-lg md:justify-end md:text-right md:text-xl">
             Next Article
             <ArrowRight className="h-4 w-4" aria-hidden="true" />
           </h3>
+          {nextPost ? (
+            <CompactArticleCard post={nextPost} />
+          ) : (
+            <div className="flex h-full min-h-[108px] items-center justify-center rounded-xl border border-dashed border-border/40 bg-card/30 p-4 text-center text-muted-foreground">
+              No newer articles
+            </div>
+          )}
         </div>
-      </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {prevPost ? (
-          <div className="md:col-start-1">
-            <ArticleCard post={prevPost} />
-          </div>
-        ) : (
-          <div className="md:col-start-1">
-            <p className="text-muted-foreground text-center py-8">No previous articles</p>
-          </div>
-        )}
-
-        {nextPost ? (
-          <div className="md:col-start-2">
-            <ArticleCard post={nextPost} />
-          </div>
-        ) : (
-          <div className="md:col-start-2">
-            <p className="text-muted-foreground text-center py-8">No newer articles</p>
-          </div>
-        )}
       </div>
     </nav>
   );

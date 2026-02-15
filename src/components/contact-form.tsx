@@ -20,6 +20,13 @@ import { useState } from 'react';
 
 export function ContactForm() {
   const [formState, setFormState] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
+  const [hasSubmitted, setHasSubmitted] = useState(false);
+  const [touched, setTouched] = useState({
+    name: false,
+    email: false,
+    subject: false,
+    message: false,
+  });
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -32,14 +39,26 @@ export function ContactForm() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name } = e.target;
+    const field = name as keyof typeof formData;
+    setTouched((prev) => ({ ...prev, [field]: true }));
+  };
+
+  const isInvalid = (field: keyof typeof formData) =>
+    (hasSubmitted || touched[field]) && formData[field].trim() === '';
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setHasSubmitted(true);
     setFormState('submitting');
 
     try {
       await new Promise((resolve) => setTimeout(resolve, 1500));
       setFormState('success');
       setFormData({ name: '', email: '', subject: '', message: '' });
+      setTouched({ name: false, email: false, subject: false, message: false });
+      setHasSubmitted(false);
     } catch {
       setFormState('error');
     }
@@ -84,7 +103,7 @@ export function ContactForm() {
           </Alert>
         )}
 
-        <form onSubmit={handleSubmit} className="space-y-4" aria-label="Contact form">
+        <form id="contact-form" onSubmit={handleSubmit} className="space-y-4" aria-label="Contact form">
           <div className="space-y-2">
             <Label htmlFor="name" className="form-label text-foreground">
               Name
@@ -96,10 +115,11 @@ export function ContactForm() {
               inputMode="text"
               value={formData.name}
               onChange={handleChange}
+              onBlur={handleBlur}
               required
               className="form-input bg-background border-primary/20 focus:border-primary/50 focus:ring-primary/30"
               aria-required="true"
-              aria-invalid={formData.name === ''}
+              aria-invalid={isInvalid('name')}
             />
           </div>
 
@@ -114,10 +134,11 @@ export function ContactForm() {
               inputMode="email"
               value={formData.email}
               onChange={handleChange}
+              onBlur={handleBlur}
               required
               className="form-input bg-background border-primary/20 focus:border-primary/50 focus:ring-primary/30"
               aria-required="true"
-              aria-invalid={formData.email === ''}
+              aria-invalid={isInvalid('email')}
               autoComplete="email"
             />
           </div>
@@ -132,10 +153,11 @@ export function ContactForm() {
               autoComplete="on"
               value={formData.subject}
               onChange={handleChange}
+              onBlur={handleBlur}
               required
               className="form-input bg-background border-primary/20 focus:border-primary/50 focus:ring-primary/30"
               aria-required="true"
-              aria-invalid={formData.subject === ''}
+              aria-invalid={isInvalid('subject')}
             />
           </div>
 
@@ -151,20 +173,22 @@ export function ContactForm() {
               aria-describedby="message-help"
               value={formData.message}
               onChange={handleChange}
+              onBlur={handleBlur}
               required
               className="form-input bg-background border-primary/20 focus:border-primary/50 focus:ring-primary/30"
               aria-required="true"
-              aria-invalid={formData.message === ''}
+              aria-invalid={isInvalid('message')}
             />
             <p id="message-help" className="sr-only">
-              メッセージ欄です。500文字以内で入力してください。
+              Message field. Please keep it within 500 characters.
             </p>
           </div>
         </form>
       </CardContent>
       <CardFooter>
         <Button
-          onClick={handleSubmit}
+          type="submit"
+          form="contact-form"
           disabled={formState === 'submitting'}
           className="w-full btn-text focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
           aria-busy={formState === 'submitting'}
@@ -175,4 +199,3 @@ export function ContactForm() {
     </Card>
   );
 }
-

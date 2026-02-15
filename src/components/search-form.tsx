@@ -39,9 +39,9 @@ export function SearchForm() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="flex w-full items-center space-x-2"
+      className="flex w-full flex-col gap-2 sm:flex-row sm:items-center"
       role="search"
-      aria-label="Search articles"
+      aria-label="Search writing"
     >
       <div className="relative flex-1">
         <Search
@@ -50,14 +50,14 @@ export function SearchForm() {
         />
         <Input
           type="search"
-          placeholder="Search articles..."
+          placeholder="Search writing..."
           value={query}
           onChange={handleChange}
           className="pl-8 bg-background border-primary/20 focus:border-primary/50 focus:ring-primary/30 form-input"
-          aria-label="Search articles"
+          aria-label="Search writing"
         />
       </div>
-      <Button type="submit" size="sm" className="shrink-0 btn-text">
+      <Button type="submit" size="sm" className="w-full sm:w-auto sm:shrink-0 btn-text">
         Search
       </Button>
     </form>

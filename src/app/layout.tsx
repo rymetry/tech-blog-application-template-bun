@@ -7,19 +7,9 @@ import { SITE_TITLE_TEMPLATE, buildOgImage, feedUrl, metadataBase, siteMetadata 
 import { cn } from '@/lib/utils';
 import type { Metadata } from 'next';
 import { draftMode } from 'next/headers';
-import { Noto_Sans_JP } from 'next/font/google';
 import localFont from 'next/font/local';
 import Script from 'next/script';
 import './globals.css';
-
-// サイト全体用（本文・見出し・UI）
-const fontSans = Noto_Sans_JP({
-  weight: ['400', '500', '600', '700'],
-  subsets: ['latin'],
-  preload: true,
-  variable: '--font-sans',
-  display: 'swap',
-});
 
 // コードブロック用（PlemolJP HS版 - 全角スペース非表示）
 const fontMono = localFont({
@@ -91,16 +81,16 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <link rel="alternate" type="application/rss+xml" href={feedUrl} />
       </head>
       <body
+        lang="en"
         className={cn(
-          'min-h-screen bg-background font-sans antialiased',
-          fontSans.variable,
+          'min-h-screen bg-background antialiased',
           fontMono.variable,
         )}
       >
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
           <div className="flex min-h-screen flex-col">
             <a href="#main-content" className="skip-link">
-              コンテンツへスキップ
+              Skip to content
             </a>
             <Header />
             <main id="main-content" className="flex-1">

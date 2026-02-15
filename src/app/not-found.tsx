@@ -15,12 +15,12 @@ export default function NotFound() {
         <p className="text-base sm:text-lg md:text-xl max-w-[600px] text-muted-foreground">
           Sorry, we couldn&apos;t find the page you&apos;re looking for.
         </p>
-        <Link href="/">
-          <Button className="mt-4 gap-2 btn-text">
+        <Button asChild className="mt-4 gap-2 btn-text">
+          <Link href="/">
             <ArrowLeft className="h-4 w-4" />
             Return Home
-          </Button>
-        </Link>
+          </Link>
+        </Button>
       </div>
     </div>
   );

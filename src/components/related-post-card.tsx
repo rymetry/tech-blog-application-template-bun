@@ -1,6 +1,7 @@
 'use client';
 
 import { Author } from '@/components/author';
+import { TagPill } from '@/components/tag-pill';
 import { Card } from '@/components/ui/card';
 import { formatDate } from '@/lib/utils';
 import type { ArticlePost } from '@/types';
@@ -20,7 +21,7 @@ function RelatedPostCardComponent({ post }: RelatedPostCardProps) {
       className="group block max-w-[830px] mx-auto w-full focus-visible:outline-none"
       aria-labelledby={`related-title-${post.slug}`}
     >
-      <Card className="h-full overflow-hidden border-border/30 bg-card/60 hover:border-primary/50 focus-within:border-primary/50 transition-all duration-300 group-hover:scale-98 group-active:scale-95 group-focus-visible:ring-2 group-focus-visible:ring-primary group-focus-visible:ring-offset-2 shadow-sm py-0">
+      <Card className="h-full overflow-hidden card-surface card-surface-hover group-focus-visible:ring-2 group-focus-visible:ring-primary group-focus-visible:ring-offset-2 py-0">
         <div className="flex flex-col sm:flex-row">
           <div className="relative w-full sm:w-[330px] overflow-hidden">
             <div className="aspect-[8/5] w-full">
@@ -39,7 +40,7 @@ function RelatedPostCardComponent({ post }: RelatedPostCardProps) {
             <div>
               <h3
                 id={`related-title-${post.slug}`}
-                className="card-title group-hover:text-primary transition-colors line-clamp-2 mb-2"
+                className="card-title-sm group-hover:text-primary transition-colors line-clamp-2 mb-2"
               >
                 {post.title}
               </h3>
@@ -47,19 +48,23 @@ function RelatedPostCardComponent({ post }: RelatedPostCardProps) {
                 {post.tags && post.tags.length > 0 && (
                   <>
                     {post.tags.slice(0, 2).map((tag) => (
-                      <span
+                      <TagPill
                         key={tag.id}
-                        className="tag-text bg-primary/10 text-primary px-2 py-0.5 rounded-full flex items-center gap-1"
                         onClick={(event) => event.stopPropagation()}
                       >
                         <Tag className="h-3 w-3" aria-hidden="true" />
                         {tag.name}
-                      </span>
+                      </TagPill>
                     ))}
                     {post.tags.length > 2 && (
-                      <span className="tag-text bg-secondary/80 text-secondary-foreground px-2 py-0.5 rounded-full">
+                      <TagPill
+                        variant="neutral"
+                        size="md"
+                        title={`${post.tags.length - 2} more tags`}
+                        aria-label={`+${post.tags.length - 2} more tags`}
+                      >
                         +{post.tags.length - 2}
-                      </span>
+                      </TagPill>
                     )}
                   </>
                 )}

@@ -1,10 +1,10 @@
 'use client';
 
-import { cn } from '@/lib/utils';
 import type { Tag } from '@/types';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useCallback, useMemo } from 'react';
-import { Tag as TagIcon } from 'lucide-react';
+import { TagPill } from '@/components/tag-pill';
+import { cn } from '@/lib/utils';
 
 interface TagFilterProps {
   tags: Tag[];
@@ -14,6 +14,7 @@ export function TagFilter({ tags }: TagFilterProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const currentTag = searchParams.get('tag');
+  const isAllSelected = !currentTag;
 
   const handleTagClick = useCallback(
     (tagId: string) => {
@@ -25,33 +26,63 @@ export function TagFilter({ tags }: TagFilterProps) {
         params.set('tag', tagId);
       }
 
-      router.push(`/articles?${params.toString()}`);
+      const query = params.toString();
+      router.push(query ? `/articles?${query}` : '/articles');
     },
     [currentTag, router, searchParams],
   );
 
+  const handleAllClick = useCallback(() => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete('tag');
+    const query = params.toString();
+    router.push(query ? `/articles?${query}` : '/articles');
+  }, [router, searchParams]);
+
   const renderedTags = useMemo(() => {
-    return tags.map((tag) => {
+    const sortedTags = [...tags].sort((a, b) => a.name.localeCompare(b.name));
+    const items = sortedTags.map((tag) => {
       const isSelected = currentTag === tag.id;
       return (
-        <button
+        <TagPill
           key={tag.id}
-          onClick={() => handleTagClick(tag.id)}
-          className={cn(
-            'tag-text px-2.5 py-1 rounded-full transition-colors flex items-center gap-1 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 cursor-pointer',
-            isSelected
-              ? 'bg-primary text-primary-foreground'
-              : 'bg-primary/10 text-primary hover:bg-primary/20',
-          )}
-          aria-pressed={isSelected}
-          aria-label={`Filter by tag: ${tag.name}`}
+          asChild
+          variant={isSelected ? 'selected' : 'muted'}
+          size="md"
+          className={cn(isSelected ? '' : 'hover:text-foreground hover:border-primary/30')}
         >
-          <TagIcon className="h-3 w-3" aria-hidden="true" />
-          {tag.name}
-        </button>
+          <button
+            onClick={() => handleTagClick(tag.id)}
+            className="cursor-pointer"
+            aria-pressed={isSelected}
+            aria-label={`Filter by tag: ${tag.name}`}
+          >
+            {tag.name}
+          </button>
+        </TagPill>
       );
     });
-  }, [tags, currentTag, handleTagClick]);
+
+    return [
+      <TagPill
+        key="all-tags"
+        asChild
+        variant={isAllSelected ? 'selected' : 'muted'}
+        size="md"
+        className={cn(isAllSelected ? '' : 'hover:text-foreground hover:border-primary/30')}
+      >
+        <button
+          onClick={handleAllClick}
+          className="cursor-pointer"
+          aria-pressed={isAllSelected}
+          aria-label="Show all tags"
+        >
+          All
+        </button>
+      </TagPill>,
+      ...items,
+    ];
+  }, [tags, currentTag, handleTagClick, handleAllClick, isAllSelected]);
 
   return (
     <div className="flex flex-wrap gap-2" role="group" aria-label="Filter articles by tag">

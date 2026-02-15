@@ -2,3 +2,4 @@
 export * from './author';
 export * from './article';
 export * from './tag';
+export * from './project';
