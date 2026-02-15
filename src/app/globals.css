@@ -681,7 +681,7 @@
   }
 
   .editorial-scope .article-toc-link {
-    @apply block rounded-md px-2 py-1.5 text-xs sm:text-[13px] text-muted-foreground transition-colors hover:bg-secondary/60 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2;
+    @apply relative block rounded-md py-1.5 pr-2 pl-4 text-xs sm:text-[13px] text-muted-foreground transition-colors hover:bg-secondary/60 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2;
   }
 
   .editorial-scope .article-toc-link-active {
@@ -691,6 +691,31 @@
   .editorial-scope .article-toc-indent-h3 {
     @apply ml-3 text-[11px] sm:text-xs;
   }
+
+  .editorial-scope .article-toc-segment {
+    @apply absolute left-1.5 top-1/2 -translate-y-1/2 rounded-full transition-all duration-200;
+  }
+
+  .editorial-scope .article-toc-segment-done {
+    @apply h-4 w-[3px] bg-primary/65;
+  }
+
+  .editorial-scope .article-toc-segment-current {
+    @apply h-5 w-[4px] bg-primary ring-1 ring-primary/30;
+  }
+
+  .editorial-scope .article-toc-segment-upcoming {
+    @apply h-[14px] w-[3px] bg-muted-foreground/35;
+  }
+
+  .editorial-scope .article-toc-progress-track {
+    @apply h-1.5 w-full overflow-hidden rounded-full bg-secondary;
+  }
+
+  .editorial-scope .article-toc-progress-fill {
+    @apply h-full rounded-full bg-primary transition-[width] duration-200;
+  }
+
 }
 
 /* Skip link (accessible keyboard navigation) */

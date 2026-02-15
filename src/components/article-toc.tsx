@@ -11,18 +11,21 @@ import {
 } from '@/components/ui/sheet';
 import type { TocItem } from '@/lib/toc';
 import { cn } from '@/lib/utils';
-import { BookOpen, List } from 'lucide-react';
+import { BookOpen } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import type { MouseEvent } from 'react';
 
 interface ArticleTocProps {
   items: TocItem[];
+  readingScopeId?: string;
 }
 
 interface TocOffsets {
   scroll: number;
   active: number;
 }
+
+type TocSegmentState = 'done' | 'current' | 'upcoming';
 
 const FALLBACK_SCROLL_OFFSET_PX = 96;
 const FALLBACK_ACTIVE_OFFSET_PX = 160;
@@ -45,8 +48,13 @@ function readTocOffsets(): TocOffsets {
   };
 }
 
-export function ArticleToc({ items }: ArticleTocProps) {
+function clamp(value: number, min: number, max: number) {
+  return Math.min(max, Math.max(min, value));
+}
+
+export function ArticleToc({ items, readingScopeId = 'article-reading-scope' }: ArticleTocProps) {
   const [activeId, setActiveId] = useState(items[0]?.id ?? '');
+  const [readingProgress, setReadingProgress] = useState(0);
   const [offsets, setOffsets] = useState<TocOffsets>({
     scroll: FALLBACK_SCROLL_OFFSET_PX,
     active: FALLBACK_ACTIVE_OFFSET_PX,
@@ -139,6 +147,66 @@ export function ArticleToc({ items }: ArticleTocProps) {
     };
   }, [items, offsets.active]);
 
+  useEffect(() => {
+    let frameId = 0;
+    let resizeObserver: ResizeObserver | null = null;
+
+    const updateReadingProgress = () => {
+      const scopeEl = document.getElementById(readingScopeId);
+      if (!scopeEl) {
+        setReadingProgress((current) => (current === 0 ? current : 0));
+        return;
+      }
+
+      const rect = scopeEl.getBoundingClientRect();
+      const readLine = window.scrollY + offsets.active;
+      const scopeTop = rect.top + window.scrollY - offsets.scroll;
+      const scopeBottom = rect.bottom + window.scrollY;
+      const ratio = clamp(
+        (readLine - scopeTop) / Math.max(scopeBottom - scopeTop, 1),
+        0,
+        1,
+      );
+      const nextProgress = Math.round(ratio * 100);
+
+      setReadingProgress((current) => (current === nextProgress ? current : nextProgress));
+    };
+
+    const scheduleUpdate = () => {
+      if (frameId !== 0) {
+        return;
+      }
+
+      frameId = window.requestAnimationFrame(() => {
+        frameId = 0;
+        updateReadingProgress();
+      });
+    };
+
+    scheduleUpdate();
+    window.addEventListener('scroll', scheduleUpdate, { passive: true });
+    window.addEventListener('resize', scheduleUpdate);
+    window.addEventListener('site-layout-vars-change', scheduleUpdate);
+
+    if (typeof ResizeObserver !== 'undefined') {
+      const scopeEl = document.getElementById(readingScopeId);
+      if (scopeEl) {
+        resizeObserver = new ResizeObserver(scheduleUpdate);
+        resizeObserver.observe(scopeEl);
+      }
+    }
+
+    return () => {
+      if (frameId !== 0) {
+        window.cancelAnimationFrame(frameId);
+      }
+      resizeObserver?.disconnect();
+      window.removeEventListener('scroll', scheduleUpdate);
+      window.removeEventListener('resize', scheduleUpdate);
+      window.removeEventListener('site-layout-vars-change', scheduleUpdate);
+    };
+  }, [readingScopeId, offsets.active, offsets.scroll]);
+
   const handleTocClick = (event: MouseEvent<HTMLAnchorElement>, id: string) => {
     event.preventDefault();
     const heading = document.getElementById(id);
@@ -152,9 +220,32 @@ export function ArticleToc({ items }: ArticleTocProps) {
     setActiveId(id);
   };
 
+  const activeIndex = items.findIndex((item) => item.id === activeId);
+
+  const resolveSegmentState = (index: number): TocSegmentState => {
+    if (readingProgress >= 100 && index === items.length - 1) {
+      return 'done';
+    }
+
+    if (activeIndex < 0) {
+      return 'upcoming';
+    }
+
+    if (index < activeIndex) {
+      return 'done';
+    }
+
+    if (index === activeIndex) {
+      return 'current';
+    }
+
+    return 'upcoming';
+  };
+
   const renderLinks = (withSheetClose = false) => (
-    <ul className="space-y-1.5">
-      {items.map((item) => {
+    <ul className="m-0 list-none space-y-1.5 p-0">
+      {items.map((item, index) => {
+        const segmentState = resolveSegmentState(index);
         const linkNode = (
           <a
             href={`#${item.id}`}
@@ -166,7 +257,16 @@ export function ArticleToc({ items }: ArticleTocProps) {
             )}
             aria-current={activeId === item.id ? 'location' : undefined}
           >
-            {item.text}
+            <span
+              aria-hidden="true"
+              className={cn(
+                'article-toc-segment',
+                segmentState === 'done' && 'article-toc-segment-done',
+                segmentState === 'current' && 'article-toc-segment-current',
+                segmentState === 'upcoming' && 'article-toc-segment-upcoming',
+              )}
+            />
+            <span>{item.text}</span>
           </a>
         );
 
@@ -183,12 +283,23 @@ export function ArticleToc({ items }: ArticleTocProps) {
     </ul>
   );
 
-      return (
+  return (
     <>
       <aside className="article-toc-panel hidden lg:block">
-        <div className="mb-3 flex items-center gap-2 text-xs font-semibold text-foreground">
-          <List className="h-4 w-4" aria-hidden="true" />
-          Table of Contents
+        <div className="mb-3 text-xs font-semibold text-foreground">Table of Contents</div>
+        <div
+          className="article-toc-progress-track mb-3"
+          role="progressbar"
+          aria-label="Reading progress"
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-valuenow={readingProgress}
+        >
+          <div
+            className="article-toc-progress-fill"
+            style={{ width: `${readingProgress}%` }}
+            aria-hidden="true"
+          />
         </div>
         <nav aria-label="Table of contents">{renderLinks()}</nav>
       </aside>
@@ -208,10 +319,24 @@ export function ArticleToc({ items }: ArticleTocProps) {
         <SheetContent
           side="bottom"
           title="Table of contents"
-          className="max-h-[75vh] rounded-t-2xl pb-[calc(0.5rem+env(safe-area-inset-bottom))]"
+          className="editorial-scope max-h-[75vh] rounded-t-2xl pb-[calc(0.5rem+env(safe-area-inset-bottom))]"
         >
           <SheetHeader className="pb-0">
             <SheetTitle>Table of Contents</SheetTitle>
+            <div
+              className="article-toc-progress-track"
+              role="progressbar"
+              aria-label="Reading progress"
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-valuenow={readingProgress}
+            >
+              <div
+                className="article-toc-progress-fill"
+                style={{ width: `${readingProgress}%` }}
+                aria-hidden="true"
+              />
+            </div>
           </SheetHeader>
           <div className="overflow-y-auto px-4 pb-[calc(1.5rem+env(safe-area-inset-bottom))]">
             <nav aria-label="Table of contents">{renderLinks(true)}</nav>
