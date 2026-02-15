@@ -3,11 +3,13 @@ import { PrevNextPosts } from '@/components/prev-next-posts';
 import { RelatedPosts } from '@/components/related-posts';
 import { JsonLd } from '@/components/json-ld';
 import { ArticleContent } from '@/components/article-content';
+import { ArticleToc } from '@/components/article-toc';
 import { TagPill } from '@/components/tag-pill';
 import { getArticlePost, getArticlePosts } from '@/lib/api';
 import { getMicroCmsImageUrl } from '@/lib/image';
 import { createArticleMetadata, createPageMetadata } from '@/lib/metadata-helpers';
 import { buildArticleJsonLd, buildBreadcrumbJsonLd } from '@/lib/structured-data';
+import { processArticleContentWithToc } from '@/lib/toc';
 import { formatDate } from '@/lib/utils';
 import { CalendarCheck, RefreshCcw, Tag as TagIcon } from 'lucide-react';
 import Image from 'next/image';
@@ -114,6 +116,8 @@ export default async function ArticlePostPage({ params, searchParams }: ArticleP
   const compactCoverUrl = post.hasCoverImage
     ? getMicroCmsImageUrl(post.coverImage.url, { width: 240, height: 240, fit: 'max' })
     : '';
+  const { html: processedHtml, toc } = await processArticleContentWithToc(post.content);
+  const shouldShowToc = post.showToc === true || (post.showToc == null && toc.length >= 3);
 
   const metaBlock = (
     <div className="mx-auto flex flex-wrap items-start justify-center gap-6 sm:gap-10">
@@ -148,7 +152,7 @@ export default async function ArticlePostPage({ params, searchParams }: ArticleP
       <JsonLd data={breadcrumbJsonLd} id="article-breadcrumb-jsonld" />
       <JsonLd data={articleJsonLd} id="article-structured-jsonld" />
       <section className="w-full pt-24 pb-10 md:pt-32 md:pb-12 qa-hero-background qa-hero-soft article-hero-compact">
-        <div className="mx-auto w-full max-w-[1024px] px-4 sm:px-6 lg:px-8">
+        <div className="mx-auto w-full max-w-[1280px] px-4 sm:px-6 lg:px-8">
           <div className="w-full space-y-6 text-center">
             <div className="flex justify-center">
               {post.hasCoverImage ? (
@@ -199,12 +203,29 @@ export default async function ArticlePostPage({ params, searchParams }: ArticleP
         </div>
       </section>
 
-      <article className="container w-full py-8 sm:py-10 md:py-12 max-w-[1024px]">
-        <div className="max-w-[1024px] lg:max-w-[820px] mx-auto">
-          <ArticleContent content={post.content} />
+      <article className="container w-full py-8 sm:py-10 md:py-12">
+        <div
+          className={`mx-auto grid gap-8 sm:gap-10 ${
+            shouldShowToc
+              ? 'max-w-[1280px] lg:grid-cols-[minmax(0,960px)_280px] lg:items-start'
+              : 'max-w-[1024px]'
+          }`}
+        >
+          <div className="min-w-0">
+            <ArticleContent html={processedHtml} />
+          </div>
+
+          {shouldShowToc && (
+            <div
+              className="min-w-0 lg:sticky lg:self-start"
+              style={{ top: 'var(--article-toc-sticky-top)' }}
+            >
+              <ArticleToc items={toc} />
+            </div>
+          )}
         </div>
 
-        {/* 関連記事と前後の記事を並列で取得 */}
+        {/* 関連記事と前後の記事は本文グリッドの外に配置 */}
         <Suspense fallback={<div className="py-8 text-center">Loading related posts...</div>}>
           {post.relatedPosts && <RelatedPosts relatedPosts={post.relatedPosts} />}
         </Suspense>

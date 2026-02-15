@@ -13,6 +13,7 @@ export interface ArticlePost {
   author: Author;
   tags: Tag[];
   content: string;
+  showToc?: boolean | null;
   relatedPosts?: ArticlePost[];
 }
 

@@ -85,7 +85,12 @@ export async function ArticlePostsList({ searchParams }: { searchParams: SearchP
       {listPosts.length > 0 && (
         <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
           {listPosts.map((post, index) => (
-            <ArticleCard key={post.id} post={post} priority={index < 2} />
+            <ArticleCard
+              key={post.id}
+              post={post}
+              priority={index < 2}
+              sizes="(max-width: 767px) 100vw, (max-width: 1279px) 50vw, 480px"
+            />
           ))}
         </div>
       )}

@@ -6,7 +6,7 @@ import { portfolioConfig } from '@/lib/portfolio-config';
 import { cn } from '@/lib/utils';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ModeToggle } from './mode-toggle';
 
 const navItems = [
@@ -20,13 +20,48 @@ const navItems = [
 export default function Header() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const headerRef = useRef<HTMLElement>(null);
   const isActivePath = (href: string) => (href === '/' ? pathname === '/' : pathname.startsWith(href));
   const activeLinkClass =
     'text-primary font-medium relative after:content-[""] after:absolute after:left-2 after:right-2 after:-bottom-1 after:h-[2px] after:bg-primary/70 after:rounded-full';
   const inactiveLinkClass = 'text-muted-foreground';
 
+  useEffect(() => {
+    const updateHeaderHeight = () => {
+      const headerHeight = headerRef.current?.offsetHeight ?? 64;
+      const scrollOffset = headerHeight + 32;
+      const activeOffset = headerHeight + 96;
+
+      document.documentElement.style.setProperty('--site-header-height', `${headerHeight}px`);
+      document.documentElement.style.setProperty('--article-toc-sticky-top', `${scrollOffset}px`);
+      document.documentElement.style.setProperty('--article-toc-scroll-offset', `${scrollOffset}px`);
+      document.documentElement.style.setProperty('--article-toc-active-offset', `${activeOffset}px`);
+      window.dispatchEvent(new Event('site-layout-vars-change'));
+    };
+
+    updateHeaderHeight();
+
+    const headerEl = headerRef.current;
+    let resizeObserver: ResizeObserver | null = null;
+
+    if (headerEl && typeof ResizeObserver !== 'undefined') {
+      resizeObserver = new ResizeObserver(updateHeaderHeight);
+      resizeObserver.observe(headerEl);
+    }
+
+    window.addEventListener('resize', updateHeaderHeight, { passive: true });
+
+    return () => {
+      resizeObserver?.disconnect();
+      window.removeEventListener('resize', updateHeaderHeight);
+    };
+  }, []);
+
   return (
-    <header className="border-b border-border/20 bg-background/80 backdrop-blur-sm fixed top-0 left-0 right-0 z-50">
+    <header
+      ref={headerRef}
+      className="border-b border-border/20 bg-background/80 backdrop-blur-sm fixed top-0 left-0 right-0 z-50"
+    >
       <div className="container flex h-16 items-center justify-between max-w-[1280px] mx-auto">
         <div className="flex items-center gap-6 md:gap-10">
           <Link href="/" className="logo-text" aria-label={`${portfolioConfig.ownerName} Home`}>
@@ -61,8 +96,8 @@ export default function Header() {
             <SheetTrigger asChild className="ml-2">
               <Button
                 variant="ghost"
-                size="sm"
-                className="px-0 text-base"
+                size="icon"
+                className="h-11 w-11 p-0 text-base"
                 aria-label="Open menu"
                 aria-expanded={open}
                 aria-controls="mobile-menu"

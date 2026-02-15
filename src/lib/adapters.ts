@@ -29,6 +29,12 @@ export function adaptArticle(article: Article): ArticlePost {
     pickImage(article.authors?.image, article.authors?.profileImage) || fallbackAuthorImage;
   const articleBody = article.custom_body?.article_body || article.content?.body || '';
   const relatedArticles = article.custom_body?.related_articles || article.content?.relatedArticles || [];
+  const showToc =
+    typeof article.custom_body?.toc_visible === 'boolean'
+      ? article.custom_body.toc_visible
+      : typeof article.content?.showToc === 'boolean'
+        ? article.content.showToc
+        : null;
 
   return {
     id: article.id,
@@ -68,6 +74,7 @@ export function adaptArticle(article: Article): ArticlePost {
         name: tag.name,
       })) || [],
     content: articleBody,
+    showToc,
     relatedPosts:
       relatedArticles?.map((relatedArticle) => {
         const hasRelatedCover = Boolean(relatedArticle.ogp_image?.url || relatedArticle.ogpImage?.url);

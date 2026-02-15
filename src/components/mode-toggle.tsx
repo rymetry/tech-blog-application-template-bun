@@ -29,7 +29,7 @@ export function ModeToggle() {
         <Button
           variant="ghost"
           size="icon"
-          className="h-8 w-8 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+          className="h-11 w-11 md:h-8 md:w-8 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
           aria-label={
             mounted ? `Change theme, current theme is ${theme || 'system'}` : 'Change theme'
           }

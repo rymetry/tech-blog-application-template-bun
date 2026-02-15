@@ -10,9 +10,13 @@ import { CalendarCheck, RefreshCcw, Tag } from 'lucide-react';
 interface ArticleCardProps {
   post: ArticlePost;
   priority?: boolean;
+  sizes?: string;
 }
 
-export function ArticleCard({ post, priority = false }: ArticleCardProps) {
+const DEFAULT_CARD_IMAGE_SIZES =
+  '(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1440px) 33vw, 420px';
+
+export function ArticleCard({ post, priority = false, sizes = DEFAULT_CARD_IMAGE_SIZES }: ArticleCardProps) {
   return (
     <Link
       href={`/articles/${post.slug}`}
@@ -26,7 +30,7 @@ export function ArticleCard({ post, priority = false }: ArticleCardProps) {
             alt=""
             aria-hidden="true"
             fill
-            sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw"
+            sizes={sizes}
             className="pointer-events-none object-cover scale-110 blur-2xl opacity-45"
           />
           <div className="absolute inset-0 bg-background/20" aria-hidden="true" />
@@ -36,7 +40,7 @@ export function ArticleCard({ post, priority = false }: ArticleCardProps) {
             aria-hidden="true"
             fill
             priority={priority}
-            sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw"
+            sizes={sizes}
             className="object-contain p-2"
           />
         </div>

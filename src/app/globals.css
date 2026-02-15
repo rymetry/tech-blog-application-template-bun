@@ -90,6 +90,14 @@
   --sidebar-accent-foreground: #111827;
   --sidebar-border: #e5e7eb;
   --sidebar-ring: #60a5fa;
+  --site-header-height: 4rem;
+  --article-toc-sticky-top: 96px;
+  --article-toc-scroll-offset: 96px;
+  --article-toc-active-offset: 160px;
+  --fixed-ui-right: 1rem;
+  --fixed-ui-bottom: 1rem;
+  --fixed-ui-stack-gap: 0.75rem;
+  --draft-indicator-height: 0px;
 }
 
 .dark {
@@ -315,6 +323,17 @@
 
 .prose img {
   @apply rounded-lg mx-auto my-6 sm:my-8 md:my-10 lg:my-12;
+}
+
+.prose table {
+  @apply block w-full overflow-x-auto;
+  max-width: 100%;
+  border-collapse: collapse;
+  -webkit-overflow-scrolling: touch;
+}
+
+.prose iframe {
+  @apply block w-full max-w-full;
 }
 
 /* コードブロックのスタイル */
@@ -561,6 +580,11 @@
   @apply font-semibold mt-6 sm:mt-8 md:mt-10 lg:mt-12 mb-3 sm:mb-4 md:mb-5;
 }
 
+.editorial-scope .prose h2[id],
+.editorial-scope .prose h3[id] {
+  scroll-margin-top: var(--article-toc-scroll-offset);
+}
+
 .prose p {
   @apply text-sm sm:text-base md:text-base lg:text-base leading-relaxed mb-4 sm:mb-5 md:mb-6 lg:mb-8;
 }
@@ -587,6 +611,10 @@
 
   .card-title-sm {
     @apply font-medium text-base sm:text-lg md:text-xl lg:text-xl leading-tight;
+  }
+
+  .article-compact-title {
+    @apply font-medium text-sm sm:text-base md:text-lg leading-snug;
   }
 
   .card-body {
@@ -645,6 +673,23 @@
 
   .editorial-scope .article-compact-card-media {
     @apply h-[100px] w-[100px] rounded-xl border border-border/30;
+  }
+
+  .editorial-scope .article-toc-panel {
+    @apply rounded-2xl border border-border/40 bg-card/60 p-4 shadow-sm backdrop-blur-sm lg:overflow-y-auto;
+    max-height: calc(100vh - var(--article-toc-sticky-top) - 1rem);
+  }
+
+  .editorial-scope .article-toc-link {
+    @apply block rounded-md px-2 py-1.5 text-xs sm:text-[13px] text-muted-foreground transition-colors hover:bg-secondary/60 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2;
+  }
+
+  .editorial-scope .article-toc-link-active {
+    @apply bg-primary/10 text-primary;
+  }
+
+  .editorial-scope .article-toc-indent-h3 {
+    @apply ml-3 text-[11px] sm:text-xs;
   }
 }
 

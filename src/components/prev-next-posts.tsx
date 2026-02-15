@@ -34,7 +34,7 @@ export async function PrevNextPosts({ postSlug }: PrevNextPostsProps) {
 
   return (
     <nav
-      className="mt-12 sm:mt-16 pt-8 border-t dark:border-primary/30 border-primary/20 max-w-[1024px] mx-auto w-full"
+      className="mt-12 sm:mt-16 pt-8 border-t dark:border-primary/30 border-primary/20 w-full"
       aria-labelledby="pagination-heading"
     >
       <h2
@@ -43,44 +43,34 @@ export async function PrevNextPosts({ postSlug }: PrevNextPostsProps) {
       >
         Continue Reading
       </h2>
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h3 className="text-base sm:text-lg md:text-xl font-medium mb-3 flex gap-2 items-center text-primary">
+      <div className="grid grid-cols-1 gap-x-6 gap-y-14 md:grid-cols-2 md:gap-y-6">
+        <div className="h-full space-y-4 md:col-start-1 md:space-y-3">
+          <h3 className="flex items-center gap-2 text-base font-medium tracking-tight text-primary sm:text-lg md:text-xl">
             <ArrowLeft className="h-4 w-4" aria-hidden="true" />
             Previous Article
           </h3>
+          {prevPost ? (
+            <CompactArticleCard post={prevPost} />
+          ) : (
+            <div className="flex h-full min-h-[108px] items-center justify-center rounded-xl border border-dashed border-border/40 bg-card/30 p-4 text-center text-muted-foreground">
+              No previous articles
+            </div>
+          )}
         </div>
-        <div>
-          <h3 className="text-base sm:text-lg md:text-xl font-medium mb-3 flex gap-2 items-center sm:justify-end text-primary">
+
+        <div className="h-full space-y-4 pt-2 sm:pt-3 md:col-start-2 md:space-y-3 md:pt-0">
+          <h3 className="flex items-center gap-2 text-base font-medium tracking-tight text-primary sm:text-lg md:justify-end md:text-right md:text-xl">
             Next Article
             <ArrowRight className="h-4 w-4" aria-hidden="true" />
           </h3>
-        </div>
-      </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {prevPost ? (
-          <div className="h-full md:col-start-1">
-            <CompactArticleCard post={prevPost} />
-          </div>
-        ) : (
-          <div className="h-full md:col-start-1">
-            <div className="flex h-full min-h-[132px] items-center justify-center rounded-xl border border-dashed border-border/40 bg-card/30 p-4 text-center text-muted-foreground">
-              No previous articles
-            </div>
-          </div>
-        )}
-
-        {nextPost ? (
-          <div className="h-full md:col-start-2">
+          {nextPost ? (
             <CompactArticleCard post={nextPost} />
-          </div>
-        ) : (
-          <div className="h-full md:col-start-2">
-            <div className="flex h-full min-h-[132px] items-center justify-center rounded-xl border border-dashed border-border/40 bg-card/30 p-4 text-center text-muted-foreground">
+          ) : (
+            <div className="flex h-full min-h-[108px] items-center justify-center rounded-xl border border-dashed border-border/40 bg-card/30 p-4 text-center text-muted-foreground">
               No newer articles
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </nav>
   );

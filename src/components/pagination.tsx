@@ -72,65 +72,67 @@ function PaginationContent({ totalPages, currentPage }: PaginationProps) {
 
   return (
     <nav
-      className="flex items-center justify-center gap-1"
+      className="w-full overflow-x-auto"
       aria-label="Pagination"
       role="navigation"
     >
-      <Button
-        variant="outline"
-        size="icon"
-        onClick={() => handlePageChange(currentPage - 1)}
-        disabled={currentPage <= 1}
-        className="h-8 w-8 bg-secondary/70 border-border/30 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
-        aria-label="Go to previous page"
-      >
-        <ChevronLeft className="h-4 w-4" aria-hidden="true" />
-      </Button>
+      <div className="mx-auto flex w-max items-center gap-1 px-1">
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={() => handlePageChange(currentPage - 1)}
+          disabled={currentPage <= 1}
+          className="h-11 w-11 sm:h-8 sm:w-8 bg-secondary/70 border-border/30 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+          aria-label="Go to previous page"
+        >
+          <ChevronLeft className="h-4 w-4" aria-hidden="true" />
+        </Button>
 
-      {pageNumbers.map((page, i) => {
-        if (page === 'ellipsis-start' || page === 'ellipsis-end') {
+        {pageNumbers.map((page, i) => {
+          if (page === 'ellipsis-start' || page === 'ellipsis-end') {
+            return (
+              <span
+                key={`ellipsis-${i}`}
+                className="min-w-8 px-2 py-2 text-sm text-muted-foreground text-center opacity-60"
+                aria-hidden="true"
+              >
+                ...
+              </span>
+            );
+          }
+
+          const pageNum = page as number;
+          const isCurrentPage = currentPage === pageNum;
+
           return (
-            <span
-              key={`ellipsis-${i}`}
-              className="min-w-8 px-2 py-2 text-sm text-muted-foreground text-center opacity-60"
-              aria-hidden="true"
+            <Button
+              key={page}
+              variant={isCurrentPage ? 'default' : 'outline'}
+              size="sm"
+              onClick={() => handlePageChange(pageNum)}
+              className={cn(
+                'h-11 w-11 sm:h-8 sm:w-8 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2',
+                isCurrentPage ? 'border-primary' : 'bg-secondary/70 border-border/30',
+              )}
+              aria-label={`Page ${pageNum}`}
+              aria-current={isCurrentPage ? 'page' : undefined}
             >
-              ...
-            </span>
+              {pageNum}
+            </Button>
           );
-        }
+        })}
 
-        const pageNum = page as number;
-        const isCurrentPage = currentPage === pageNum;
-
-        return (
-          <Button
-            key={page}
-            variant={isCurrentPage ? 'default' : 'outline'}
-            size="sm"
-            onClick={() => handlePageChange(pageNum)}
-            className={cn(
-              'h-8 w-8 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2',
-              isCurrentPage ? 'border-primary' : 'bg-secondary/70 border-border/30',
-            )}
-            aria-label={`Page ${pageNum}`}
-            aria-current={isCurrentPage ? 'page' : undefined}
-          >
-            {pageNum}
-          </Button>
-        );
-      })}
-
-      <Button
-        variant="outline"
-        size="icon"
-        onClick={() => handlePageChange(currentPage + 1)}
-        disabled={currentPage >= totalPages}
-        className="h-8 w-8 bg-secondary/70 border-border/30 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
-        aria-label="Go to next page"
-      >
-        <ChevronRight className="h-4 w-4" aria-hidden="true" />
-      </Button>
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={() => handlePageChange(currentPage + 1)}
+          disabled={currentPage >= totalPages}
+          className="h-11 w-11 sm:h-8 sm:w-8 bg-secondary/70 border-border/30 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
+          aria-label="Go to next page"
+        >
+          <ChevronRight className="h-4 w-4" aria-hidden="true" />
+        </Button>
+      </div>
     </nav>
   );
 }

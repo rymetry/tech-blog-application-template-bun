@@ -20,11 +20,11 @@ export function QualityPipeline() {
       </div>
 
       <div className="mt-5">
-        <ol className="grid grid-cols-1 sm:grid-cols-5 gap-4">
+        <ol className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
           {steps.map((step, index) => (
             <li
               key={step.title}
-              className="relative sm:after:absolute sm:after:top-5 sm:after:left-[calc(50%+20px)] sm:after:h-px sm:after:w-[calc(100%+1rem-40px)] sm:after:bg-border/60 sm:after:content-[''] last:sm:after:hidden"
+              className="relative lg:after:absolute lg:after:top-5 lg:after:left-[calc(50%+20px)] lg:after:h-px lg:after:w-[calc(100%+1rem-40px)] lg:after:bg-border/60 lg:after:content-[''] last:lg:after:hidden"
             >
               <div className="flex items-start gap-3 sm:flex-col sm:items-center sm:gap-2">
                 <div className="relative z-10 h-10 w-10 rounded-full border border-primary/30 bg-primary/10 text-primary flex items-center justify-center font-semibold">

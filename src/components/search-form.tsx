@@ -39,7 +39,7 @@ export function SearchForm() {
   return (
     <form
       onSubmit={handleSubmit}
-      className="flex w-full items-center space-x-2"
+      className="flex w-full flex-col gap-2 sm:flex-row sm:items-center"
       role="search"
       aria-label="Search writing"
     >
@@ -57,7 +57,7 @@ export function SearchForm() {
           aria-label="Search writing"
         />
       </div>
-      <Button type="submit" size="sm" className="shrink-0 btn-text">
+      <Button type="submit" size="sm" className="w-full sm:w-auto sm:shrink-0 btn-text">
         Search
       </Button>
     </form>
