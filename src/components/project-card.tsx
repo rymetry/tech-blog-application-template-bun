@@ -5,6 +5,8 @@ import { CheckCircle2, ExternalLink, FileText, Github } from 'lucide-react';
 import Link from 'next/link';
 
 const isRealLink = (value: string | undefined) => Boolean(value && value !== '#');
+const STACK_TAG_CLASS =
+  'cursor-default border-slate-400/45 bg-slate-500/12 text-slate-700 dark:border-slate-500/40 dark:bg-slate-400/10 dark:text-slate-200';
 
 interface ProjectCardProps {
   project: Project;
@@ -24,7 +26,7 @@ export function ProjectCard({ project }: ProjectCardProps) {
         </p>
         <div className="flex flex-wrap gap-2" aria-label="Project tags">
           {project.tags.map((tag) => (
-            <TagPill key={tag} variant="primary" className="cursor-default">
+            <TagPill key={tag} variant="primary" size="md" className="cursor-default">
               {tag}
             </TagPill>
           ))}
@@ -53,7 +55,11 @@ export function ProjectCard({ project }: ProjectCardProps) {
           <div className="text-xs uppercase tracking-wide text-muted-foreground">Stack</div>
           <div className="flex flex-wrap gap-2">
             {project.stack.map((item) => (
-              <TagPill key={item} variant="muted" className="cursor-default">
+              <TagPill
+                key={item}
+                variant="muted"
+                className={STACK_TAG_CLASS}
+              >
                 {item}
               </TagPill>
             ))}
