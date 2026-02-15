@@ -26,15 +26,24 @@ export function ArticleCard({ post, priority = false }: ArticleCardProps) {
             alt=""
             aria-hidden="true"
             fill
+            sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw"
+            className="pointer-events-none object-cover scale-110 blur-2xl opacity-45"
+          />
+          <div className="absolute inset-0 bg-background/20" aria-hidden="true" />
+          <Image
+            src={post.coverImage.url || '/placeholder.svg'}
+            alt=""
+            aria-hidden="true"
+            fill
             priority={priority}
             sizes="(max-width: 640px) 100vw, (max-width: 768px) 50vw, 33vw"
-            className="object-cover transition-transform duration-300 group-hover:scale-105"
+            className="object-contain p-2"
           />
         </div>
         <CardContent className="p-4 space-y-3">
           <h3
             id={`article-title-${post.slug}`}
-            className="card-title-sm group-hover:text-primary transition-colors line-clamp-2"
+            className="card-title-sm break-words group-hover:text-primary transition-colors"
           >
             {post.title}
           </h3>

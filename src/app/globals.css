@@ -622,6 +622,30 @@
   .btn-text {
     @apply text-sm sm:text-sm md:text-base lg:text-base;
   }
+
+  .editorial-scope .article-hero-compact {
+    @apply text-center;
+  }
+
+  .editorial-scope .article-hero-standard {
+    @apply text-left;
+  }
+
+  .editorial-scope .article-hero-cover-compact {
+    @apply h-[100px] w-[100px] rounded-2xl border border-border/40 shadow-sm bg-card/70;
+  }
+
+  .editorial-scope .article-hero-cover-placeholder {
+    @apply flex items-center justify-center bg-gradient-to-br from-secondary/60 to-background text-muted-foreground;
+  }
+
+  .editorial-scope .article-compact-card {
+    @apply bg-card/60 border border-border/40 shadow-sm;
+  }
+
+  .editorial-scope .article-compact-card-media {
+    @apply h-[100px] w-[100px] rounded-xl border border-border/30;
+  }
 }
 
 /* Skip link (accessible keyboard navigation) */

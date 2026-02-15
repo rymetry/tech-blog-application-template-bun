@@ -1,4 +1,5 @@
 import { ArticleCard } from '@/components/article-card';
+import { FeaturedArticleCard } from '@/components/featured-article-card';
 import { Pagination } from '@/components/pagination';
 import { TagPill } from '@/components/tag-pill';
 import { getArticlePosts, getTags } from '@/lib/api';
@@ -14,6 +15,7 @@ export async function ArticlePostsList({ searchParams }: { searchParams: SearchP
   const page = searchParams.page ? Number.parseInt(searchParams.page) : 1;
   const limit = PAGINATION_LIMITS.ARTICLES_LIST;
   const offset = (page - 1) * limit;
+  const shouldShowFeatured = page === 1 && !searchParams.tag && !searchParams.q;
 
   const filters: string[] = [];
   if (searchParams.tag) {
@@ -70,13 +72,23 @@ export async function ArticlePostsList({ searchParams }: { searchParams: SearchP
     );
   }
 
+  const featuredPost = shouldShowFeatured ? posts[0] : null;
+  const listPosts = shouldShowFeatured ? posts.slice(1) : posts;
+
   return (
     <>
-      <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
-        {posts.map((post, index) => (
-          <ArticleCard key={post.id} post={post} priority={index < 2} />
-        ))}
-      </div>
+      {featuredPost && (
+        <div className="mb-8">
+          <FeaturedArticleCard post={featuredPost} />
+        </div>
+      )}
+      {listPosts.length > 0 && (
+        <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
+          {listPosts.map((post, index) => (
+            <ArticleCard key={post.id} post={post} priority={index < 2} />
+          ))}
+        </div>
+      )}
       {totalPages > 1 && (
         <div className="mt-8">
           <Pagination totalPages={totalPages} currentPage={page} />

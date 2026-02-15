@@ -23,6 +23,7 @@ const pickImage = (primary?: ImageLike, secondary?: ImageLike): ImageLike | unde
  * microCMSのブログ記事を内部形式に変換する
  */
 export function adaptArticle(article: Article): ArticlePost {
+  const hasCoverImage = Boolean(article.ogp_image?.url || article.ogpImage?.url);
   const coverImage = pickImage(article.ogp_image, article.ogpImage) || fallbackImage;
   const authorImage =
     pickImage(article.authors?.image, article.authors?.profileImage) || fallbackAuthorImage;
@@ -41,6 +42,7 @@ export function adaptArticle(article: Article): ArticlePost {
       height: coverImage.height,
       width: coverImage.width,
     },
+    hasCoverImage,
     author: article.authors
       ? {
           id: article.authors.id || '',
@@ -68,6 +70,7 @@ export function adaptArticle(article: Article): ArticlePost {
     content: articleBody,
     relatedPosts:
       relatedArticles?.map((relatedArticle) => {
+        const hasRelatedCover = Boolean(relatedArticle.ogp_image?.url || relatedArticle.ogpImage?.url);
         const relatedCover =
           pickImage(relatedArticle.ogp_image, relatedArticle.ogpImage) || fallbackImage;
         const relatedAuthorImage =
@@ -86,6 +89,7 @@ export function adaptArticle(article: Article): ArticlePost {
             height: relatedCover.height,
             width: relatedCover.width,
           },
+          hasCoverImage: hasRelatedCover,
           author: relatedArticle.authors
             ? {
                 id: relatedArticle.authors.id || '',

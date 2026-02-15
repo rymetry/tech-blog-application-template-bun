@@ -95,7 +95,7 @@ export default async function ArticlePage(props: ArticlePageProps) {
   ]);
 
   return (
-    <>
+    <div className="editorial-scope">
       <JsonLd data={breadcrumbJsonLd} id="articles-breadcrumb-jsonld" />
       <PageHero
         title="Writing"
@@ -107,7 +107,7 @@ export default async function ArticlePage(props: ArticlePageProps) {
 
       <SectionContainer className="py-8 sm:py-10 md:py-12">
         <div className="grid gap-8 sm:gap-10 md:grid-cols-[240px_1fr]">
-          <div className="space-y-8 md:sticky md:top-24 md:self-start h-fit">
+          <div className="space-y-8 md:sticky md:top-24 md:self-start h-fit md:pr-6 md:border-r md:border-border/30 editorial-index-rail">
             <div>
               <SectionHeading
                 title="Search"
@@ -137,13 +137,13 @@ export default async function ArticlePage(props: ArticlePageProps) {
             </div>
           </div>
 
-          <div className="space-y-8 sm:space-y-10">
+          <div className="space-y-8 sm:space-y-10 md:pl-6">
             <Suspense fallback={<div className="py-10 text-center">Loading posts...</div>}>
               <ArticlePostsList searchParams={searchParams} />
             </Suspense>
           </div>
         </div>
       </SectionContainer>
-    </>
+    </div>
   );
 }

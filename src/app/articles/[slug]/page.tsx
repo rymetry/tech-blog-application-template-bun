@@ -5,10 +5,11 @@ import { JsonLd } from '@/components/json-ld';
 import { ArticleContent } from '@/components/article-content';
 import { TagPill } from '@/components/tag-pill';
 import { getArticlePost, getArticlePosts } from '@/lib/api';
+import { getMicroCmsImageUrl } from '@/lib/image';
 import { createArticleMetadata, createPageMetadata } from '@/lib/metadata-helpers';
 import { buildArticleJsonLd, buildBreadcrumbJsonLd } from '@/lib/structured-data';
 import { formatDate } from '@/lib/utils';
-import { CalendarCheck, RefreshCcw } from 'lucide-react';
+import { CalendarCheck, RefreshCcw, Tag as TagIcon } from 'lucide-react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { draftMode } from 'next/headers';
@@ -110,66 +111,89 @@ export default async function ArticlePostPage({ params, searchParams }: ArticleP
     { name: post.title, path: `/articles/${post.slug}` },
   ]);
   const articleJsonLd = buildArticleJsonLd(post);
+  const compactCoverUrl = post.hasCoverImage
+    ? getMicroCmsImageUrl(post.coverImage.url, { width: 240, height: 240, fit: 'max' })
+    : '';
+
+  const metaBlock = (
+    <div className="mx-auto flex flex-wrap items-start justify-center gap-6 sm:gap-10">
+      <div className="flex items-center justify-center">
+        {post.author && <Author author={post.author} size="lg" />}
+      </div>
+      <div className="flex flex-col items-center gap-2 text-sm sm:text-base text-muted-foreground">
+        <div className="flex items-center gap-1">
+          <CalendarCheck className="h-4 w-4" aria-hidden="true" />
+          <time
+            dateTime={post.publishedAt}
+            aria-label={`Published on ${formatDate(post.publishedAt)}`}
+          >
+            {formatDate(post.publishedAt)}
+          </time>
+        </div>
+        <div className="flex items-center gap-1">
+          <RefreshCcw className="h-4 w-4" aria-hidden="true" />
+          <time
+            dateTime={post.updatedAt}
+            aria-label={`Updated on ${formatDate(post.updatedAt)}`}
+          >
+            {formatDate(post.updatedAt)}
+          </time>
+        </div>
+      </div>
+    </div>
+  );
 
   return (
-    <>
+    <div className="editorial-scope">
       <JsonLd data={breadcrumbJsonLd} id="article-breadcrumb-jsonld" />
       <JsonLd data={articleJsonLd} id="article-structured-jsonld" />
-      <section className="w-full pt-24 pb-10 md:pt-32 md:pb-12 qa-hero-background qa-hero-soft">
+      <section className="w-full pt-24 pb-10 md:pt-32 md:pb-12 qa-hero-background qa-hero-soft article-hero-compact">
         <div className="mx-auto w-full max-w-[1024px] px-4 sm:px-6 lg:px-8">
-          <div className="w-full space-y-4 text-left">
-            <div className="mb-8 max-w-[420px] mx-auto">
-              <Image
-                src={post.coverImage?.url || '/placeholder.svg'}
-                alt={`Cover image for ${post.title}`}
-                width={1200}
-                height={630}
-                className="rounded-lg object-cover aspect-[1200/630] w-full shadow-md"
-                priority
-                sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 360px"
-              />
-            </div>
-            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight">
-              {post.title}
-            </h1>
-            <div className="flex flex-wrap gap-2 mt-4" aria-label="Tags">
-              {post.tags?.map((tag) => (
-                <TagPill key={tag.id} asChild variant="primary" size="md">
-                  <Link
-                    href={`/articles?tag=${tag.id}`}
-                    aria-label={`View all posts with tag: ${tag.name}`}
-                  >
-                    {tag.name}
-                  </Link>
-                </TagPill>
-              ))}
-            </div>
-            <div className="flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
-              {post.author && (
-                <div className="flex items-center">
-                  <Author author={post.author} size="lg" />
+          <div className="w-full space-y-6 text-center">
+            <div className="flex justify-center">
+              {post.hasCoverImage ? (
+                <div className="article-hero-cover-compact relative overflow-hidden">
+                  <Image
+                    src={compactCoverUrl}
+                    alt=""
+                    aria-hidden="true"
+                    fill
+                    sizes="100px"
+                    className="pointer-events-none object-cover scale-110 blur-xl opacity-45"
+                  />
+                  <div className="absolute inset-0 bg-background/20" aria-hidden="true" />
+                  <Image
+                    src={compactCoverUrl}
+                    alt=""
+                    aria-hidden="true"
+                    fill
+                    sizes="100px"
+                    quality={90}
+                    className="object-contain p-1.5"
+                  />
                 </div>
+              ) : (
+                <div className="article-hero-cover-compact article-hero-cover-placeholder" aria-hidden="true" />
               )}
-              <div className="flex flex-col gap-2 text-sm sm:text-base text-muted-foreground">
-                <div className="flex items-center gap-1">
-                  <CalendarCheck className="h-4 w-4" aria-hidden="true" />
-                  <time
-                    dateTime={post.publishedAt}
-                    aria-label={`Published on ${formatDate(post.publishedAt)}`}
-                  >
-                    {formatDate(post.publishedAt)}
-                  </time>
-                </div>
-                <div className="flex items-center gap-1">
-                  <RefreshCcw className="h-4 w-4" aria-hidden="true" />
-                  <time
-                    dateTime={post.updatedAt}
-                    aria-label={`Updated on ${formatDate(post.updatedAt)}`}
-                  >
-                    {formatDate(post.updatedAt)}
-                  </time>
-                </div>
+            </div>
+            <div className="space-y-4">
+              <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight">
+                {post.title}
+              </h1>
+              <div className="mt-4 flex flex-wrap justify-center gap-2" aria-label="Tags">
+                {post.tags?.map((tag) => (
+                  <TagPill key={tag.id} asChild variant="primary" size="md">
+                    <Link
+                      href={`/articles?tag=${tag.id}`}
+                      aria-label={`View all posts with tag: ${tag.name}`}
+                    >
+                      <TagIcon className="h-3 w-3" aria-hidden="true" />
+                      {tag.name}
+                    </Link>
+                  </TagPill>
+                ))}
               </div>
+              {metaBlock}
             </div>
           </div>
         </div>
@@ -189,6 +213,6 @@ export default async function ArticlePostPage({ params, searchParams }: ArticleP
           <PrevNextPosts postSlug={post.slug} />
         </Suspense>
       </article>
-    </>
+    </div>
   );
 }

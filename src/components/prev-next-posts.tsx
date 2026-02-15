@@ -1,4 +1,4 @@
-import { ArticleCard } from '@/components/article-card';
+import { CompactArticleCard } from '@/components/compact-article-card';
 import { getAllArticles } from '@/lib/api';
 import type { ArticlePost } from '@/types';
 import { ArrowLeft, ArrowRight } from 'lucide-react';
@@ -59,22 +59,26 @@ export async function PrevNextPosts({ postSlug }: PrevNextPostsProps) {
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {prevPost ? (
-          <div className="md:col-start-1">
-            <ArticleCard post={prevPost} />
+          <div className="h-full md:col-start-1">
+            <CompactArticleCard post={prevPost} />
           </div>
         ) : (
-          <div className="md:col-start-1">
-            <p className="text-muted-foreground text-center py-8">No previous articles</p>
+          <div className="h-full md:col-start-1">
+            <div className="flex h-full min-h-[132px] items-center justify-center rounded-xl border border-dashed border-border/40 bg-card/30 p-4 text-center text-muted-foreground">
+              No previous articles
+            </div>
           </div>
         )}
 
         {nextPost ? (
-          <div className="md:col-start-2">
-            <ArticleCard post={nextPost} />
+          <div className="h-full md:col-start-2">
+            <CompactArticleCard post={nextPost} />
           </div>
         ) : (
-          <div className="md:col-start-2">
-            <p className="text-muted-foreground text-center py-8">No newer articles</p>
+          <div className="h-full md:col-start-2">
+            <div className="flex h-full min-h-[132px] items-center justify-center rounded-xl border border-dashed border-border/40 bg-card/30 p-4 text-center text-muted-foreground">
+              No newer articles
+            </div>
           </div>
         )}
       </div>

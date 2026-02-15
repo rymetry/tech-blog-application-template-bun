@@ -19,11 +19,13 @@ export function QualityPipeline() {
         <StatusPill label="Green build" tone="success" />
       </div>
 
-      <div className="mt-5 relative">
-        <div className="hidden sm:block absolute left-6 right-6 top-5 h-px bg-border/60" aria-hidden="true" />
+      <div className="mt-5">
         <ol className="grid grid-cols-1 sm:grid-cols-5 gap-4">
           {steps.map((step, index) => (
-            <li key={step.title} className="relative">
+            <li
+              key={step.title}
+              className="relative sm:after:absolute sm:after:top-5 sm:after:left-[calc(50%+20px)] sm:after:h-px sm:after:w-[calc(100%+1rem-40px)] sm:after:bg-border/60 sm:after:content-[''] last:sm:after:hidden"
+            >
               <div className="flex items-start gap-3 sm:flex-col sm:items-center sm:gap-2">
                 <div className="relative z-10 h-10 w-10 rounded-full border border-primary/30 bg-primary/10 text-primary flex items-center justify-center font-semibold">
                   {index + 1}
