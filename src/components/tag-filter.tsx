@@ -4,7 +4,7 @@ import type { Tag } from '@/types';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useCallback, useMemo } from 'react';
 import { TagPill } from '@/components/tag-pill';
-import { cn } from '@/lib/utils';
+import { buildArticlesPath, cn } from '@/lib/utils';
 
 interface TagFilterProps {
   tags: Tag[];
@@ -14,35 +14,30 @@ export function TagFilter({ tags }: TagFilterProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const currentTag = searchParams.get('tag');
-  const isAllSelected = !currentTag;
+  const validTagIds = useMemo(() => new Set(tags.map((tag) => tag.id)), [tags]);
+  const normalizedCurrentTag = currentTag && validTagIds.has(currentTag) ? currentTag : undefined;
+  const isAllSelected = !normalizedCurrentTag;
 
   const handleTagClick = useCallback(
     (tagId: string) => {
-      const params = new URLSearchParams(searchParams.toString());
-
-      if (currentTag === tagId) {
-        params.delete('tag');
-      } else {
-        params.set('tag', tagId);
-      }
-
-      const query = params.toString();
-      router.push(query ? `/articles?${query}` : '/articles');
+      const nextTag = normalizedCurrentTag === tagId ? undefined : tagId;
+      router.push(
+        buildArticlesPath(searchParams, { tag: nextTag }, { resetPage: true }),
+      );
     },
-    [currentTag, router, searchParams],
+    [normalizedCurrentTag, router, searchParams],
   );
 
   const handleAllClick = useCallback(() => {
-    const params = new URLSearchParams(searchParams.toString());
-    params.delete('tag');
-    const query = params.toString();
-    router.push(query ? `/articles?${query}` : '/articles');
+    router.push(
+      buildArticlesPath(searchParams, { tag: undefined }, { resetPage: true }),
+    );
   }, [router, searchParams]);
 
   const renderedTags = useMemo(() => {
     const sortedTags = [...tags].sort((a, b) => a.name.localeCompare(b.name));
     const items = sortedTags.map((tag) => {
-      const isSelected = currentTag === tag.id;
+      const isSelected = normalizedCurrentTag === tag.id;
       return (
         <TagPill
           key={tag.id}
@@ -82,7 +77,7 @@ export function TagFilter({ tags }: TagFilterProps) {
       </TagPill>,
       ...items,
     ];
-  }, [tags, currentTag, handleTagClick, handleAllClick, isAllSelected]);
+  }, [tags, normalizedCurrentTag, handleTagClick, handleAllClick, isAllSelected]);
 
   return (
     <div className="flex flex-wrap gap-2" role="group" aria-label="Filter articles by tag">

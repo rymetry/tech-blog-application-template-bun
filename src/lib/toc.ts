@@ -20,6 +20,19 @@ type ProcessedArticleContent = {
 };
 
 const ALLOWED_PRISM_ATTRS = ['data-line', 'dataLine', 'data-highlight', 'dataHighlight'];
+const FALLBACK_ESCAPE_PATTERN = /[&<>"']/g;
+const FALLBACK_ESCAPE_MAP: Record<string, string> = {
+  '&': '&amp;',
+  '<': '&lt;',
+  '>': '&gt;',
+  '"': '&quot;',
+  "'": '&#39;',
+};
+
+export const escapeHtmlForPre = (value: string) =>
+  value.replace(FALLBACK_ESCAPE_PATTERN, (char) => FALLBACK_ESCAPE_MAP[char] ?? char);
+
+export const buildTocFallbackHtml = (value: string) => `<pre>${escapeHtmlForPre(value)}</pre>`;
 
 function createHeadingSlug(value: string): string {
   const normalized = value
@@ -322,6 +335,6 @@ export async function processArticleContentWithToc(content: string): Promise<Pro
     return { html: String(file), toc };
   } catch (error) {
     console.error('Error processing article content with TOC:', error);
-    return { html: content, toc: [] };
+    return { html: buildTocFallbackHtml(content), toc: [] };
   }
 }

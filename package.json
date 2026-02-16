@@ -7,6 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
+    "test": "bun test",
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,css,md}\""
   },
   "dependencies": {
@@ -45,6 +46,7 @@
     "@types/react-dom": "^19",
     "@types/rss": "^0.0.32",
     "bun-plugin-tailwind": "^0.0.15",
+    "bun-types": "^1.3.9",
     "eslint": "^9",
     "eslint-config-next": "15.3.0",
     "eslint-config-prettier": "^10.1.2",

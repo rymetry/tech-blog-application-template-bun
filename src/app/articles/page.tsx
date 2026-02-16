@@ -5,53 +5,41 @@ import { SectionHeading } from '@/components/section-heading';
 import { SectionContainer } from '@/components/section-container';
 import { TagsList } from '@/components/tags-list';
 import { JsonLd } from '@/components/json-ld';
-import { getTags } from '@/lib/api';
+import { normalizeArticlesQuery, type RawArticlesQuery } from '@/lib/articles-query';
 import { createPageMetadata } from '@/lib/metadata-helpers';
 import { buildBreadcrumbJsonLd } from '@/lib/structured-data';
+import { getTagsByIdMapSafe } from '@/lib/tags-map';
 import { buildQueryString } from '@/lib/utils';
 import { Suspense } from 'react';
 
 export const revalidate = 300;
 
 interface ArticlePageProps {
-  searchParams: Promise<{
-    page?: string;
-    tag?: string;
-    q?: string;
-  }>;
+  searchParams: Promise<RawArticlesQuery>;
 }
 
 export async function generateMetadata({ searchParams }: ArticlePageProps) {
   const params = await searchParams;
-  const pageNumber = params.page ? Number.parseInt(params.page, 10) : 1;
-  const tagId = params.tag;
-  const query = params.q;
-
-  let tagLabel: string | undefined;
-
-  if (tagId) {
-    try {
-      const { contents } = await getTags();
-      tagLabel = contents.find((tag) => tag.id === tagId)?.name;
-    } catch (error) {
-      console.error('Error resolving tag for metadata:', error);
-    }
-  }
+  const tagsById = await getTagsByIdMapSafe();
+  const normalizeOptions =
+    tagsById.size > 0
+      ? { validTagIds: new Set(tagsById.keys()) }
+      : {};
+  const normalized = normalizeArticlesQuery(params, normalizeOptions);
+  const tagLabel = normalized.tag ? tagsById.get(normalized.tag) : undefined;
 
   const titleSegments = ['Writing'];
 
-  if (tagLabel) {
+  if (normalized.tag && tagLabel) {
     titleSegments.push(`Tag: ${tagLabel}`);
-  } else if (tagId) {
-    titleSegments.push(`Tag: ${tagId}`);
   }
 
-  if (query) {
-    titleSegments.push(`Search: ${query}`);
+  if (normalized.q) {
+    titleSegments.push(`Search: ${normalized.q}`);
   }
 
-  if (pageNumber > 1) {
-    titleSegments.push(`Page ${pageNumber}`);
+  if (normalized.page > 1) {
+    titleSegments.push(`Page ${normalized.page}`);
   }
 
   const title = titleSegments.join(' • ');
@@ -60,22 +48,22 @@ export async function generateMetadata({ searchParams }: ArticlePageProps) {
     'Browse articles with insights on web development and technology.',
   ];
 
-  if (tagLabel) {
+  if (normalized.tag && tagLabel) {
     descriptionParts.push(`Currently filtered by tag "${tagLabel}".`);
   }
 
-  if (query) {
-    descriptionParts.push(`Search results for "${query}".`);
+  if (normalized.q) {
+    descriptionParts.push(`Search results for "${normalized.q}".`);
   }
 
-  if (pageNumber > 1) {
-    descriptionParts.push(`You are viewing page ${pageNumber}.`);
+  if (normalized.page > 1) {
+    descriptionParts.push(`You are viewing page ${normalized.page}.`);
   }
 
   const canonicalQuery = buildQueryString({
-    tag: tagId,
-    q: query,
-    page: pageNumber > 1 ? pageNumber : undefined,
+    tag: normalized.tag,
+    q: normalized.q,
+    page: normalized.page > 1 ? normalized.page : undefined,
   });
 
   const canonicalPath = canonicalQuery ? `/articles${canonicalQuery}` : '/articles';

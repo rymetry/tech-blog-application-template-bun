@@ -2,32 +2,31 @@
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { buildArticlesPath } from '@/lib/utils';
 import { Search } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import type React from 'react';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 export function SearchForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [query, setQuery] = useState(searchParams.get('q') || '');
 
+  useEffect(() => {
+    setQuery(searchParams.get('q') || '');
+  }, [searchParams]);
+
   const handleSubmit = useCallback(
     (e: React.FormEvent) => {
       e.preventDefault();
-
-      const params = new URLSearchParams(searchParams.toString());
-
-      if (query) {
-        params.set('q', query);
-      } else {
-        params.delete('q');
-      }
-
-      // ページをリセット
-      params.delete('page');
-
-      router.push(`/articles?${params.toString()}`);
+      router.push(
+        buildArticlesPath(
+          searchParams,
+          { q: query.trim() || undefined },
+          { resetPage: true },
+        ),
+      );
     },
     [query, router, searchParams],
   );
@@ -53,6 +52,7 @@ export function SearchForm() {
           placeholder="Search writing..."
           value={query}
           onChange={handleChange}
+          maxLength={100}
           className="pl-8 bg-background border-primary/20 focus:border-primary/50 focus:ring-primary/30 form-input"
           aria-label="Search writing"
         />

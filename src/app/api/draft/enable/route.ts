@@ -1,32 +1,15 @@
 import { isAsciiSafe, toUtf8Buffer } from '@/lib/constants';
 import { absoluteUrl, metadataBase } from '@/lib/metadata';
+import { normalizeSafeRedirectPath } from '@/lib/safe-redirect';
 import { timingSafeEqual } from 'crypto';
 import { draftMode } from 'next/headers';
 import { NextResponse } from 'next/server';
 
 const PREVIEW_SECRET = process.env.MICROCMS_PREVIEW_SECRET;
 
-const resolveRedirectUrl = (path?: string | null) => {
-  if (!path) {
-    return absoluteUrl('/');
-  }
-
-  if (path.startsWith('http://') || path.startsWith('https://')) {
-    try {
-      const target = new URL(path);
-
-      if (target.origin === metadataBase.origin) {
-        return target.toString();
-      }
-    } catch (error) {
-      console.error('Failed to parse redirect URL:', error);
-    }
-
-    return absoluteUrl('/');
-  }
-
-  const normalizedPath = path.startsWith('/') ? path : `/${path}`;
-  return absoluteUrl(normalizedPath);
+const withNoStore = (response: NextResponse) => {
+  response.headers.set('Cache-Control', 'no-store');
+  return response;
 };
 
 const isValidSecret = (candidate: string | null) => {
@@ -53,7 +36,7 @@ export async function GET(request: Request) {
   const secret = searchParams.get('secret');
 
   if (!isValidSecret(secret)) {
-    return new NextResponse('Invalid preview secret', { status: 401 });
+    return withNoStore(new NextResponse('Invalid preview secret', { status: 401 }));
   }
 
   const draftKey = searchParams.get('draftKey') || undefined;
@@ -65,7 +48,14 @@ export async function GET(request: Request) {
     rawPath ||
     (rawSlug ? `/articles/${rawSlug.replace(/^\/+/, '')}` : undefined) ||
     '/';
-  const redirectUrl = new URL(resolveRedirectUrl(path));
+  const requestOrigin = new URL(request.url).origin;
+  const redirectUrl = new URL(
+    absoluteUrl(
+      normalizeSafeRedirectPath(path, {
+        allowedOrigins: [metadataBase.origin, requestOrigin],
+      }),
+    ),
+  );
 
   if (draftKey) {
     redirectUrl.searchParams.set('draftKey', draftKey);
@@ -78,5 +68,5 @@ export async function GET(request: Request) {
   const draft = await draftMode();
   draft.enable();
 
-  return NextResponse.redirect(redirectUrl);
+  return withNoStore(NextResponse.redirect(redirectUrl));
 }

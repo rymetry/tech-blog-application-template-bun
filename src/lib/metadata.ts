@@ -1,4 +1,5 @@
 import { portfolioConfig } from '@/lib/portfolio-config';
+import { logWarnEvent } from '@/lib/log-warn';
 
 const DEFAULT_SITE_NAME = portfolioConfig.ownerName;
 const DEFAULT_DESCRIPTION =
@@ -21,28 +22,94 @@ const DEFAULT_FEED_PATH = '/feed.xml';
 export const SITE_TITLE_TEMPLATE = `%s | ${DEFAULT_SITE_NAME}`;
 
 const trimTrailingSlash = (value: string) => value.replace(/\/+$/, '');
-const normalizeHostname = (value: string) => value.replace(/^https?:\/\//, '').replace(/\/+$/, '');
+const normalizeHostname = (value: string) => value.replace(/^https?:\/\//i, '').replace(/\/+$/, '');
 
-const resolveSiteUrl = () => {
-  const urlFromEnv = (process.env.NEXT_PUBLIC_SITE_URL || '').trim();
+const LOCALHOST_HOSTNAMES = new Set(['localhost', '127.0.0.1', '::1', '[::1]']);
 
-  if (urlFromEnv) {
-    return trimTrailingSlash(urlFromEnv);
+const isCiTruthy = (value: string | undefined) => {
+  if (!value) {
+    return false;
   }
 
-  if (process.env.NODE_ENV === 'production') {
-    const vercelUrl = (process.env.VERCEL_URL || '').trim();
-    if (vercelUrl) {
-      return `https://${normalizeHostname(vercelUrl)}`;
-    }
+  return /^(true|1|yes)$/i.test(value.trim());
+};
 
+const resolveLocalhostHostname = (hostname: string) => {
+  const normalized = hostname.toLowerCase();
+  return LOCALHOST_HOSTNAMES.has(normalized);
+};
+
+const assertEnvContract = (env: NodeJS.ProcessEnv) => {
+  if (env.SITE_URL) {
     throw new Error(
-      'Site URL is not set. Please configure NEXT_PUBLIC_SITE_URL for your custom domain. VERCEL_URL is automatically set by Vercel in production deployments and does not need manual configuration.',
+      'SITE_URL is no longer supported. Configure NEXT_PUBLIC_SITE_URL or rely on VERCEL_URL in production.',
+    );
+  }
+};
+
+export const resolveSiteUrlForEnv = (
+  env: NodeJS.ProcessEnv = process.env,
+  options: { onLocalhostOverrideUsed?: (context: { host: string }) => void } = {},
+) => {
+  assertEnvContract(env);
+
+  const strictMode = env.NODE_ENV === 'production';
+  const localhostOverride = env.ALLOW_LOCALHOST_SITE_URL_FOR_BUILD === '1';
+  const onVercel = env.VERCEL === '1';
+  const onCi = isCiTruthy(env.CI);
+
+  if (localhostOverride && (onVercel || onCi)) {
+    throw new Error(
+      'ALLOW_LOCALHOST_SITE_URL_FOR_BUILD=1 is local-only. Disable it when VERCEL=1 or CI is truthy.',
     );
   }
 
-  return 'http://localhost:3000';
+  const urlFromEnv = (env.NEXT_PUBLIC_SITE_URL || '').trim();
+  let resolvedUrl: URL | null = null;
+
+  if (urlFromEnv) {
+    try {
+      resolvedUrl = new URL(urlFromEnv);
+    } catch {
+      throw new Error('NEXT_PUBLIC_SITE_URL must be an absolute URL (for example, https://example.com).');
+    }
+  }
+
+  if (!resolvedUrl && strictMode) {
+    const vercelUrl = (env.VERCEL_URL || '').trim();
+    if (vercelUrl) {
+      resolvedUrl = new URL(`https://${normalizeHostname(vercelUrl)}`);
+    } else {
+      throw new Error(
+        'Site URL is not set. Configure NEXT_PUBLIC_SITE_URL (preferred) or rely on VERCEL_URL in production.',
+      );
+    }
+  }
+
+  if (!resolvedUrl) {
+    resolvedUrl = new URL('http://localhost:3000');
+  }
+
+  if (strictMode && resolveLocalhostHostname(resolvedUrl.hostname)) {
+    if (!localhostOverride) {
+      throw new Error(
+        'Localhost site URLs are not allowed in production. Set NEXT_PUBLIC_SITE_URL to your public domain.',
+      );
+    }
+
+    const context = { host: resolvedUrl.host };
+    options.onLocalhostOverrideUsed?.(context);
+    logWarnEvent({
+      event: 'site_url_localhost_override_used',
+      reason: 'allow_localhost_site_url_for_build',
+      context,
+    });
+  }
+
+  return trimTrailingSlash(resolvedUrl.toString());
 };
+
+const resolveSiteUrl = () => resolveSiteUrlForEnv(process.env);
 
 export const siteMetadata = {
   name: DEFAULT_SITE_NAME,

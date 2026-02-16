@@ -1,5 +1,5 @@
-import type { Author as AuthorType, ArticlePost, Tag } from '@/types';
-import type { Article, MicroCMSAuthor, MicroCMSTag } from './microcms';
+import type { ArticlePost, Tag } from '@/types';
+import type { Article, MicroCMSTag } from './microcms';
 
 type ImageLike = { url: string; height: number; width: number };
 
@@ -38,6 +38,7 @@ export function adaptArticle(article: Article): ArticlePost {
 
   return {
     id: article.id,
+    createdAt: article.createdAt,
     title: article.title,
     slug: article.slug,
     excerpt: article.excerpt || '',
@@ -53,6 +54,7 @@ export function adaptArticle(article: Article): ArticlePost {
       ? {
           id: article.authors.id || '',
           name: article.authors.name || 'Anonymous',
+          email: article.authors.email,
           image: {
             url: authorImage.url,
             height: authorImage.height,
@@ -86,6 +88,7 @@ export function adaptArticle(article: Article): ArticlePost {
 
         return {
           id: relatedArticle.id,
+          createdAt: relatedArticle.createdAt,
           title: relatedArticle.title,
           slug: relatedArticle.slug,
           excerpt: relatedArticle.excerpt || '',
@@ -101,6 +104,7 @@ export function adaptArticle(article: Article): ArticlePost {
             ? {
                 id: relatedArticle.authors.id || '',
                 name: relatedArticle.authors.name || 'Anonymous',
+                email: relatedArticle.authors.email,
                 image: {
                   url: relatedAuthorImage.url,
                   height: relatedAuthorImage.height,
@@ -139,19 +143,5 @@ export function adaptTag(tag: MicroCMSTag): Tag {
   return {
     id: tag.id,
     name: tag.name,
-  };
-}
-
-export function adaptAuthor(author: MicroCMSAuthor): AuthorType {
-  const image = pickImage(author.image, author.profileImage) || fallbackAuthorImage;
-
-  return {
-    id: author.id,
-    name: author.name || 'Anonymous',
-    image: {
-      url: image.url,
-      height: image.height,
-      width: image.width,
-    },
   };
 }
