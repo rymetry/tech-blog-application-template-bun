@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import type { ArticlePost } from '@/types';
-import { SITE_TITLE_TEMPLATE, absoluteUrl, buildOgImage, siteMetadata } from '@/lib/metadata';
+import { absoluteUrl, buildOgImage, siteMetadata } from '@/lib/metadata';
 import { truncateForSEO } from '@/lib/utils';
 
 export interface PageMetadataOptions {
@@ -50,7 +50,7 @@ const createBaseMetadata = ({
   const normalizedPath = normalizePath(path);
   const canonicalUrl = absoluteUrl(normalizedPath);
   const truncatedDescription = truncateForSEO(description ?? siteMetadata.description);
-  const metadataTitle = title ? SITE_TITLE_TEMPLATE.replace('%s', title) : siteMetadata.name;
+  const metadataTitle = title || siteMetadata.name;
   const ogImage = buildOgImage(image, title, {
     width: imageWidth,
     height: imageHeight,
@@ -98,12 +98,12 @@ const createBaseMetadata = ({
 
 /**
  * ページのメタデータを生成します
- * @param options - メタデータオプション
- * @returns Next.js Metadata オブジェクト
+ * @param options - メタデータ生成オプション
+ * @returns Next.js のメタデータオブジェクト
  * @example
  * const metadata = createPageMetadata({
- *   title: 'About',
- *   description: 'About page',
+ *   title: '概要',
+ *   description: '概要ページ',
  *   path: '/about',
  * });
  */

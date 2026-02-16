@@ -1,7 +1,7 @@
 import { CompactArticleCard } from '@/components/compact-article-card';
 import type { ArticlePost } from '@/types';
 
-export async function RelatedPosts({ relatedPosts }: { relatedPosts: ArticlePost[] }) {
+export function RelatedPosts({ relatedPosts }: { relatedPosts: ArticlePost[] }) {
   if (!relatedPosts || relatedPosts.length === 0) return null;
 
   return (

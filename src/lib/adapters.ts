@@ -1,5 +1,5 @@
-import type { Author as AuthorType, ArticlePost, Tag } from '@/types';
-import type { Article, MicroCMSAuthor, MicroCMSTag } from './microcms';
+import type { ArticlePost, Tag } from '@/types';
+import type { Article, MicroCMSTag } from './microcms';
 
 type ImageLike = { url: string; height: number; width: number };
 
@@ -19,6 +19,10 @@ const pickImage = (primary?: ImageLike, secondary?: ImageLike): ImageLike | unde
   return primary || secondary || undefined;
 };
 
+const resolveArticleBody = (article: Pick<Article, 'custom_body' | 'content'>): string => {
+  return article.custom_body?.article_body || article.custom_body?.body || article.content?.body || '';
+};
+
 /**
  * microCMSのブログ記事を内部形式に変換する
  */
@@ -27,7 +31,7 @@ export function adaptArticle(article: Article): ArticlePost {
   const coverImage = pickImage(article.ogp_image, article.ogpImage) || fallbackImage;
   const authorImage =
     pickImage(article.authors?.image, article.authors?.profileImage) || fallbackAuthorImage;
-  const articleBody = article.custom_body?.article_body || article.content?.body || '';
+  const articleBody = resolveArticleBody(article);
   const relatedArticles = article.custom_body?.related_articles || article.content?.relatedArticles || [];
   const showToc =
     typeof article.custom_body?.toc_visible === 'boolean'
@@ -121,11 +125,7 @@ export function adaptArticle(article: Article): ArticlePost {
               id: tag.id,
               name: tag.name,
             })) || [],
-          content:
-            relatedArticle.custom_body?.article_body ||
-            relatedArticle.custom_body?.body ||
-            relatedArticle.content?.body ||
-            '',
+          content: resolveArticleBody(relatedArticle),
         };
       }) || [],
   };
@@ -139,19 +139,5 @@ export function adaptTag(tag: MicroCMSTag): Tag {
   return {
     id: tag.id,
     name: tag.name,
-  };
-}
-
-export function adaptAuthor(author: MicroCMSAuthor): AuthorType {
-  const image = pickImage(author.image, author.profileImage) || fallbackAuthorImage;
-
-  return {
-    id: author.id,
-    name: author.name || 'Anonymous',
-    image: {
-      url: image.url,
-      height: image.height,
-      width: image.width,
-    },
   };
 }

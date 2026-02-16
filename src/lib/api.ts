@@ -1,31 +1,20 @@
-import { adaptAuthor, adaptArticle, adaptTag } from '@/lib/adapters';
-import type { Author, ArticlePost, Tag } from '@/types';
+import { adaptArticle, adaptTag } from '@/lib/adapters';
+import { getAllArticlesCached } from '@/lib/articles-cache';
+import { logWarnEvent } from '@/lib/log-warn';
+import type { ArticlePost, Tag } from '@/types';
 import {
   getDetail,
+  IS_PRODUCTION,
   getList,
-  getAuthors as getMicroCMSAuthors,
+  getListRawOrThrow,
+  MICROCMS_MAX_LIMIT,
+  toSafeErrorLogContext,
   getTags as getMicroCMSTags,
-  MICROCMS_CACHE_TAGS,
-  MICROCMS_REVALIDATE_SECONDS,
+  type MicroCMSCacheMode,
 } from './microcms';
-import { unstable_cache } from 'next/cache';
 
 export interface ArticleResponse {
   contents: ArticlePost[];
-  totalCount: number;
-  offset: number;
-  limit: number;
-}
-
-export interface TagResponse {
-  contents: Tag[];
-  totalCount: number;
-  offset: number;
-  limit: number;
-}
-
-export interface AuthorResponse {
-  contents: Author[];
   totalCount: number;
   offset: number;
   limit: number;
@@ -39,53 +28,24 @@ type ArticlePostParams = {
   orders?: string;
 };
 
+export type AdjacentArticles = {
+  prevPost: ArticlePost | null;
+  nextPost: ArticlePost | null;
+};
+
 const DEFAULT_ARTICLE_LIMIT = 10;
-const DEFAULT_TAG_LIMIT = 10;
-const DEFAULT_AUTHOR_LIMIT = 10;
+const ADJACENT_SAME_PUBLISHED_AT_LIMIT = 1000;
 
-// MicroCMSの一覧取得はパラメータごとに結果が変わるため、キャッシュキーに条件を埋め込んで誤キャッシュを防ぐ。
-const getArticleParamsKey = (params: ArticlePostParams) => [
-  'microcms',
-  'article-posts',
-  `offset:${params.offset ?? 0}`,
-  `limit:${params.limit ?? DEFAULT_ARTICLE_LIMIT}`,
-  `filters:${params.filters ?? ''}`,
-  `q:${params.q ?? ''}`,
-  `orders:${params.orders ?? ''}`,
-];
+const getEmptyArticleResponse = (): ArticleResponse => ({
+  contents: [],
+  totalCount: 0,
+  offset: 0,
+  limit: DEFAULT_ARTICLE_LIMIT,
+});
 
-const fetchArticlePostsCached = async (params: ArticlePostParams = {}): Promise<ArticleResponse> =>
-  unstable_cache(
-    async () => {
-      const limit = params.limit ?? DEFAULT_ARTICLE_LIMIT;
-      const response = await getList({
-        offset: params.offset,
-        limit,
-        filters: params.filters,
-        q: params.q,
-        orders: params.orders,
-      });
-
-      return {
-        contents: response.contents.map(adaptArticle),
-        totalCount: response.totalCount,
-        offset: response.offset,
-        limit: response.limit,
-      };
-    },
-    getArticleParamsKey(params),
-    {
-      revalidate: MICROCMS_REVALIDATE_SECONDS,
-      // fetchFromMicroCMS側でも同じタグを付与しているが、こちらでも付けておくことで
-      // revalidateTag('microcms') がunstable_cacheの結果まで確実に無効化できる。
-      tags: ['microcms', MICROCMS_CACHE_TAGS.ARTICLES],
-    },
-  )();
-
-// 記事詳細はslugごとにキャッシュを分離し、ISRの恩恵を保ちつつ取り違いを防ぐ。
 const fetchArticlePostFromApi = async (
   slug: string,
-  options: { draftKey?: string } = {},
+  options: { draftKey?: string; cacheMode?: MicroCMSCacheMode } = {},
 ): Promise<ArticlePost | null> => {
   const queries: Record<string, unknown> = {
     filters: `slug[equals]${slug}`,
@@ -94,12 +54,10 @@ const fetchArticlePostFromApi = async (
   };
 
   if (options.draftKey) {
-    // NOTE: microCMS の preview API は draftKey をクエリに含めるだけで利用できる。
-    // キャッシュ経由の取得と処理を揃えるため、ここで統一的にセットしている。
     queries.draftKey = options.draftKey;
   }
 
-  const { contents } = await getList(queries);
+  const { contents } = await getList(queries, { cacheMode: options.cacheMode });
   const matchedPost = contents[0];
 
   if (!matchedPost) {
@@ -109,82 +67,82 @@ const fetchArticlePostFromApi = async (
   return adaptArticle(matchedPost);
 };
 
-const fetchArticlePostCached = async (slug: string): Promise<ArticlePost | null> =>
-  unstable_cache(
-    async () => {
-      return fetchArticlePostFromApi(slug);
-    },
-    ['microcms', 'article-post', slug],
-    {
-      revalidate: MICROCMS_REVALIDATE_SECONDS,
-      // fetchFromMicroCMS側でも同じタグを付与しているが、こちらでも付けておくことで
-      // revalidateTag('microcms') がunstable_cacheの結果まで確実に無効化できる。
-      tags: ['microcms', MICROCMS_CACHE_TAGS.ARTICLES],
-    },
-  )();
+const compareByPublishedAtDescAndIdDesc = (
+  a: Pick<ArticlePost, 'publishedAt' | 'id'>,
+  b: Pick<ArticlePost, 'publishedAt' | 'id'>,
+) => {
+  if (a.publishedAt !== b.publishedAt) {
+    return b.publishedAt.localeCompare(a.publishedAt);
+  }
 
-const fetchArticlePostPreview = async (slug: string, draftKey?: string): Promise<ArticlePost | null> => {
-  return fetchArticlePostFromApi(slug, { draftKey });
+  return b.id.localeCompare(a.id);
 };
 
-const fetchTagsCached = unstable_cache(
-  async (): Promise<TagResponse> => {
-    const response = await getMicroCMSTags({ limit: DEFAULT_TAG_LIMIT });
+type RawArticleListResponse = Awaited<ReturnType<typeof getListRawOrThrow>>;
 
-    return {
-      contents: response.contents.map(adaptTag),
-      totalCount: response.totalCount,
-      offset: response.offset,
-      limit: response.limit,
-    };
-  },
-  ['microcms', 'tags'],
-  {
-    revalidate: MICROCMS_REVALIDATE_SECONDS,
-    // fetchFromMicroCMS側でも同じタグを付与しているが、こちらでも付けておくことで
-    // revalidateTag('microcms') がunstable_cacheの結果まで確実に無効化できる。
-    tags: ['microcms', MICROCMS_CACHE_TAGS.TAGS],
-  },
-);
+const getSamePublishedAtArticlesWithLimit = async (
+  publishedAt: string,
+): Promise<Pick<RawArticleListResponse, 'contents' | 'totalCount'>> => {
+  const contents: RawArticleListResponse['contents'] = [];
+  let totalCount = 0;
+  let offset = 0;
 
-const fetchAuthorsCached = unstable_cache(
-  async (): Promise<AuthorResponse> => {
-    const response = await getMicroCMSAuthors({ limit: DEFAULT_AUTHOR_LIMIT });
+  while (offset < ADJACENT_SAME_PUBLISHED_AT_LIMIT) {
+    const remaining = ADJACENT_SAME_PUBLISHED_AT_LIMIT - offset;
+    const response = await getListRawOrThrow({
+      offset,
+      limit: Math.min(MICROCMS_MAX_LIMIT, remaining),
+      depth: 3 as const,
+      filters: `publishedAt[equals]${publishedAt}`,
+      orders: '-publishedAt',
+    });
 
-    return {
-      contents: response.contents.map(adaptAuthor),
-      totalCount: response.totalCount,
-      offset: response.offset,
-      limit: response.limit,
-    };
-  },
-  ['microcms', 'authors'],
-  {
-    revalidate: MICROCMS_REVALIDATE_SECONDS,
-    // fetchFromMicroCMS側でも同じタグを付与しているが、こちらでも付けておくことで
-    // revalidateTag('microcms') がunstable_cacheの結果まで確実に無効化できる。
-    tags: ['microcms', MICROCMS_CACHE_TAGS.AUTHORS],
-  },
-);
+    if (totalCount === 0) {
+      totalCount = response.totalCount;
+    }
 
-/**
- * ブログ記事一覧を取得する
- */
-export async function getArticlePosts(
-  params: ArticlePostParams = {},
-): Promise<ArticleResponse> {
+    if (!response.contents.length) {
+      break;
+    }
+
+    contents.push(...response.contents);
+    offset += response.contents.length;
+
+    if (offset >= totalCount) {
+      break;
+    }
+  }
+
+  return { contents, totalCount };
+};
+
+export async function getArticlePosts(params: ArticlePostParams = {}): Promise<ArticleResponse> {
   try {
-    return await fetchArticlePostsCached(params);
+    const limit = params.limit ?? DEFAULT_ARTICLE_LIMIT;
+    const response = await getList({
+      offset: params.offset,
+      limit,
+      filters: params.filters,
+      q: params.q,
+      orders: params.orders,
+    });
+
+    return {
+      contents: response.contents.map(adaptArticle),
+      totalCount: response.totalCount,
+      offset: response.offset,
+      limit: response.limit,
+    };
   } catch (error) {
-    console.error('Error in getArticlePosts:', error);
-    return { contents: [], totalCount: 0, offset: 0, limit: DEFAULT_ARTICLE_LIMIT };
+    console.error('Error in getArticlePosts:', toSafeErrorLogContext(error));
+    if (IS_PRODUCTION) {
+      throw error;
+    }
+
+    return getEmptyArticleResponse();
   }
 }
 
-/**
- * ブログ記事詳細を取得する
- * depthパラメータを使用して関連コンテンツの詳細も取得する
- */
 type GetArticlePostOptions = {
   draftKey?: string;
   contentId?: string;
@@ -198,74 +156,130 @@ export async function getArticlePost(
     const { draftKey, contentId } = options;
 
     if (draftKey && contentId) {
-      const detail = await getDetail(contentId, { draftKey, depth: 3 as const });
+      const detail = await getDetail(
+        contentId,
+        { draftKey },
+        { cacheMode: 'no-store' },
+      );
       return adaptArticle(detail);
     }
 
     if (draftKey) {
-      return await fetchArticlePostPreview(slug, draftKey);
+      return fetchArticlePostFromApi(slug, { draftKey, cacheMode: 'no-store' });
     }
 
-    // キャッシュされた記事詳細を取得
-    return await fetchArticlePostCached(slug);
+    return fetchArticlePostFromApi(slug, { cacheMode: 'revalidate' });
   } catch (error) {
-    console.error(`Error in getArticlePost for slug ${slug}:`, error);
+    console.error(`Error in getArticlePost for slug ${slug}:`, toSafeErrorLogContext(error));
+    if (IS_PRODUCTION) {
+      throw error;
+    }
+
     return null;
   }
 }
 
-/**
- * タグ一覧を取得する
- */
-export async function getTags(): Promise<TagResponse> {
-  try {
-    return await fetchTagsCached();
-  } catch (error) {
-    console.error('Error in getTags:', error);
-    return { contents: [], totalCount: 0, offset: 0, limit: DEFAULT_TAG_LIMIT };
+export async function getAllTags(): Promise<Tag[]> {
+  const allTags: Tag[] = [];
+  let offset = 0;
+  let totalCount = 0;
+
+  while (totalCount === 0 || offset < totalCount) {
+    const response = await getMicroCMSTags({
+      offset,
+      limit: MICROCMS_MAX_LIMIT,
+    });
+
+    if (totalCount === 0) {
+      totalCount = response.totalCount;
+    }
+
+    if (!response.contents.length) {
+      break;
+    }
+
+    allTags.push(...response.contents.map(adaptTag));
+    offset += MICROCMS_MAX_LIMIT;
   }
+
+  return allTags;
 }
 
-/**
- * 著者一覧を取得する
- */
-export async function getAuthors(): Promise<AuthorResponse> {
+export async function getAllTagsSafe(): Promise<Tag[]> {
   try {
-    return await fetchAuthorsCached();
+    return await getAllTags();
   } catch (error) {
-    console.error('Error in getAuthors:', error);
-    return { contents: [], totalCount: 0, offset: 0, limit: DEFAULT_AUTHOR_LIMIT };
+    console.error('Error in getAllTagsSafe:', toSafeErrorLogContext(error));
+    return [];
   }
 }
 
 export async function getAllArticles(): Promise<ArticlePost[]> {
-  const allArticles: ArticlePost[] = [];
-  const limit = 100;
-  let offset = 0;
-  let totalCount = 0;
-
   try {
-    while (totalCount === 0 || offset < totalCount) {
-      const { contents, totalCount: fetchedTotalCount } = await getArticlePosts({
-        limit,
-        offset,
-        orders: '-publishedAt',
-      });
-
-      if (totalCount === 0) {
-        totalCount = fetchedTotalCount;
-      }
-
-      if (!contents.length) {
-        break;
-      }
-
-      allArticles.push(...contents);
-      offset += limit;
-    }
+    return await getAllArticlesCached();
   } catch (error) {
-    console.error('Error fetching all articles:', error);
-  }
+    console.error('Error in getAllArticles:', toSafeErrorLogContext(error));
+    if (IS_PRODUCTION) {
+      throw error;
+    }
 
-  return allArticles;
+    return [];
+  }
+}
+
+export async function getAdjacentArticles(
+  currentPost: Pick<ArticlePost, 'id' | 'publishedAt'>,
+): Promise<AdjacentArticles> {
+  try {
+    const { id: currentArticleId, publishedAt } = currentPost;
+
+    const [newer, older, samePublishedAt] = await Promise.all([
+      getListRawOrThrow({
+        limit: 1,
+        depth: 3 as const,
+        filters: `publishedAt[greater_than]${publishedAt}`,
+        orders: 'publishedAt',
+      }),
+      getListRawOrThrow({
+        limit: 1,
+        depth: 3 as const,
+        filters: `publishedAt[less_than]${publishedAt}`,
+        orders: '-publishedAt',
+      }),
+      getSamePublishedAtArticlesWithLimit(publishedAt),
+    ]);
+
+    if (samePublishedAt.totalCount > ADJACENT_SAME_PUBLISHED_AT_LIMIT) {
+      logWarnEvent({
+        event: 'adjacent_articles_same_published_at_limit_reached',
+        reason: 'same_published_at_scan_limit',
+        context: {
+          limit: ADJACENT_SAME_PUBLISHED_AT_LIMIT,
+          totalCount: samePublishedAt.totalCount,
+        },
+      });
+    }
+
+    const mergedMap = new Map<string, ArticlePost>();
+
+    for (const article of [...newer.contents, ...samePublishedAt.contents, ...older.contents]) {
+      const adapted = adaptArticle(article);
+      mergedMap.set(adapted.id, adapted);
+    }
+
+    const mergedArticles = Array.from(mergedMap.values()).sort(compareByPublishedAtDescAndIdDesc);
+    const currentIndex = mergedArticles.findIndex((article) => article.id === currentArticleId);
+
+    if (currentIndex === -1) {
+      return { prevPost: null, nextPost: null };
+    }
+
+    return {
+      prevPost: currentIndex < mergedArticles.length - 1 ? mergedArticles[currentIndex + 1] : null,
+      nextPost: currentIndex > 0 ? mergedArticles[currentIndex - 1] : null,
+    };
+  } catch (error) {
+    console.error('Error in getAdjacentArticles:', toSafeErrorLogContext(error));
+    return { prevPost: null, nextPost: null };
+  }
 }

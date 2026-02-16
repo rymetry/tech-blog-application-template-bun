@@ -4,7 +4,7 @@
 
 @custom-variant dark (&:is(.dark *));
 
-/* Respect reduced motion preferences */
+/* 動きの軽減設定を尊重する */
 @media (prefers-reduced-motion: reduce) {
   * {
     animation-duration: 0.01ms !important;
@@ -17,7 +17,7 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  /* --font-mono is provided by next/font. --font-sans is defined in :root. */
+  /* --font-mono は next/font で提供され、--font-sans は :root で定義する。 */
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
   --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
@@ -58,14 +58,14 @@
   --font-sans: "Noto Sans JP", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
     "Segoe UI", "Hiragino Sans", "Hiragino Kaku Gothic ProN", "Yu Gothic", sans-serif;
   --background: #ffffff;
-  --foreground: #111827; /* base text */
+  --foreground: #111827; /* 基本文字色 */
   --card: #ffffff;
   --card-foreground: #111827;
   --popover: #ffffff;
   --popover-foreground: #111827;
-  --primary: #0e7490; /* teal: AA for normal text/links */
+  --primary: #0e7490; /* ティール系: 通常の文字・リンクでAA基準を満たす */
   --primary-foreground: #ffffff;
-  --secondary: #f3f4f6; /* subtle surface */
+  --secondary: #f3f4f6; /* 控えめな面の色 */
   --secondary-foreground: #111827;
   --muted: #f3f4f6;
   --muted-foreground: #4b5563;
@@ -76,7 +76,7 @@
   --warning: #f59e0b;
   --border: #e5e7eb;
   --input: #e5e7eb;
-  --ring: #22d3ee; /* visible focus */
+  --ring: #22d3ee; /* 視認しやすいフォーカス色 */
   --chart-1: oklch(0.646 0.222 41.116);
   --chart-2: oklch(0.6 0.118 184.704);
   --chart-3: oklch(0.398 0.07 227.392);
@@ -176,7 +176,7 @@
       monospace;
   }
 
-  /* Base fluid type (16px to 20px) */
+  /* ベースの可変フォントサイズ（16px〜20px） */
   html {
     font-size: clamp(16px, 1.4vw, 20px);
     line-height: 1.6;
@@ -230,7 +230,7 @@
     padding-left: 1.5rem;
   }
 
-  /* Ensure interactive elements show pointer cursor */
+  /* 操作可能な要素ではポインターカーソルを表示する */
   a[href] {
     @apply cursor-pointer;
   }
@@ -245,7 +245,7 @@
   }
 }
 
-/* containerのスタイル */
+/* コンテナのスタイル */
 .container {
   @apply mx-auto px-4 sm:px-6 lg:px-8;
   max-width: 1280px;
@@ -266,7 +266,7 @@
   );
 }
 
-/* Hero/section decorative background used across pages */
+/* 各ページのヒーロー/セクションで使う装飾背景 */
 .qa-hero-background {
   --qa-glow-1: 18%;
   --qa-glow-2: 14%;
@@ -371,7 +371,7 @@
     "Liberation Mono",
     monospace;
   font-size: 0.875rem;
-  line-height: 1.6; /* pre code と統一 */
+  line-height: 1.6; /* pre 内のコード行と統一 */
 }
 
 .prose .line-numbers-rows > span::before {
@@ -379,7 +379,7 @@
   content: counter(linenumber);
 }
 
-/* rehype-prism-plusが生成するクラスのスタイルリセット */
+/* rehype-prism-plus が生成するクラスのスタイルをリセット */
 .prose pre .code-line {
   display: inline;
   background: transparent !important;
@@ -617,10 +617,6 @@
     @apply font-medium text-sm sm:text-base md:text-lg leading-snug;
   }
 
-  .card-body {
-    @apply text-sm sm:text-base md:text-base lg:text-lg;
-  }
-
   .card-meta {
     @apply text-xs sm:text-xs md:text-xs lg:text-xs text-muted-foreground;
   }
@@ -653,10 +649,6 @@
 
   .editorial-scope .article-hero-compact {
     @apply text-center;
-  }
-
-  .editorial-scope .article-hero-standard {
-    @apply text-left;
   }
 
   .editorial-scope .article-hero-cover-compact {
@@ -718,7 +710,7 @@
 
 }
 
-/* Skip link (accessible keyboard navigation) */
+/* スキップリンク（キーボード操作向けアクセシビリティ） */
 .skip-link {
   position: absolute;
   top: -1000px;

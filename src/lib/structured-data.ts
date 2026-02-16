@@ -6,7 +6,7 @@ type BreadcrumbItem = {
   path: string;
 };
 
-// TODO(maintainers): replace with the actual logo path once assets are provisioned.
+// 保守メモ: アセットが準備できたら実際のロゴパスに置き換える。
 const DEFAULT_LOGO_PATH = '/placeholder-logo.png';
 
 export const buildBreadcrumbJsonLd = (items: BreadcrumbItem[]) => ({

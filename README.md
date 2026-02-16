@@ -7,7 +7,7 @@ Next.js 15 / React 19 / Tailwind CSS v4 で構築した技術ブログ用テン�
 --------
 
 - microCMS 連携
-  - 記事 / タグ / 著者の取得を `src/lib/api.ts` に集約
+  - 記事 / タグの取得を `src/lib/api.ts` に集約
   - アダプターで API スキーマをアプリ内型へマッピング
 - ブログ UI
   - 最新記事カード（トップページ）
@@ -25,7 +25,8 @@ Next.js 15 / React 19 / Tailwind CSS v4 で構築した技術ブログ用テン�
   - microCMS プレビュー API と連携する `api/draft/enable|disable`
   - Draft Mode 有効時のバナー表示と `draftKey`/`contentId` 対応
 - パフォーマンス
-  - ISR（再生成間隔 300 秒）と `unstable_cache` を利用したデータキャッシュ
+  - ISR（再生成間隔 300 秒）と Next.js fetch キャッシュを利用したデータ再検証
+  - Draft Mode（`draftKey`/`contentId`）経路は `no-store` で常に最新を取得
   - フォールバック時の例外処理と `notFound` ハンドリング
 - UI / スタイル
   - Tailwind CSS v4（Typography プラグイン）
@@ -79,18 +80,26 @@ Next.js 15 / React 19 / Tailwind CSS v4 で構築した技術ブログ用テン�
 ```env
 MICROCMS_API_KEY=your-api-key
 MICROCMS_ARTICLES=https://your-service.microcms.io/api/v1/articles
-MICROCMS_AUTHORS=https://your-service.microcms.io/api/v1/authors
 MICROCMS_TAGS=https://your-service.microcms.io/api/v1/tags
 
-# 推奨
+# サイトURL契約（推奨）
 NEXT_PUBLIC_SITE_URL=https://example.com
+
+# Optional: Vercel が production build/deploy 時に自動付与
+# VERCEL_URL=your-project.vercel.app
+
 MICROCMS_PREVIEW_SECRET=your-preview-secret
 NEXT_PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXXXX # GA4 を利用する場合のみ
+
+# ローカル検証専用（CI / Vercel では禁止）
+# ALLOW_LOCALHOST_SITE_URL_FOR_BUILD=1
 ```
 
 - `MICROCMS_*` エンドポイント URL は API リスト画面からコピーしてください。
 - プレビュー機能を使う場合は microCMS 側で Web プレビューに上記 `MICROCMS_PREVIEW_SECRET` と Draft Mode エンドポイントを設定します。
-- `NEXT_PUBLIC_SITE_URL` を指定すると canonical / OGP / RSS URL が正しく生成されます。未設定の場合は `VERCEL_URL` を自動利用し、それも無い場合はビルド時にエラーになります。
+- `NEXT_PUBLIC_SITE_URL` を指定すると canonical / OGP / RSS URL が正しく生成されます。production で未設定の場合は `VERCEL_URL` を自動利用し、それも無い場合は fail-fast でビルドエラーになります。
+- `SITE_URL` は非サポートです。設定しても利用されず、起動時にエラーになります。
+- `ALLOW_LOCALHOST_SITE_URL_FOR_BUILD=1` はローカル検証専用です。`VERCEL=1` または truthy `CI`（`true|1|yes`）と併用すると fail-fast します。
 
 任意のパッケージマネージャを利用できます。例として Bun:
 
@@ -123,6 +132,7 @@ npm run dev
 - `bun run dev` / `npm run dev` 開発サーバー (Turbopack)
 - `bun run lint` / `npm run lint` ESLint + 型チェック
 - `bun run build` / `npm run build` 本番ビルド
+- `bun test` / `npm test` テスト実行
 - `bun run start` / `npm run start` 本番サーバー
 - `bun run format` Prettier による整形（`.prettierrc` を参照）
 
@@ -141,7 +151,10 @@ SEO / 配信設定
 - RSS フィード: `/feed.xml`（`layout.tsx` で `<link rel="alternate">` も登録済み）
 - サイトマップ: `/sitemap.xml` は静的ページと記事を包含
 - robots: `/robots.txt`
-- すべて ISR により 5 分間隔で再生成され、microCMS Webhook から `revalidateTag('microcms')` を呼べば即時反映も可能です（任意で追加してください）。
+- 通常ページは ISR により 5 分間隔で再生成されます。
+- Draft Mode プレビュー時は `no-store` で取得し、下書き内容を即時反映します。
+- 本番環境では microCMS 取得失敗時に fail-fast で検知し、空データを静かに配信しない方針です。
+- `next.config.ts` では `NEXT_PUBLIC_SITE_URL` の `env` 注入を行いません。環境変数はデプロイ先の設定値を直接参照します。
 
 Draft Mode プレビュー
 ----------------------
@@ -173,7 +186,7 @@ https://your-domain/api/draft/enable?secret=MICROCMS_PREVIEW_SECRET&contentId=..
 
 - Vercel など標準的な Next.js デプロイフローに対応しています。
 - 本番環境にも `.env.local` と同じ環境変数を設定してください。
-- microCMS Webhook を公開エンドポイントに連携することで、記事更新時に `revalidate` をトリガーできます（必要に応じて `/api/revalidate` を実装してください）。
+- microCMS Webhook 連携による即時無効化（`revalidateTag` など）は必要に応じて追加実装してください。
 
 ライセンス
 ----------

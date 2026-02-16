@@ -55,3 +55,35 @@ export function stripHtml(value: string | undefined | null) {
 
   return value.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
 }
+
+type QueryValue = string | number | undefined | null;
+type QueryParamsLike = URLSearchParams | { toString(): string };
+
+/**
+ * 現在のクエリパラメータと更新内容から `/articles` の遷移先パスを組み立てる。
+ * `resetPage` が true かつ `updates.page` も指定されている場合は、
+ * 先に page を削除したあと updates の値で再設定される（最終値が優先）。
+ */
+export function buildArticlesPath(
+  currentParams: QueryParamsLike,
+  updates: Record<string, QueryValue>,
+  options: { resetPage?: boolean } = {},
+) {
+  const nextParams = new URLSearchParams(currentParams.toString());
+
+  if (options.resetPage) {
+    nextParams.delete('page');
+  }
+
+  Object.entries(updates).forEach(([key, value]) => {
+    if (value === undefined || value === null || value === '') {
+      nextParams.delete(key);
+      return;
+    }
+
+    nextParams.set(key, String(value));
+  });
+
+  const query = nextParams.toString();
+  return query ? `/articles?${query}` : '/articles';
+}

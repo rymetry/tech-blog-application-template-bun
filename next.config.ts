@@ -1,11 +1,29 @@
 import type { NextConfig } from 'next';
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || process.env.SITE_URL || 'http://localhost:3000';
+const SECURITY_HEADERS = [
+  {
+    key: 'X-Content-Type-Options',
+    value: 'nosniff',
+  },
+  {
+    key: 'Referrer-Policy',
+    value: 'strict-origin-when-cross-origin',
+  },
+  {
+    key: 'X-Frame-Options',
+    value: 'DENY',
+  },
+] as const;
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
-  env: {
-    NEXT_PUBLIC_SITE_URL: siteUrl,
+  async headers() {
+    return [
+      {
+        source: '/:path*',
+        headers: [...SECURITY_HEADERS],
+      },
+    ];
   },
   images: {
     formats: ['image/avif', 'image/webp'],

@@ -1,4 +1,4 @@
-// These exports centralize the app-wide domain types so consumers can import from '@/types'.
+// アプリ共通のドメイン型を集約し、`@/types` からまとめて参照できるようにする。
 export * from './author';
 export * from './article';
 export * from './tag';

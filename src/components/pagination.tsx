@@ -1,7 +1,7 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { buildQueryString, cn } from '@/lib/utils';
+import { buildArticlesPath, cn } from '@/lib/utils';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useCallback, useMemo } from 'react';
@@ -11,58 +11,51 @@ interface PaginationProps {
   currentPage: number;
 }
 
-// ページネーションの内部実装
-function PaginationContent({ totalPages, currentPage }: PaginationProps) {
+export function Pagination({ totalPages, currentPage }: PaginationProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
   const handlePageChange = useCallback(
     (page: number) => {
-      const baseParams = Object.fromEntries(searchParams.entries());
-      const queryString = buildQueryString({
-        ...baseParams,
-        page: page === 1 ? undefined : page,
-      });
-
-      router.push(`/articles${queryString}`);
+      router.push(buildArticlesPath(searchParams, { page: page === 1 ? undefined : page }));
     },
     [router, searchParams],
   );
 
-  // Calculate which page numbers to show
+  // 表示するページ番号の並びを計算する
   const pageNumbers = useMemo(() => {
     const numbers = [];
 
-    // Always show first page
+    // 先頭ページは常に表示する
     numbers.push(1);
 
-    // Calculate start and end of page range
+    // ページ番号範囲の開始と終了を計算する
     let startPage = Math.max(2, currentPage - 1);
     let endPage = Math.min(totalPages - 1, currentPage + 1);
 
-    // Adjust if we're at the start or end
+    // 先頭付近・末尾付近では表示範囲を補正する
     if (currentPage <= 2) {
       endPage = Math.min(totalPages - 1, 3);
     } else if (currentPage >= totalPages - 1) {
       startPage = Math.max(2, totalPages - 2);
     }
 
-    // Add ellipsis after first page if needed
+    // 必要なら先頭ページの後に省略記号を入れる
     if (startPage > 2) {
       numbers.push('ellipsis-start');
     }
 
-    // Add page numbers in range
+    // 計算した範囲のページ番号を追加する
     for (let i = startPage; i <= endPage; i++) {
       numbers.push(i);
     }
 
-    // Add ellipsis before last page if needed
+    // 必要なら最終ページの前に省略記号を入れる
     if (endPage < totalPages - 1) {
       numbers.push('ellipsis-end');
     }
 
-    // Always show last page if more than 1 page
+    // 2ページ以上ある場合は最終ページを常に表示する
     if (totalPages > 1) {
       numbers.push(totalPages);
     }
@@ -135,9 +128,4 @@ function PaginationContent({ totalPages, currentPage }: PaginationProps) {
       </div>
     </nav>
   );
-}
-
-// エクスポートされるメインのPaginationコンポーネント
-export function Pagination(props: PaginationProps) {
-  return <PaginationContent {...props} />;
 }

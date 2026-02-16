@@ -6,7 +6,7 @@ export async function LatestPosts() {
   let latestPosts = [] as Awaited<ReturnType<typeof getArticlePosts>>['contents'];
 
   try {
-    // NOTE: MicroCMSのデフォルト順序と同じ順序を明示的に指定
+    // microCMSのデフォルト順序と同じ並び順を明示的に指定する
     const response = await getArticlePosts({
       limit: PAGINATION_LIMITS.LATEST_POSTS,
       orders: '-publishedAt'

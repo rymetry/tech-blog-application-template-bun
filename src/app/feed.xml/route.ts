@@ -1,13 +1,28 @@
 import RSS from 'rss';
 import { getAllArticles } from '@/lib/api';
 import { feedUrl, siteMetadata, absoluteUrl } from '@/lib/metadata';
+import { MICROCMS_REVALIDATE_SECONDS } from '@/lib/microcms';
 import { stripHtml, truncateForSEO } from '@/lib/utils';
 
-export const revalidate = 3600; // 1 hour
+// ルートセグメント設定は識別子参照を許可しないため、ここは数値リテラルで定義する。
+export const revalidate = 300;
 const CONTENT_PREVIEW_LENGTH = 1000;
 
 export async function GET() {
-  const articles = await getAllArticles();
+  let articles = [] as Awaited<ReturnType<typeof getAllArticles>>;
+
+  try {
+    articles = await getAllArticles();
+  } catch (error) {
+    console.error('Error generating feed entries:', error);
+    return new Response('Feed temporarily unavailable', {
+      status: 503,
+      headers: {
+        'Content-Type': 'text/plain; charset=utf-8',
+        'Cache-Control': 'no-store, max-age=0',
+      },
+    });
+  }
 
   const feed = new RSS({
     title: siteMetadata.name,
@@ -30,13 +45,7 @@ export async function GET() {
       url,
       guid: url,
       date: new Date(article.publishedAt),
-      ...(article.author?.email
-        ? {
-            author: article.author.name
-              ? `${article.author.email} (${article.author.name})`
-              : article.author.email,
-          }
-        : {}),
+      ...(article.author?.name ? { author: article.author.name } : {}),
       categories: article.tags?.map((tag) => tag.name).filter(Boolean),
     });
   });
@@ -44,7 +53,7 @@ export async function GET() {
   return new Response(feed.xml({ indent: true }), {
     headers: {
       'Content-Type': 'application/xml; charset=utf-8',
-      'Cache-Control': 'public, max-age=3600, s-maxage=3600',
+      'Cache-Control': `public, max-age=${MICROCMS_REVALIDATE_SECONDS}, s-maxage=${MICROCMS_REVALIDATE_SECONDS}`,
     },
   });
 }

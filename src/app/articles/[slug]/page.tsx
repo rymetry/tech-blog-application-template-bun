@@ -5,7 +5,7 @@ import { JsonLd } from '@/components/json-ld';
 import { ArticleContent } from '@/components/article-content';
 import { ArticleToc } from '@/components/article-toc';
 import { TagPill } from '@/components/tag-pill';
-import { getArticlePost, getArticlePosts } from '@/lib/api';
+import { getAllArticles, getArticlePost } from '@/lib/api';
 import { getMicroCmsImageUrl } from '@/lib/image';
 import { createArticleMetadata, createPageMetadata } from '@/lib/metadata-helpers';
 import { buildArticleJsonLd, buildBreadcrumbJsonLd } from '@/lib/structured-data';
@@ -28,7 +28,7 @@ interface ArticlePostPageProps {
   }>;
 }
 
-// revalidateは数値リテラルでなければビルド時に最適化されないため、ここで直接指定する。
+// revalidate は数値リテラルでないとビルド時に最適化されないため、ここで直接指定する。
 export const revalidate = 300;
 
 export async function generateMetadata({ params, searchParams }: ArticlePostPageProps) {
@@ -61,31 +61,8 @@ export async function generateMetadata({ params, searchParams }: ArticlePostPage
 
 export async function generateStaticParams() {
   try {
-    const limit = 100;
-    let offset = 0;
-    let totalCount = Infinity;
-    const slugs: { slug: string }[] = [];
-
-    while (slugs.length < totalCount) {
-      const { contents, totalCount: fetchedTotalCount } = await getArticlePosts({
-        limit,
-        offset,
-        orders: '-publishedAt',
-      });
-
-      if (totalCount === Infinity) {
-        totalCount = fetchedTotalCount;
-      }
-
-      if (contents.length === 0) {
-        break;
-      }
-
-      slugs.push(...contents.map((article) => ({ slug: article.slug })));
-      offset += limit;
-    }
-
-    return slugs;
+    const articles = await getAllArticles();
+    return articles.map((article) => ({ slug: article.slug }));
   } catch (error) {
     console.error('Error generating static params for articles:', error);
     return [];
@@ -230,9 +207,11 @@ export default async function ArticlePostPage({ params, searchParams }: ArticleP
           {post.relatedPosts && <RelatedPosts relatedPosts={post.relatedPosts} />}
         </Suspense>
 
-        <Suspense fallback={<div className="py-8 text-center">Loading navigation...</div>}>
-          <PrevNextPosts postSlug={post.slug} />
-        </Suspense>
+        {!draftState.isEnabled && (
+          <Suspense fallback={<div className="py-8 text-center">Loading navigation...</div>}>
+            <PrevNextPosts currentPost={{ id: post.id, publishedAt: post.publishedAt }} />
+          </Suspense>
+        )}
       </article>
     </div>
   );

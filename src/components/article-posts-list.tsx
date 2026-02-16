@@ -2,50 +2,44 @@ import { ArticleCard } from '@/components/article-card';
 import { FeaturedArticleCard } from '@/components/featured-article-card';
 import { Pagination } from '@/components/pagination';
 import { TagPill } from '@/components/tag-pill';
-import { getArticlePosts, getTags } from '@/lib/api';
+import { normalizeArticlesQuery, type RawArticlesQuery } from '@/lib/articles-query';
+import { getArticlePosts } from '@/lib/api';
 import { PAGINATION_LIMITS } from '@/lib/constants';
+import { getTagsByIdMapSafe } from '@/lib/tags-map';
 
-type SearchParams = {
-  page?: string;
-  tag?: string;
-  q?: string;
-};
-
-export async function ArticlePostsList({ searchParams }: { searchParams: SearchParams }) {
-  const page = searchParams.page ? Number.parseInt(searchParams.page) : 1;
+export async function ArticlePostsList({ searchParams }: { searchParams: RawArticlesQuery }) {
+  const tagsById = await getTagsByIdMapSafe();
+  const normalizeOptions =
+    tagsById.size > 0
+      ? { validTagIds: new Set(tagsById.keys()) }
+      : {};
+  const query = normalizeArticlesQuery(searchParams, normalizeOptions);
+  const page = query.page;
   const limit = PAGINATION_LIMITS.ARTICLES_LIST;
   const offset = (page - 1) * limit;
-  const shouldShowFeatured = page === 1 && !searchParams.tag && !searchParams.q;
+  const shouldShowFeatured = page === 1 && !query.tag && !query.q;
 
   const filters: string[] = [];
-  if (searchParams.tag) {
-    filters.push(`tags[contains]${searchParams.tag}`);
+  if (query.tag) {
+    filters.push(`tags[contains]${query.tag}`);
   }
 
-  // NOTE: MicroCMSのデフォルト順序と同じ順序を明示的に指定
+  // microCMSのデフォルト順序と同じ並び順を明示的に指定する
   const { contents: posts, totalCount } = await getArticlePosts({
     offset,
     limit,
     filters: filters.length > 0 ? filters.join('[and]') : undefined,
-    q: searchParams.q,
+    q: query.q,
     orders: '-publishedAt',
   });
 
-  let tagLabel: string | undefined;
-  if (searchParams.tag) {
-    try {
-      const { contents } = await getTags();
-      tagLabel = contents.find((tag) => tag.id === searchParams.tag)?.name;
-    } catch (error) {
-      console.error('Error resolving tag label:', error);
-    }
-  }
+  const tagLabel = query.tag ? tagsById.get(query.tag) : undefined;
 
   const totalPages = Math.ceil(totalCount / limit);
   const activeFilters = [
-    ...(searchParams.q ? [{ key: 'q', label: `Search: ${searchParams.q}` }] : []),
-    ...(searchParams.tag
-      ? [{ key: 'tag', label: `Tag: ${tagLabel ?? searchParams.tag}` }]
+    ...(query.q ? [{ key: 'q', label: `Search: ${query.q}` }] : []),
+    ...(query.tag
+      ? [{ key: 'tag', label: `Tag: ${tagLabel ?? query.tag}` }]
       : []),
   ];
 

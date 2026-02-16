@@ -1,3 +1,5 @@
+import { logWarnEvent } from '@/lib/log-warn';
+
 const GA4_MEASUREMENT_ID_PATTERN = /^G-[A-Z0-9]+$/;
 const ASCII_SAFE_PATTERN = /^[\x20-\x7E]+$/;
 
@@ -8,7 +10,11 @@ export const sanitizeMeasurementId = (value: string | undefined | null) => {
 
   const trimmed = value.trim();
   if (!ASCII_SAFE_PATTERN.test(trimmed)) {
-    console.warn('Invalid characters detected in GA measurement ID.');
+    logWarnEvent({
+      event: 'ga_measurement_id_invalid_characters',
+      reason: 'non_ascii',
+      context: { length: trimmed.length },
+    });
     return null;
   }
 

@@ -20,6 +20,19 @@ type ProcessedArticleContent = {
 };
 
 const ALLOWED_PRISM_ATTRS = ['data-line', 'dataLine', 'data-highlight', 'dataHighlight'];
+const FALLBACK_ESCAPE_PATTERN = /[&<>"']/g;
+const FALLBACK_ESCAPE_MAP: Record<string, string> = {
+  '&': '&amp;',
+  '<': '&lt;',
+  '>': '&gt;',
+  '"': '&quot;',
+  "'": '&#39;',
+};
+
+export const escapeHtmlForPre = (value: string) =>
+  value.replace(FALLBACK_ESCAPE_PATTERN, (char) => FALLBACK_ESCAPE_MAP[char] ?? char);
+
+export const buildTocFallbackHtml = (value: string) => `<pre>${escapeHtmlForPre(value)}</pre>`;
 
 function createHeadingSlug(value: string): string {
   const normalized = value
@@ -47,7 +60,7 @@ function createUniqueId(baseId: string, seen: Map<string, number>): string {
 }
 
 /**
- * カスタムrehypeプラグイン: <div data-filename> をunwrapし、ファイル名をcodeタグに転写
+ * カスタム rehype プラグイン: <div data-filename> を展開し、ファイル名を code タグに転写
  */
 function rehypeExtractFilenameWrapper() {
   return (tree: Root) => {
@@ -84,7 +97,7 @@ function rehypeExtractFilenameWrapper() {
 }
 
 /**
- * カスタムrehypeプラグイン: コードブロックの前にタイトルバーを挿入
+ * カスタム rehype プラグイン: コードブロックの前にタイトルバーを挿入
  */
 function rehypeAddCodeTitle() {
   return (tree: Root) => {
@@ -148,7 +161,7 @@ function rehypeAddCodeTitle() {
 }
 
 /**
- * カスタムrehypeプラグイン: 行番号を追加
+ * カスタム rehype プラグイン: 行番号を追加
  */
 function rehypeLineNumbers() {
   return (tree: Root) => {
@@ -322,6 +335,6 @@ export async function processArticleContentWithToc(content: string): Promise<Pro
     return { html: String(file), toc };
   } catch (error) {
     console.error('Error processing article content with TOC:', error);
-    return { html: content, toc: [] };
+    return { html: buildTocFallbackHtml(content), toc: [] };
   }
 }

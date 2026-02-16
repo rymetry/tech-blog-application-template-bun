@@ -18,18 +18,6 @@ export function Author({ author, size = 'md', showName = true, compact = false }
     ? 'text-xs sm:text-xs md:text-xs font-medium'
     : 'text-sm sm:text-sm md:text-base font-medium';
 
-  // 著者情報が存在しない場合
-  if (!author) {
-    return (
-      <div className="flex items-center gap-2" aria-label="Anonymous author">
-        <Avatar className={sizeClasses[size]}>
-          <AvatarFallback>A</AvatarFallback>
-        </Avatar>
-        {showName && <span className={nameClasses}>Anonymous</span>}
-      </div>
-    );
-  }
-
   // 著者名が存在しない場合
   const authorName = author.name || 'Anonymous';
   const authorInitial = authorName.charAt(0).toUpperCase();
