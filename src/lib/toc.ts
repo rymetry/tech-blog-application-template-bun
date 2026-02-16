@@ -60,7 +60,7 @@ function createUniqueId(baseId: string, seen: Map<string, number>): string {
 }
 
 /**
- * カスタムrehypeプラグイン: <div data-filename> をunwrapし、ファイル名をcodeタグに転写
+ * カスタム rehype プラグイン: <div data-filename> を展開し、ファイル名を code タグに転写
  */
 function rehypeExtractFilenameWrapper() {
   return (tree: Root) => {
@@ -97,7 +97,7 @@ function rehypeExtractFilenameWrapper() {
 }
 
 /**
- * カスタムrehypeプラグイン: コードブロックの前にタイトルバーを挿入
+ * カスタム rehype プラグイン: コードブロックの前にタイトルバーを挿入
  */
 function rehypeAddCodeTitle() {
   return (tree: Root) => {
@@ -161,7 +161,7 @@ function rehypeAddCodeTitle() {
 }
 
 /**
- * カスタムrehypeプラグイン: 行番号を追加
+ * カスタム rehype プラグイン: 行番号を追加
  */
 function rehypeLineNumbers() {
   return (tree: Root) => {

@@ -97,7 +97,7 @@ export const logWarnEvent = ({ event, reason, context }: LogWarnEventInput): voi
           }),
         );
       } catch {
-        // Intentionally swallow every failure to keep this logger non-throwing.
+        // このロガーで例外を投げないため、失敗は意図的に握りつぶす。
       }
     }
   } catch {
@@ -109,7 +109,7 @@ export const logWarnEvent = ({ event, reason, context }: LogWarnEventInput): voi
         ts: new Date().toISOString(),
       });
     } catch {
-      // Intentionally no-op.
+      // 意図的に何もしない。
     }
   }
 };

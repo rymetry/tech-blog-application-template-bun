@@ -98,12 +98,12 @@ const createBaseMetadata = ({
 
 /**
  * ページのメタデータを生成します
- * @param options - メタデータオプション
- * @returns Next.js Metadata オブジェクト
+ * @param options - メタデータ生成オプション
+ * @returns Next.js のメタデータオブジェクト
  * @example
  * const metadata = createPageMetadata({
- *   title: 'About',
- *   description: 'About page',
+ *   title: '概要',
+ *   description: '概要ページ',
  *   path: '/about',
  * });
  */

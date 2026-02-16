@@ -60,9 +60,9 @@ type QueryValue = string | number | undefined | null;
 type QueryParamsLike = URLSearchParams | { toString(): string };
 
 /**
- * Builds an /articles path from current query params and updates.
- * When `resetPage` is true and `updates.page` is also provided,
- * page is deleted first and then re-added from updates (final value wins).
+ * 現在のクエリパラメータと更新内容から `/articles` の遷移先パスを組み立てる。
+ * `resetPage` が true かつ `updates.page` も指定されている場合は、
+ * 先に page を削除したあと updates の値で再設定される（最終値が優先）。
  */
 export function buildArticlesPath(
   currentParams: QueryParamsLike,

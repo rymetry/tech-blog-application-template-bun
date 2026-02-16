@@ -28,7 +28,7 @@ interface ArticlePostPageProps {
   }>;
 }
 
-// revalidateは数値リテラルでなければビルド時に最適化されないため、ここで直接指定する。
+// revalidate は数値リテラルでないとビルド時に最適化されないため、ここで直接指定する。
 export const revalidate = 300;
 
 export async function generateMetadata({ params, searchParams }: ArticlePostPageProps) {

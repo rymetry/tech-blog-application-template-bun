@@ -24,7 +24,7 @@ export async function ArticlePostsList({ searchParams }: { searchParams: RawArti
     filters.push(`tags[contains]${query.tag}`);
   }
 
-  // NOTE: MicroCMSのデフォルト順序と同じ順序を明示的に指定
+  // microCMSのデフォルト順序と同じ並び順を明示的に指定する
   const { contents: posts, totalCount } = await getArticlePosts({
     offset,
     limit,

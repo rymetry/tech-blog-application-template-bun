@@ -33,7 +33,7 @@ export default function DraftModeIndicator() {
   }, []);
 
   const handleExitDraftMode = () => {
-    // Draft Modeを終了するAPIを呼び出す
+    // ドラフトモードを終了するAPIを呼び出す
     router.push(`/api/draft/disable?path=${encodeURIComponent(currentPath)}`);
   };
 
