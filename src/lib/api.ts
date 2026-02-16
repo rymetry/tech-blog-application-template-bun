@@ -4,21 +4,17 @@ import { logWarnEvent } from '@/lib/log-warn';
 import type { ArticlePost, Tag } from '@/types';
 import {
   getDetail,
+  IS_PRODUCTION,
   getList,
   getListRawOrThrow,
+  MICROCMS_MAX_LIMIT,
+  toSafeErrorLogContext,
   getTags as getMicroCMSTags,
   type MicroCMSCacheMode,
 } from './microcms';
 
 export interface ArticleResponse {
   contents: ArticlePost[];
-  totalCount: number;
-  offset: number;
-  limit: number;
-}
-
-export interface TagResponse {
-  contents: Tag[];
   totalCount: number;
   offset: number;
   limit: number;
@@ -37,10 +33,7 @@ export type AdjacentArticles = {
   nextPost: ArticlePost | null;
 };
 
-const IS_PRODUCTION = process.env.NODE_ENV === 'production';
 const DEFAULT_ARTICLE_LIMIT = 10;
-const DEFAULT_TAG_LIMIT = 10;
-const MICROCMS_MAX_LIMIT = 100;
 const ADJACENT_SAME_PUBLISHED_AT_LIMIT = 1000;
 
 const getEmptyArticleResponse = (): ArticleResponse => ({
@@ -48,13 +41,6 @@ const getEmptyArticleResponse = (): ArticleResponse => ({
   totalCount: 0,
   offset: 0,
   limit: DEFAULT_ARTICLE_LIMIT,
-});
-
-const getEmptyTagResponse = (): TagResponse => ({
-  contents: [],
-  totalCount: 0,
-  offset: 0,
-  limit: DEFAULT_TAG_LIMIT,
 });
 
 const fetchArticlePostFromApi = async (
@@ -148,7 +134,7 @@ export async function getArticlePosts(params: ArticlePostParams = {}): Promise<A
       limit: response.limit,
     };
   } catch (error) {
-    console.error('Error in getArticlePosts:', error);
+    console.error('Error in getArticlePosts:', toSafeErrorLogContext(error));
     if (IS_PRODUCTION) {
       throw error;
     }
@@ -172,7 +158,7 @@ export async function getArticlePost(
     if (draftKey && contentId) {
       const detail = await getDetail(
         contentId,
-        { draftKey, depth: 3 as const },
+        { draftKey },
         { cacheMode: 'no-store' },
       );
       return adaptArticle(detail);
@@ -184,32 +170,12 @@ export async function getArticlePost(
 
     return fetchArticlePostFromApi(slug, { cacheMode: 'revalidate' });
   } catch (error) {
-    console.error(`Error in getArticlePost for slug ${slug}:`, error);
+    console.error(`Error in getArticlePost for slug ${slug}:`, toSafeErrorLogContext(error));
     if (IS_PRODUCTION) {
       throw error;
     }
 
     return null;
-  }
-}
-
-export async function getTags(): Promise<TagResponse> {
-  try {
-    const response = await getMicroCMSTags({ limit: DEFAULT_TAG_LIMIT });
-
-    return {
-      contents: response.contents.map(adaptTag),
-      totalCount: response.totalCount,
-      offset: response.offset,
-      limit: response.limit,
-    };
-  } catch (error) {
-    console.error('Error in getTags:', error);
-    if (IS_PRODUCTION) {
-      throw error;
-    }
-
-    return getEmptyTagResponse();
   }
 }
 
@@ -243,26 +209,16 @@ export async function getAllTagsSafe(): Promise<Tag[]> {
   try {
     return await getAllTags();
   } catch (error) {
-    console.error('Error in getAllTagsSafe:', error);
+    console.error('Error in getAllTagsSafe:', toSafeErrorLogContext(error));
     return [];
   }
-}
-
-export async function resolveTagLabel(tagId: string): Promise<string | undefined> {
-  if (!tagId) {
-    return undefined;
-  }
-
-  const { getTagsByIdMapSafe } = await import('@/lib/tags-map');
-  const tagsById = await getTagsByIdMapSafe();
-  return tagsById.get(tagId);
 }
 
 export async function getAllArticles(): Promise<ArticlePost[]> {
   try {
     return await getAllArticlesCached();
   } catch (error) {
-    console.error('Error in getAllArticles:', error);
+    console.error('Error in getAllArticles:', toSafeErrorLogContext(error));
     if (IS_PRODUCTION) {
       throw error;
     }
@@ -274,51 +230,56 @@ export async function getAllArticles(): Promise<ArticlePost[]> {
 export async function getAdjacentArticles(
   currentPost: Pick<ArticlePost, 'id' | 'publishedAt'>,
 ): Promise<AdjacentArticles> {
-  const { id: currentArticleId, publishedAt } = currentPost;
+  try {
+    const { id: currentArticleId, publishedAt } = currentPost;
 
-  const [newer, older, samePublishedAt] = await Promise.all([
-    getListRawOrThrow({
-      limit: 1,
-      depth: 3 as const,
-      filters: `publishedAt[greater_than]${publishedAt}`,
-      orders: 'publishedAt',
-    }),
-    getListRawOrThrow({
-      limit: 1,
-      depth: 3 as const,
-      filters: `publishedAt[less_than]${publishedAt}`,
-      orders: '-publishedAt',
-    }),
-    getSamePublishedAtArticlesWithLimit(publishedAt),
-  ]);
+    const [newer, older, samePublishedAt] = await Promise.all([
+      getListRawOrThrow({
+        limit: 1,
+        depth: 3 as const,
+        filters: `publishedAt[greater_than]${publishedAt}`,
+        orders: 'publishedAt',
+      }),
+      getListRawOrThrow({
+        limit: 1,
+        depth: 3 as const,
+        filters: `publishedAt[less_than]${publishedAt}`,
+        orders: '-publishedAt',
+      }),
+      getSamePublishedAtArticlesWithLimit(publishedAt),
+    ]);
 
-  if (samePublishedAt.totalCount > ADJACENT_SAME_PUBLISHED_AT_LIMIT) {
-    logWarnEvent({
-      event: 'adjacent_articles_same_published_at_limit_reached',
-      reason: 'same_published_at_scan_limit',
-      context: {
-        limit: ADJACENT_SAME_PUBLISHED_AT_LIMIT,
-        totalCount: samePublishedAt.totalCount,
-      },
-    });
-  }
+    if (samePublishedAt.totalCount > ADJACENT_SAME_PUBLISHED_AT_LIMIT) {
+      logWarnEvent({
+        event: 'adjacent_articles_same_published_at_limit_reached',
+        reason: 'same_published_at_scan_limit',
+        context: {
+          limit: ADJACENT_SAME_PUBLISHED_AT_LIMIT,
+          totalCount: samePublishedAt.totalCount,
+        },
+      });
+    }
 
-  const mergedMap = new Map<string, ArticlePost>();
+    const mergedMap = new Map<string, ArticlePost>();
 
-  for (const article of [...newer.contents, ...samePublishedAt.contents, ...older.contents]) {
-    const adapted = adaptArticle(article);
-    mergedMap.set(adapted.id, adapted);
-  }
+    for (const article of [...newer.contents, ...samePublishedAt.contents, ...older.contents]) {
+      const adapted = adaptArticle(article);
+      mergedMap.set(adapted.id, adapted);
+    }
 
-  const mergedArticles = Array.from(mergedMap.values()).sort(compareByPublishedAtDescAndIdDesc);
-  const currentIndex = mergedArticles.findIndex((article) => article.id === currentArticleId);
+    const mergedArticles = Array.from(mergedMap.values()).sort(compareByPublishedAtDescAndIdDesc);
+    const currentIndex = mergedArticles.findIndex((article) => article.id === currentArticleId);
 
-  if (currentIndex === -1) {
+    if (currentIndex === -1) {
+      return { prevPost: null, nextPost: null };
+    }
+
+    return {
+      prevPost: currentIndex < mergedArticles.length - 1 ? mergedArticles[currentIndex + 1] : null,
+      nextPost: currentIndex > 0 ? mergedArticles[currentIndex - 1] : null,
+    };
+  } catch (error) {
+    console.error('Error in getAdjacentArticles:', toSafeErrorLogContext(error));
     return { prevPost: null, nextPost: null };
   }
-
-  return {
-    prevPost: currentIndex < mergedArticles.length - 1 ? mergedArticles[currentIndex + 1] : null,
-    nextPost: currentIndex > 0 ? mergedArticles[currentIndex - 1] : null,
-  };
 }

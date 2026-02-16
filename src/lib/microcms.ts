@@ -29,14 +29,29 @@ for (const [key, value] of Object.entries(ENDPOINT_URLS)) {
 }
 
 export const MICROCMS_REVALIDATE_SECONDS = 300;
+export const MICROCMS_MAX_LIMIT = 100;
+export const IS_PRODUCTION = process.env.NODE_ENV === 'production';
 
 export const MICROCMS_CACHE_TAGS = {
   ARTICLES: 'microcms:articles',
   TAGS: 'microcms:tags',
 } as const;
 
-const IS_PRODUCTION = process.env.NODE_ENV === 'production';
 const ORDER_FALLBACK_PATTERN = /\b(orders?|sort)\b/i;
+const SENSITIVE_QUERY_PARAM_KEYS = new Set([
+  'draftkey',
+  'token',
+  'apikey',
+  'api_key',
+  'secret',
+  'password',
+  'authorization',
+  'key',
+]);
+const JSON_STYLE_SECRET_PATTERN =
+  /("(?:draftKey|api[_-]?key|token|secret|password|authorization)"\s*:\s*")([^"]+)(")/gi;
+const KEY_VALUE_SECRET_PATTERN =
+  /(\b(?:draftKey|api[_-]?key|token|secret|password|authorization)\b\s*[=:]\s*)([^\s,&]+)/gi;
 
 type MicroCMSCacheTag = (typeof MICROCMS_CACHE_TAGS)[keyof typeof MICROCMS_CACHE_TAGS];
 export type MicroCMSCacheMode = 'revalidate' | 'no-store';
@@ -88,6 +103,34 @@ const createEmptyListResponse = <T>() => ({
   limit: 10,
 });
 
+const redactSensitiveText = (value: string): string => {
+  return value
+    .replace(JSON_STYLE_SECRET_PATTERN, '$1[REDACTED]$3')
+    .replace(KEY_VALUE_SECRET_PATTERN, '$1[REDACTED]');
+};
+
+const sanitizeUrlForLog = (value: string): string => {
+  try {
+    const parsed = new URL(value);
+    for (const key of parsed.searchParams.keys()) {
+      if (SENSITIVE_QUERY_PARAM_KEYS.has(key.toLowerCase())) {
+        parsed.searchParams.set(key, '[REDACTED]');
+      }
+    }
+    return parsed.toString();
+  } catch {
+    return redactSensitiveText(value);
+  }
+};
+
+const sanitizeBodyForLog = (value: string): string => {
+  if (!value || IS_PRODUCTION) {
+    return '';
+  }
+
+  return redactSensitiveText(value).slice(0, 500);
+};
+
 export class MicroCmsHttpError extends Error {
   readonly status: number;
   readonly statusText: string;
@@ -96,14 +139,43 @@ export class MicroCmsHttpError extends Error {
 
   constructor(params: { status: number; statusText: string; url: string; body: string }) {
     const { status, statusText, url, body } = params;
-    super(`Failed to fetch ${url}: ${status} ${statusText}`);
+    const safeUrl = sanitizeUrlForLog(url);
+    const safeBody = sanitizeBodyForLog(body);
+    super(`Failed to fetch ${safeUrl}: ${status} ${statusText}`);
     this.name = 'MicroCmsHttpError';
     this.status = status;
     this.statusText = statusText;
-    this.url = url;
-    this.body = body;
+    this.url = safeUrl;
+    this.body = safeBody;
   }
 }
+
+export const toSafeErrorLogContext = (error: unknown): Record<string, unknown> => {
+  if (error instanceof MicroCmsHttpError) {
+    return {
+      name: error.name,
+      status: error.status,
+      statusText: error.statusText,
+      url: error.url,
+      ...(error.body ? { body: error.body } : {}),
+    };
+  }
+
+  if (error instanceof Error) {
+    return {
+      name: error.name,
+      message: error.message,
+    };
+  }
+
+  return {
+    message: String(error),
+  };
+};
+
+const logMicroCmsError = (message: string, error: unknown) => {
+  console.error(message, toSafeErrorLogContext(error));
+};
 
 const createMicroCmsHttpError = async (response: Response, url: string) => {
   let body = '';
@@ -295,7 +367,7 @@ export const getList = async (
   try {
     return await getListRawOrThrow(queries, options);
   } catch (error) {
-    console.error('Error fetching article list from microCMS:', error);
+    logMicroCmsError('Error fetching article list from microCMS:', error);
     if (IS_PRODUCTION) {
       throw error;
     }
@@ -324,7 +396,7 @@ export const getDetail = async (
       cacheMode: options.cacheMode,
     });
   } catch (error) {
-    console.error(`Error fetching detail from endpoint ${targetEndpoint}:`, error);
+    logMicroCmsError(`Error fetching detail from endpoint ${targetEndpoint}:`, error);
     throw error;
   }
 };
@@ -351,7 +423,7 @@ export const getTags = async (
       cacheMode: options.cacheMode,
     });
   } catch (error) {
-    console.error('Error fetching tags:', error);
+    logMicroCmsError('Error fetching tags:', error);
     if (IS_PRODUCTION) {
       throw error;
     }

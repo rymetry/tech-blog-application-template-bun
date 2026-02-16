@@ -1,6 +1,13 @@
 import { describe, expect, it } from 'bun:test';
 import { normalizeSafeRedirectPath } from './safe-redirect';
 
+const expectRelativePath = (path: string) => {
+  expect(path.startsWith('/')).toBe(true);
+  expect(path.startsWith('//')).toBe(false);
+  expect(path.startsWith('http://')).toBe(false);
+  expect(path.startsWith('https://')).toBe(false);
+};
+
 describe('safe-redirect', () => {
   it('normalizes internal relative paths', () => {
     expect(normalizeSafeRedirectPath(' articles/test ')).toBe('/articles/test');
@@ -43,5 +50,13 @@ describe('safe-redirect', () => {
     const longPath = `/${'a'.repeat(4000)}`;
     const normalized = normalizeSafeRedirectPath(longPath);
     expect(normalized.length).toBeLessThanOrEqual(2048);
+  });
+
+  it('keeps double-encoded external payloads as relative paths', () => {
+    const protocolRelative = normalizeSafeRedirectPath('%252F%252Fevil.example.com');
+    const schemeLike = normalizeSafeRedirectPath('%2568ttps://evil.example.com');
+
+    expectRelativePath(protocolRelative);
+    expectRelativePath(schemeLike);
   });
 });

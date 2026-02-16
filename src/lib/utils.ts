@@ -59,6 +59,11 @@ export function stripHtml(value: string | undefined | null) {
 type QueryValue = string | number | undefined | null;
 type QueryParamsLike = URLSearchParams | { toString(): string };
 
+/**
+ * Builds an /articles path from current query params and updates.
+ * When `resetPage` is true and `updates.page` is also provided,
+ * page is deleted first and then re-added from updates (final value wins).
+ */
 export function buildArticlesPath(
   currentParams: QueryParamsLike,
   updates: Record<string, QueryValue>,

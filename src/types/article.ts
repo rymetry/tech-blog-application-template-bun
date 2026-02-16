@@ -3,7 +3,6 @@ import type { Tag } from './tag';
 
 export interface ArticlePost {
   id: string;
-  createdAt: string;
   title: string;
   slug: string;
   excerpt: string;

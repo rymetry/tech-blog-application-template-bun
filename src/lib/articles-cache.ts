@@ -1,13 +1,12 @@
 import { adaptArticle } from '@/lib/adapters';
 import {
   MICROCMS_CACHE_TAGS,
+  MICROCMS_MAX_LIMIT,
   MICROCMS_REVALIDATE_SECONDS,
   getListRawOrThrow,
 } from '@/lib/microcms';
 import type { ArticlePost } from '@/types';
 import { unstable_cache } from 'next/cache';
-
-const MICROCMS_MAX_LIMIT = 100;
 
 const fetchAllArticlesUncached = async (): Promise<ArticlePost[]> => {
   const allArticles: ArticlePost[] = [];

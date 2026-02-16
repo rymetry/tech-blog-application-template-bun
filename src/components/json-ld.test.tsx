@@ -18,17 +18,14 @@ describe('JsonLd', () => {
     expect(() => JsonLd({ data: circular })).toThrow();
   });
 
-  it('falls back to {} and logs warning in production when stringify fails', async () => {
+  it('returns null and logs warning in production when stringify fails', async () => {
     process.env.NODE_ENV = 'production';
     console.warn = () => {};
     const { JsonLd } = await import(`./json-ld?prod=${Date.now()}`);
     const circular: Record<string, unknown> = {};
     circular.self = circular;
 
-    const element = JsonLd({ data: circular }) as unknown as {
-      props: { dangerouslySetInnerHTML: { __html: string } };
-    };
-
-    expect(element.props.dangerouslySetInnerHTML.__html).toBe('{}');
+    const element = JsonLd({ data: circular });
+    expect(element).toBeNull();
   });
 });

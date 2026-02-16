@@ -7,7 +7,7 @@ type JsonLdProps = {
 };
 
 export function JsonLd({ data, id }: JsonLdProps) {
-  let serialized = '{}';
+  let serialized = '';
 
   try {
     serialized = stringifyJsonLd(data);
@@ -21,6 +21,7 @@ export function JsonLd({ data, id }: JsonLdProps) {
       reason: 'stringify_exception',
       context: { component: 'json-ld' },
     });
+    return null;
   }
 
   return (
