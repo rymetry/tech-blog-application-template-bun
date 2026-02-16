@@ -617,10 +617,6 @@
     @apply font-medium text-sm sm:text-base md:text-lg leading-snug;
   }
 
-  .card-body {
-    @apply text-sm sm:text-base md:text-base lg:text-lg;
-  }
-
   .card-meta {
     @apply text-xs sm:text-xs md:text-xs lg:text-xs text-muted-foreground;
   }
@@ -653,10 +649,6 @@
 
   .editorial-scope .article-hero-compact {
     @apply text-center;
-  }
-
-  .editorial-scope .article-hero-standard {
-    @apply text-left;
   }
 
   .editorial-scope .article-hero-cover-compact {

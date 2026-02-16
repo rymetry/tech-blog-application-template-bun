@@ -14,7 +14,7 @@ export const metadata = createPageMetadata({
   path: '/projects',
 });
 
-export default async function ProjectsPage() {
+export default function ProjectsPage() {
   const breadcrumbJsonLd = buildBreadcrumbJsonLd([
     { name: 'Home', path: '/' },
     { name: 'Projects', path: '/projects' },

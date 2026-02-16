@@ -81,7 +81,6 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <link rel="alternate" type="application/rss+xml" href={feedUrl} />
       </head>
       <body
-        lang="en"
         className={cn(
           'min-h-screen bg-background antialiased',
           fontMono.variable,

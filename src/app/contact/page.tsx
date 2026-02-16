@@ -12,7 +12,7 @@ export const metadata = createPageMetadata({
   path: '/contact',
 });
 
-export default async function ContactPage() {
+export default function ContactPage() {
   const breadcrumbJsonLd = buildBreadcrumbJsonLd([
     { name: 'Home', path: '/' },
     { name: 'Contact', path: '/contact' },

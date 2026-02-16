@@ -1,7 +1,7 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { buildQueryString, cn } from '@/lib/utils';
+import { buildArticlesPath, cn } from '@/lib/utils';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useCallback, useMemo } from 'react';
@@ -11,20 +11,13 @@ interface PaginationProps {
   currentPage: number;
 }
 
-// ページネーションの内部実装
-function PaginationContent({ totalPages, currentPage }: PaginationProps) {
+export function Pagination({ totalPages, currentPage }: PaginationProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
 
   const handlePageChange = useCallback(
     (page: number) => {
-      const baseParams = Object.fromEntries(searchParams.entries());
-      const queryString = buildQueryString({
-        ...baseParams,
-        page: page === 1 ? undefined : page,
-      });
-
-      router.push(`/articles${queryString}`);
+      router.push(buildArticlesPath(searchParams, { page: page === 1 ? undefined : page }));
     },
     [router, searchParams],
   );
@@ -135,9 +128,4 @@ function PaginationContent({ totalPages, currentPage }: PaginationProps) {
       </div>
     </nav>
   );
-}
-
-// エクスポートされるメインのPaginationコンポーネント
-export function Pagination(props: PaginationProps) {
-  return <PaginationContent {...props} />;
 }
