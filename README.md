@@ -130,9 +130,10 @@ npm run dev
 ----------
 
 - `bun run dev` / `npm run dev` 開発サーバー (Turbopack)
-- `bun run lint` / `npm run lint` ESLint + 型チェック
+- `bun run lint` / `npm run lint` ESLint
 - `bun run build` / `npm run build` 本番ビルド
 - `bun test` / `npm test` テスト実行
+- `bun run test:csp-e2e` CSP nonce 伝播のE2E相当スモーク（build + start）
 - `bun run start` / `npm run start` 本番サーバー
 - `bun run format` Prettier による整形（`.prettierrc` を参照）
 
@@ -155,6 +156,26 @@ SEO / 配信設定
 - Draft Mode プレビュー時は `no-store` で取得し、下書き内容を即時反映します。
 - 本番環境では microCMS 取得失敗時に fail-fast で検知し、空データを静かに配信しない方針です。
 - `next.config.ts` では `NEXT_PUBLIC_SITE_URL` の `env` 注入を行いません。環境変数はデプロイ先の設定値を直接参照します。
+
+セキュリティヘッダー / CSP 運用
+-------------------------------
+
+- CSP は middleware で HTML ナビゲーションにのみ適用し、nonce を `x-csp-nonce` で Layout / JsonLd まで伝播します。
+- `CSP_MODE` でモードを切り替えます。
+  - `report-only`（デフォルト）: ブロックせず違反を収集
+  - `enforce`: 違反を実際にブロック
+  - 不正値は `report-only` にフォールバックし、warn を 1 回だけ出力します。
+- 段階移行の推奨手順:
+  1. `CSP_MODE=report-only` で違反レポートを収集
+  2. 外部スクリプト・インラインスクリプトを整理
+  3. `CSP_MODE=enforce` に切り替え
+- レポート送信ヘッダー:
+  - `report-uri` と `report-to` を併用
+  - `Report-To` の `max_age` は `86400`（1日）
+- `Strict-Transport-Security` は production のみ有効です（`max-age=15552000; includeSubDomains`）。
+  - `includeSubDomains` を有効にする前に、全サブドメインが HTTPS で運用されていることを確認してください。
+  - production 向けビルド成果物を別環境へ再利用する場合、HSTS 適用差異で動作が変わる点に注意してください。
+- `Permissions-Policy` で不要なブラウザ機能（camera / microphone / geolocation など）を無効化しています。
 
 Draft Mode プレビュー
 ----------------------

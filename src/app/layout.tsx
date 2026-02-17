@@ -3,10 +3,11 @@ import Header from '@/components/header';
 import DraftModeIndicator from '@/components/draft-mode-indicator';
 import { ThemeProvider } from '@/components/theme-provider';
 import { sanitizeMeasurementId } from '@/lib/constants';
+import { CSP_NONCE_HEADER } from '@/lib/csp';
 import { SITE_TITLE_TEMPLATE, buildOgImage, feedUrl, metadataBase, siteMetadata } from '@/lib/metadata';
 import { cn } from '@/lib/utils';
 import type { Metadata } from 'next';
-import { draftMode } from 'next/headers';
+import { draftMode, headers } from 'next/headers';
 import localFont from 'next/font/local';
 import Script from 'next/script';
 import './globals.css';
@@ -32,6 +33,7 @@ const fontMono = localFont({
 const defaultOgImage = buildOgImage();
 const GA_MEASUREMENT_ID = sanitizeMeasurementId(process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID);
 const GA_MEASUREMENT_ID_JSON = GA_MEASUREMENT_ID ? JSON.stringify(GA_MEASUREMENT_ID) : null;
+const ENABLE_CSP_E2E_PROBE = process.env.CSP_NONCE_E2E_PROBE === '1';
 
 export const metadata: Metadata = {
   metadataBase,
@@ -72,7 +74,9 @@ export const metadata: Metadata = {
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const draftState = await draftMode();
+  const requestHeaders = await headers();
   const { isEnabled } = draftState;
+  const cspNonce = requestHeaders.get(CSP_NONCE_HEADER) || undefined;
 
   return (
     <html lang="ja" suppressHydrationWarning>
@@ -86,7 +90,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           fontMono.variable,
         )}
       >
-        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem nonce={cspNonce}>
           <div className="flex min-h-screen flex-col">
             <a href="#main-content" className="skip-link">
               Skip to content
@@ -104,10 +108,12 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             <Script
               src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
               strategy="afterInteractive"
+              nonce={cspNonce}
             />
             <Script
               id="ga4"
               strategy="afterInteractive"
+              nonce={cspNonce}
               dangerouslySetInnerHTML={{
                 __html: `
                   const GA_MEASUREMENT_ID = ${GA_MEASUREMENT_ID_JSON};
@@ -121,6 +127,13 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               }}
             />
           </>
+        ) : null}
+        {ENABLE_CSP_E2E_PROBE && cspNonce ? (
+          <script
+            id="layout-csp-probe"
+            nonce={cspNonce}
+            dangerouslySetInnerHTML={{ __html: 'window.__layoutCspProbe = true;' }}
+          />
         ) : null}
       </body>
     </html>
