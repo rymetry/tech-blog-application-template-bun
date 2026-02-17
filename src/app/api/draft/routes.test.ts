@@ -16,7 +16,7 @@ const resetEnv = () => {
 
 beforeEach(() => {
   resetEnv();
-  process.env.NODE_ENV = 'test';
+  (process.env as Record<string, string | undefined>).NODE_ENV = 'test';
   process.env.NEXT_PUBLIC_SITE_URL = 'https://example.com';
 });
 

@@ -10,7 +10,7 @@ afterEach(() => {
 describe('logWarnEvent', () => {
   it('never throws even with BigInt and circular context', () => {
     const context: Record<string, unknown> = {
-      count: 1n,
+      count: BigInt(1),
     };
     context.self = context;
 

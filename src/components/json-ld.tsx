@@ -1,13 +1,18 @@
+import { CSP_NONCE_HEADER } from '@/lib/csp';
 import { logWarnEvent } from '@/lib/log-warn';
 import { stringifyJsonLd } from '@/lib/safe-json';
+import { headers } from 'next/headers';
 
 type JsonLdProps = {
   data: Record<string, unknown>;
   id?: string;
+  nonce?: string;
 };
 
-export function JsonLd({ data, id }: JsonLdProps) {
+export async function JsonLd({ data, id, nonce }: JsonLdProps) {
   let serialized = '';
+  const requestHeaders = await headers();
+  const effectiveNonce = nonce || requestHeaders.get(CSP_NONCE_HEADER) || undefined;
 
   try {
     serialized = stringifyJsonLd(data);
@@ -28,6 +33,7 @@ export function JsonLd({ data, id }: JsonLdProps) {
     <script
       type="application/ld+json"
       suppressHydrationWarning
+      {...(effectiveNonce ? { nonce: effectiveNonce } : {})}
       {...(id ? { id } : {})}
       dangerouslySetInnerHTML={{ __html: serialized }}
     />
