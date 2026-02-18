@@ -16,7 +16,7 @@ export default function Footer() {
             </p>
           </div>
           <div className="flex-col">
-            <div className="flex gap-1" aria-label="Social media links">
+            <div className="flex gap-2" aria-label="Social media links">
               {portfolioConfig.links.github ? (
                 <Link
                   href={portfolioConfig.links.github}
@@ -52,11 +52,9 @@ export default function Footer() {
             <div className="w-full text-center md:text-right md:pr-3">
               <Link
                 href="https://lucide.dev"
-                className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 rounded-md"
+                className="inline-flex min-h-[44px] items-center justify-center rounded-md px-2 text-xs sm:text-sm text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
               >
-                <p className="text-xs sm:text-sm text-muted-foreground">
-                  Icons by Lucide
-                </p>
+                Icons by Lucide
               </Link>
             </div>
           </div>
