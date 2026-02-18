@@ -14,6 +14,7 @@ export type CspMode = 'report-only' | 'enforce';
 type BuildCspHeaderValueOptions = {
   nonce: string;
   isProduction: boolean;
+  mode: CspMode;
 };
 
 export const resolveCspMode = (value: string | undefined = process.env.CSP_MODE): CspMode => {
@@ -61,6 +62,7 @@ export const createCspNonce = (): string => {
 export const buildCspHeaderValue = ({
   nonce,
   isProduction,
+  mode,
 }: BuildCspHeaderValueOptions): string => {
   const directives = [
     "default-src 'self'",
@@ -80,7 +82,7 @@ export const buildCspHeaderValue = ({
     `report-to ${CSP_REPORT_GROUP}`,
   ];
 
-  if (isProduction) {
+  if (isProduction && mode === 'enforce') {
     directives.push('upgrade-insecure-requests');
   }
 

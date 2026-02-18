@@ -52,20 +52,28 @@ describe('csp utils', () => {
     expect(nonce).toMatch(/^[A-Za-z0-9_-]{32}$/);
   });
 
-  it('includes report-uri and report-to directives, and production upgrade directive', async () => {
+  it('includes upgrade-insecure-requests only for enforce mode in production', async () => {
     const { buildCspHeaderValue } = await import(`./csp?header=${Date.now()}`);
-    const reportOnlyValue = buildCspHeaderValue({
+    const nonProductionReportOnlyValue = buildCspHeaderValue({
       nonce: 'abc123',
       isProduction: false,
+      mode: 'report-only',
     });
-    const productionValue = buildCspHeaderValue({
+    const productionReportOnlyValue = buildCspHeaderValue({
       nonce: 'abc123',
       isProduction: true,
+      mode: 'report-only',
+    });
+    const productionEnforceValue = buildCspHeaderValue({
+      nonce: 'abc123',
+      isProduction: true,
+      mode: 'enforce',
     });
 
-    expect(reportOnlyValue).toContain('report-uri /api/csp-report');
-    expect(reportOnlyValue).toContain('report-to csp-endpoint');
-    expect(reportOnlyValue).not.toContain('upgrade-insecure-requests');
-    expect(productionValue).toContain('upgrade-insecure-requests');
+    expect(nonProductionReportOnlyValue).toContain('report-uri /api/csp-report');
+    expect(nonProductionReportOnlyValue).toContain('report-to csp-endpoint');
+    expect(nonProductionReportOnlyValue).not.toContain('upgrade-insecure-requests');
+    expect(productionReportOnlyValue).not.toContain('upgrade-insecure-requests');
+    expect(productionEnforceValue).toContain('upgrade-insecure-requests');
   });
 });
