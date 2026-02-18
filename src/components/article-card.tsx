@@ -1,6 +1,7 @@
 import { Author } from '@/components/author';
 import { TagPill } from '@/components/tag-pill';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
+import { getMicroCmsImageUrl } from '@/lib/image';
 import { formatDate } from '@/lib/utils';
 import type { ArticlePost } from '@/types';
 import Image from 'next/image';
@@ -9,14 +10,17 @@ import { CalendarCheck, RefreshCcw, Tag } from 'lucide-react';
 
 interface ArticleCardProps {
   post: ArticlePost;
-  priority?: boolean;
   sizes?: string;
 }
 
 const DEFAULT_CARD_IMAGE_SIZES =
   '(max-width: 640px) 100vw, (max-width: 1024px) 50vw, (max-width: 1440px) 33vw, 420px';
 
-export function ArticleCard({ post, priority = false, sizes = DEFAULT_CARD_IMAGE_SIZES }: ArticleCardProps) {
+export function ArticleCard({ post, sizes = DEFAULT_CARD_IMAGE_SIZES }: ArticleCardProps) {
+  const coverImageUrl = post.coverImage.url || '/placeholder.svg';
+  const mainImageUrl = getMicroCmsImageUrl(coverImageUrl, { width: 960, height: 600, fit: 'max' });
+  const blurImageUrl = getMicroCmsImageUrl(coverImageUrl, { width: 320, height: 200, fit: 'max' });
+
   return (
     <Link
       href={`/articles/${post.slug}`}
@@ -26,7 +30,7 @@ export function ArticleCard({ post, priority = false, sizes = DEFAULT_CARD_IMAGE
       <Card className="h-full overflow-hidden card-surface card-surface-hover group-focus-visible:ring-2 group-focus-visible:ring-primary group-focus-visible:ring-offset-2 py-0">
         <div className="relative w-full aspect-[8/5] overflow-hidden">
           <Image
-            src={post.coverImage.url || '/placeholder.svg'}
+            src={blurImageUrl}
             alt=""
             aria-hidden="true"
             fill
@@ -35,11 +39,10 @@ export function ArticleCard({ post, priority = false, sizes = DEFAULT_CARD_IMAGE
           />
           <div className="absolute inset-0 bg-background/20" aria-hidden="true" />
           <Image
-            src={post.coverImage.url || '/placeholder.svg'}
+            src={mainImageUrl}
             alt=""
             aria-hidden="true"
             fill
-            priority={priority}
             sizes={sizes}
             className="object-contain p-2"
           />

@@ -1,4 +1,5 @@
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { getOptimizedAvatarUrl } from '@/lib/image';
 import type { Author as AuthorType } from '@/types';
 
 interface AuthorProps {
@@ -14,6 +15,11 @@ export function Author({ author, size = 'md', showName = true, compact = false }
     md: 'h-8 w-8',
     lg: 'h-10 w-10',
   };
+  const avatarSizePx = {
+    sm: 24,
+    md: 32,
+    lg: 40,
+  };
   const nameClasses = compact
     ? 'text-xs sm:text-xs md:text-xs font-medium'
     : 'text-sm sm:text-sm md:text-base font-medium';
@@ -21,11 +27,14 @@ export function Author({ author, size = 'md', showName = true, compact = false }
   // 著者名が存在しない場合
   const authorName = author.name || 'Anonymous';
   const authorInitial = authorName.charAt(0).toUpperCase();
+  const avatarSrc = author.image?.url
+    ? getOptimizedAvatarUrl(author.image.url, avatarSizePx[size])
+    : undefined;
 
   return (
     <div className="flex items-center gap-2" aria-label={`Author: ${authorName}`}>
       <Avatar className={sizeClasses[size]}>
-        {author.image?.url ? <AvatarImage src={author.image.url} alt="" loading="lazy" /> : null}
+        {avatarSrc ? <AvatarImage src={avatarSrc} alt="" loading="lazy" /> : null}
         <AvatarFallback>{authorInitial}</AvatarFallback>
       </Avatar>
       {showName && <span className={nameClasses}>{authorName}</span>}

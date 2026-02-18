@@ -40,7 +40,7 @@ export default function AboutPage() {
             <div className="grid gap-8 lg:grid-cols-[200px_1fr] items-start">
               <div className="relative w-40 h-40 rounded-full overflow-hidden mx-auto lg:mx-0 shadow-md">
                 <Image
-                  src="/placeholder.svg?height=160&width=160"
+                  src="/placeholder.svg"
                   alt={`${portfolioConfig.ownerName} profile photo`}
                   fill
                   className="object-cover"

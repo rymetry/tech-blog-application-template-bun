@@ -1,10 +1,30 @@
 import { PageHero } from '@/components/page-hero';
 import { SectionHeading } from '@/components/section-heading';
 import { SectionContainer } from '@/components/section-container';
-import { ContactForm } from '@/components/contact-form';
 import { JsonLd } from '@/components/json-ld';
 import { createPageMetadata } from '@/lib/metadata-helpers';
 import { buildBreadcrumbJsonLd } from '@/lib/structured-data';
+import dynamic from 'next/dynamic';
+
+const ContactForm = dynamic(
+  () => import('@/components/contact-form').then((mod) => mod.ContactForm),
+  {
+    loading: () => (
+      <div className="rounded-xl border border-border/40 bg-card/60 p-6 shadow-sm">
+        <div className="h-7 w-36 animate-pulse rounded bg-secondary/70" />
+        <div className="mt-3 h-4 w-full animate-pulse rounded bg-secondary/60" />
+        <div className="mt-2 h-4 w-5/6 animate-pulse rounded bg-secondary/60" />
+        <div className="mt-8 space-y-4">
+          <div className="h-11 w-full animate-pulse rounded bg-secondary/60" />
+          <div className="h-11 w-full animate-pulse rounded bg-secondary/60" />
+          <div className="h-11 w-full animate-pulse rounded bg-secondary/60" />
+          <div className="h-32 w-full animate-pulse rounded bg-secondary/60" />
+        </div>
+        <div className="mt-6 h-10 w-full animate-pulse rounded bg-secondary/70" />
+      </div>
+    ),
+  },
+);
 
 export const metadata = createPageMetadata({
   title: 'Contact',

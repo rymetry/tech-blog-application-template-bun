@@ -26,11 +26,10 @@ export async function LatestPosts() {
 
   return (
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8">
-      {latestPosts.map((post, index) => (
+      {latestPosts.map((post) => (
         <ArticleCard
           key={post.id}
           post={post}
-          priority={index === 0}
           sizes="(max-width: 767px) 100vw, (max-width: 1279px) 33vw, 400px"
         />
       ))}

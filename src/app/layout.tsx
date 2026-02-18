@@ -5,30 +5,10 @@ import { ThemeProvider } from '@/components/theme-provider';
 import { sanitizeMeasurementId } from '@/lib/constants';
 import { CSP_NONCE_HEADER } from '@/lib/csp';
 import { SITE_TITLE_TEMPLATE, buildOgImage, feedUrl, metadataBase, siteMetadata } from '@/lib/metadata';
-import { cn } from '@/lib/utils';
 import type { Metadata } from 'next';
 import { draftMode, headers } from 'next/headers';
-import localFont from 'next/font/local';
 import Script from 'next/script';
 import './globals.css';
-
-// コードブロック用（PlemolJP HS版 - 全角スペース非表示）
-const fontMono = localFont({
-  src: [
-    {
-      path: './fonts/PlemolJPHS-Regular.woff2',
-      weight: '400',
-      style: 'normal',
-    },
-    {
-      path: './fonts/PlemolJPHS-SemiBold.woff2',
-      weight: '600',
-      style: 'normal',
-    },
-  ],
-  variable: '--font-mono',
-  display: 'swap',
-});
 
 const defaultOgImage = buildOgImage();
 const GA_MEASUREMENT_ID = sanitizeMeasurementId(process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID);
@@ -84,12 +64,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <link rel="preconnect" href="https://images.microcms-assets.io" crossOrigin="" />
         <link rel="alternate" type="application/rss+xml" href={feedUrl} />
       </head>
-      <body
-        className={cn(
-          'min-h-screen bg-background antialiased',
-          fontMono.variable,
-        )}
-      >
+      <body className="min-h-screen bg-background antialiased">
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem nonce={cspNonce}>
           <div className="flex min-h-screen flex-col">
             <a href="#main-content" className="skip-link">

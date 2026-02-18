@@ -10,7 +10,6 @@ import { createPageMetadata } from '@/lib/metadata-helpers';
 import { buildBreadcrumbJsonLd } from '@/lib/structured-data';
 import { getTagsByIdMapSafe } from '@/lib/tags-map';
 import { buildQueryString } from '@/lib/utils';
-import { Suspense } from 'react';
 
 export const revalidate = 300;
 
@@ -119,16 +118,12 @@ export default async function ArticlePage(props: ArticlePageProps) {
               <p className="text-xs text-muted-foreground mb-4">
                 Filter by topic to narrow the list.
               </p>
-              <Suspense fallback={<div>Loading tags...</div>}>
-                <TagsList />
-              </Suspense>
+              <TagsList />
             </div>
           </div>
 
           <div className="space-y-8 sm:space-y-10 md:pl-6">
-            <Suspense fallback={<div className="py-10 text-center">Loading posts...</div>}>
-              <ArticlePostsList searchParams={searchParams} />
-            </Suspense>
+            <ArticlePostsList searchParams={searchParams} />
           </div>
         </div>
       </SectionContainer>

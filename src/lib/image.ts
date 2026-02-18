@@ -38,3 +38,9 @@ export function getMicroCmsImageUrl(url: string, options: MicroCmsImageOptions =
 
   return parsedUrl.toString();
 }
+
+export function getOptimizedAvatarUrl(src: string, sizePx: number): string {
+  const normalizedSize = Number.isFinite(sizePx) ? Math.max(16, Math.round(sizePx)) : 32;
+  const targetSize = Math.min(512, normalizedSize * 2);
+  return getMicroCmsImageUrl(src, { width: targetSize, height: targetSize, fit: 'crop' });
+}

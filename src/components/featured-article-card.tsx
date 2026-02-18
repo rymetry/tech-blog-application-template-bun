@@ -16,6 +16,9 @@ export function FeaturedArticleCard({ post }: FeaturedArticleCardProps) {
   const featuredImageUrl = post.hasCoverImage
     ? getMicroCmsImageUrl(post.coverImage.url, { width: 1200, height: 630, fit: 'max' })
     : '/placeholder.svg';
+  const featuredBlurImageUrl = post.hasCoverImage
+    ? getMicroCmsImageUrl(post.coverImage.url, { width: 320, height: 168, fit: 'max' })
+    : '/placeholder.svg';
 
   return (
     <Link
@@ -27,10 +30,12 @@ export function FeaturedArticleCard({ post }: FeaturedArticleCardProps) {
         <div className="grid md:grid-cols-[1fr_2fr]">
           <div className="relative min-h-[180px] overflow-hidden md:min-h-[220px]">
             <Image
-              src={featuredImageUrl}
+              src={featuredBlurImageUrl}
               alt=""
               aria-hidden="true"
               fill
+              loading="eager"
+              fetchPriority="low"
               sizes="(max-width: 768px) 100vw, 33vw"
               className="pointer-events-none object-cover scale-110 blur-2xl opacity-45"
             />
@@ -40,7 +45,8 @@ export function FeaturedArticleCard({ post }: FeaturedArticleCardProps) {
               alt=""
               aria-hidden="true"
               fill
-              priority
+              loading="eager"
+              fetchPriority="high"
               sizes="(max-width: 768px) 100vw, 33vw"
               quality={90}
               className="object-contain p-3"
