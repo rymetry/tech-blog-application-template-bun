@@ -47,6 +47,7 @@ export function middleware(request: NextRequest) {
   const cspValue = buildCspHeaderValue({
     nonce,
     isProduction: process.env.NODE_ENV === 'production',
+    mode,
   });
   const requestHeaders = new Headers(request.headers);
   requestHeaders.set(CSP_NONCE_HEADER, nonce);
