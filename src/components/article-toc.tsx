@@ -5,6 +5,7 @@ import {
   Sheet,
   SheetClose,
   SheetContent,
+  SheetDescription,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
@@ -81,11 +82,9 @@ export function ArticleToc({ items, readingScopeId = 'article-reading-scope' }: 
     };
 
     syncOffsets();
-    window.addEventListener('site-layout-vars-change', syncOffsets);
     window.addEventListener('resize', syncOffsets, { passive: true });
 
     return () => {
-      window.removeEventListener('site-layout-vars-change', syncOffsets);
       window.removeEventListener('resize', syncOffsets);
     };
   }, []);
@@ -186,7 +185,6 @@ export function ArticleToc({ items, readingScopeId = 'article-reading-scope' }: 
     scheduleUpdate();
     window.addEventListener('scroll', scheduleUpdate, { passive: true });
     window.addEventListener('resize', scheduleUpdate);
-    window.addEventListener('site-layout-vars-change', scheduleUpdate);
 
     if (typeof ResizeObserver !== 'undefined') {
       const scopeEl = document.getElementById(readingScopeId);
@@ -203,7 +201,6 @@ export function ArticleToc({ items, readingScopeId = 'article-reading-scope' }: 
       resizeObserver?.disconnect();
       window.removeEventListener('scroll', scheduleUpdate);
       window.removeEventListener('resize', scheduleUpdate);
-      window.removeEventListener('site-layout-vars-change', scheduleUpdate);
     };
   }, [readingScopeId, offsets.active, offsets.scroll]);
 
@@ -323,6 +320,9 @@ export function ArticleToc({ items, readingScopeId = 'article-reading-scope' }: 
         >
           <SheetHeader className="pb-0">
             <SheetTitle>Table of Contents</SheetTitle>
+            <SheetDescription className="sr-only">
+              Jump to headings in this article and review reading progress.
+            </SheetDescription>
             <div
               className="article-toc-progress-track"
               role="progressbar"

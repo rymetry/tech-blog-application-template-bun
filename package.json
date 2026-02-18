@@ -9,7 +9,11 @@
     "lint": "eslint .",
     "test": "bun test",
     "test:csp-e2e": "node scripts/csp-nonce-smoke.mjs",
-    "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,css,md}\""
+    "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,css,md}\"",
+    "perf:urls": "node scripts/perf-run.mjs --urls-only --mode=all",
+    "perf:lh:mobile": "node scripts/perf-run.mjs --device=mobile",
+    "perf:lh:desktop": "node scripts/perf-run.mjs --device=desktop",
+    "perf:assert": "node scripts/perf-assert.mjs"
   },
   "dependencies": {
     "@radix-ui/react-avatar": "^1.1.4",
