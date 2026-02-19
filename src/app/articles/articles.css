@@ -313,7 +313,7 @@
   }
 
   .editorial-scope .article-toc-link-active {
-    @apply bg-primary/10 text-primary;
+    @apply bg-primary/10 text-primary font-semibold;
   }
 
   .editorial-scope .article-toc-indent-h3 {
