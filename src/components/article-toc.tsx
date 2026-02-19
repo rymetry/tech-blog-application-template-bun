@@ -18,7 +18,6 @@ import type { MouseEvent } from 'react';
 
 interface ArticleTocProps {
   items: TocItem[];
-  readingScopeId?: string;
 }
 
 interface TocOffsets {
@@ -49,13 +48,8 @@ function readTocOffsets(): TocOffsets {
   };
 }
 
-function clamp(value: number, min: number, max: number) {
-  return Math.min(max, Math.max(min, value));
-}
-
-export function ArticleToc({ items, readingScopeId = 'article-reading-scope' }: ArticleTocProps) {
+export function ArticleToc({ items }: ArticleTocProps) {
   const [activeId, setActiveId] = useState(items[0]?.id ?? '');
-  const [readingProgress, setReadingProgress] = useState(0);
   const [offsets, setOffsets] = useState<TocOffsets>({
     scroll: FALLBACK_SCROLL_OFFSET_PX,
     active: FALLBACK_ACTIVE_OFFSET_PX,
@@ -146,64 +140,6 @@ export function ArticleToc({ items, readingScopeId = 'article-reading-scope' }: 
     };
   }, [items, offsets.active]);
 
-  useEffect(() => {
-    let frameId = 0;
-    let resizeObserver: ResizeObserver | null = null;
-
-    const updateReadingProgress = () => {
-      const scopeEl = document.getElementById(readingScopeId);
-      if (!scopeEl) {
-        setReadingProgress((current) => (current === 0 ? current : 0));
-        return;
-      }
-
-      const rect = scopeEl.getBoundingClientRect();
-      const readLine = window.scrollY + offsets.active;
-      const scopeTop = rect.top + window.scrollY - offsets.scroll;
-      const scopeBottom = rect.bottom + window.scrollY;
-      const ratio = clamp(
-        (readLine - scopeTop) / Math.max(scopeBottom - scopeTop, 1),
-        0,
-        1,
-      );
-      const nextProgress = Math.round(ratio * 100);
-
-      setReadingProgress((current) => (current === nextProgress ? current : nextProgress));
-    };
-
-    const scheduleUpdate = () => {
-      if (frameId !== 0) {
-        return;
-      }
-
-      frameId = window.requestAnimationFrame(() => {
-        frameId = 0;
-        updateReadingProgress();
-      });
-    };
-
-    scheduleUpdate();
-    window.addEventListener('scroll', scheduleUpdate, { passive: true });
-    window.addEventListener('resize', scheduleUpdate);
-
-    if (typeof ResizeObserver !== 'undefined') {
-      const scopeEl = document.getElementById(readingScopeId);
-      if (scopeEl) {
-        resizeObserver = new ResizeObserver(scheduleUpdate);
-        resizeObserver.observe(scopeEl);
-      }
-    }
-
-    return () => {
-      if (frameId !== 0) {
-        window.cancelAnimationFrame(frameId);
-      }
-      resizeObserver?.disconnect();
-      window.removeEventListener('scroll', scheduleUpdate);
-      window.removeEventListener('resize', scheduleUpdate);
-    };
-  }, [readingScopeId, offsets.active, offsets.scroll]);
-
   const handleTocClick = (event: MouseEvent<HTMLAnchorElement>, id: string) => {
     event.preventDefault();
     const heading = document.getElementById(id);
@@ -220,10 +156,6 @@ export function ArticleToc({ items, readingScopeId = 'article-reading-scope' }: 
   const activeIndex = items.findIndex((item) => item.id === activeId);
 
   const resolveSegmentState = (index: number): TocSegmentState => {
-    if (readingProgress >= 100 && index === items.length - 1) {
-      return 'done';
-    }
-
     if (activeIndex < 0) {
       return 'upcoming';
     }
@@ -284,20 +216,6 @@ export function ArticleToc({ items, readingScopeId = 'article-reading-scope' }: 
     <>
       <aside className="article-toc-panel hidden lg:block">
         <div className="mb-3 text-xs font-semibold text-foreground">Table of Contents</div>
-        <div
-          className="article-toc-progress-track mb-3"
-          role="progressbar"
-          aria-label="Reading progress"
-          aria-valuemin={0}
-          aria-valuemax={100}
-          aria-valuenow={readingProgress}
-        >
-          <div
-            className="article-toc-progress-fill"
-            style={{ width: `${readingProgress}%` }}
-            aria-hidden="true"
-          />
-        </div>
         <nav aria-label="Table of contents">{renderLinks()}</nav>
       </aside>
 
@@ -321,22 +239,8 @@ export function ArticleToc({ items, readingScopeId = 'article-reading-scope' }: 
           <SheetHeader className="pb-0">
             <SheetTitle>Table of Contents</SheetTitle>
             <SheetDescription className="sr-only">
-              Jump to headings in this article and review reading progress.
+              Jump to headings in this article.
             </SheetDescription>
-            <div
-              className="article-toc-progress-track"
-              role="progressbar"
-              aria-label="Reading progress"
-              aria-valuemin={0}
-              aria-valuemax={100}
-              aria-valuenow={readingProgress}
-            >
-              <div
-                className="article-toc-progress-fill"
-                style={{ width: `${readingProgress}%` }}
-                aria-hidden="true"
-              />
-            </div>
           </SheetHeader>
           <div className="overflow-y-auto px-4 pb-[calc(1.5rem+env(safe-area-inset-bottom))]">
             <nav aria-label="Table of contents">{renderLinks(true)}</nav>

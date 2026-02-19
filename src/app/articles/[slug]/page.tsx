@@ -188,7 +188,7 @@ export default async function ArticlePostPage({ params, searchParams }: ArticleP
               : 'max-w-[1024px]'
           }`}
         >
-          <div id="article-reading-scope" className="min-w-0">
+          <div className="min-w-0">
             <ArticleContent html={processedHtml} />
           </div>
 
@@ -197,7 +197,7 @@ export default async function ArticlePostPage({ params, searchParams }: ArticleP
               className="min-w-0 lg:sticky lg:self-start"
               style={{ top: 'var(--article-toc-sticky-top)' }}
             >
-              <ArticleToc items={toc} readingScopeId="article-reading-scope" />
+              <ArticleToc items={toc} />
             </div>
           )}
         </div>

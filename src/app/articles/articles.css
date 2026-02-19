@@ -336,11 +336,4 @@
     @apply h-[14px] w-[3px] bg-muted-foreground/35;
   }
 
-  .editorial-scope .article-toc-progress-track {
-    @apply h-1.5 w-full overflow-hidden rounded-full bg-secondary;
-  }
-
-  .editorial-scope .article-toc-progress-fill {
-    @apply h-full rounded-full bg-primary transition-[width] duration-200;
-  }
 }
