@@ -7,11 +7,6 @@ const articleMonoFont = localFont({
       weight: '400',
       style: 'normal',
     },
-    {
-      path: '../../fonts/PlemolJPHS-SemiBold.woff2',
-      weight: '600',
-      style: 'normal',
-    },
   ],
   variable: '--font-mono',
   display: 'swap',
