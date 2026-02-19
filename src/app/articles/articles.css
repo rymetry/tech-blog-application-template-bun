@@ -288,7 +288,7 @@
   }
 
   .editorial-scope .article-hero-cover-compact {
-    @apply h-[100px] w-[100px] rounded-2xl border border-border/40 bg-card/70 shadow-sm;
+    @apply w-[200px] md:w-[224px] lg:w-[240px] aspect-[8/5] rounded-2xl border border-border/40 bg-card/70 shadow-sm;
   }
 
   .editorial-scope .article-hero-cover-placeholder {
