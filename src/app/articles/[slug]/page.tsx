@@ -91,7 +91,7 @@ export default async function ArticlePostPage({ params, searchParams }: ArticleP
   ]);
   const articleJsonLd = buildArticleJsonLd(post);
   const compactCoverUrl = post.hasCoverImage
-    ? getMicroCmsImageUrl(post.coverImage.url, { width: 240, height: 240, fit: 'max' })
+    ? getMicroCmsImageUrl(post.coverImage.url, { width: 720, height: 450, fit: 'crop' })
     : '';
   const { html: processedHtml, toc } = await processArticleContentWithToc(post.content);
   const shouldShowToc = post.showToc === true || (post.showToc == null && toc.length >= 3);
@@ -139,18 +139,8 @@ export default async function ArticlePostPage({ params, searchParams }: ArticleP
                     alt=""
                     aria-hidden="true"
                     fill
-                    sizes="100px"
-                    className="pointer-events-none object-cover scale-110 blur-xl opacity-45"
-                  />
-                  <div className="absolute inset-0 bg-background/20" aria-hidden="true" />
-                  <Image
-                    src={compactCoverUrl}
-                    alt=""
-                    aria-hidden="true"
-                    fill
-                    sizes="100px"
-                    quality={90}
-                    className="object-contain p-1.5"
+                    sizes="(max-width: 767px) 200px, (max-width: 1023px) 224px, 240px"
+                    className="object-cover object-center"
                   />
                 </div>
               ) : (
@@ -188,7 +178,7 @@ export default async function ArticlePostPage({ params, searchParams }: ArticleP
               : 'max-w-[1024px]'
           }`}
         >
-          <div id="article-reading-scope" className="min-w-0">
+          <div className="min-w-0">
             <ArticleContent html={processedHtml} />
           </div>
 
@@ -197,7 +187,7 @@ export default async function ArticlePostPage({ params, searchParams }: ArticleP
               className="min-w-0 lg:sticky lg:self-start"
               style={{ top: 'var(--article-toc-sticky-top)' }}
             >
-              <ArticleToc items={toc} readingScopeId="article-reading-scope" />
+              <ArticleToc items={toc} />
             </div>
           )}
         </div>

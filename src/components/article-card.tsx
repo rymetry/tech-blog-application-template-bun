@@ -18,8 +18,7 @@ const DEFAULT_CARD_IMAGE_SIZES =
 
 export function ArticleCard({ post, sizes = DEFAULT_CARD_IMAGE_SIZES }: ArticleCardProps) {
   const coverImageUrl = post.coverImage.url || '/placeholder.svg';
-  const mainImageUrl = getMicroCmsImageUrl(coverImageUrl, { width: 960, height: 600, fit: 'max' });
-  const blurImageUrl = getMicroCmsImageUrl(coverImageUrl, { width: 320, height: 200, fit: 'max' });
+  const mainImageUrl = getMicroCmsImageUrl(coverImageUrl, { width: 960, height: 600, fit: 'crop' });
 
   return (
     <Link
@@ -30,21 +29,12 @@ export function ArticleCard({ post, sizes = DEFAULT_CARD_IMAGE_SIZES }: ArticleC
       <Card className="h-full overflow-hidden card-surface card-surface-hover group-focus-visible:ring-2 group-focus-visible:ring-primary group-focus-visible:ring-offset-2 py-0">
         <div className="relative w-full aspect-[8/5] overflow-hidden">
           <Image
-            src={blurImageUrl}
-            alt=""
-            aria-hidden="true"
-            fill
-            sizes={sizes}
-            className="pointer-events-none object-cover scale-110 blur-2xl opacity-45"
-          />
-          <div className="absolute inset-0 bg-background/20" aria-hidden="true" />
-          <Image
             src={mainImageUrl}
             alt=""
             aria-hidden="true"
             fill
             sizes={sizes}
-            className="object-contain p-2"
+            className="object-cover object-center"
           />
         </div>
         <CardContent className="p-4 space-y-3">

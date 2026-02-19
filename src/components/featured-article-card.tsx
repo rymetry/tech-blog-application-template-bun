@@ -12,12 +12,16 @@ interface FeaturedArticleCardProps {
   post: ArticlePost;
 }
 
+const FEATURED_IMAGE_SIZES =
+  '(max-width: 767px) 100vw, (max-width: 1023px) calc(100vw - 320px), (max-width: 1279px) calc((100vw - 344px) / 2), 468px';
+
 export function FeaturedArticleCard({ post }: FeaturedArticleCardProps) {
   const featuredImageUrl = post.hasCoverImage
-    ? getMicroCmsImageUrl(post.coverImage.url, { width: 1200, height: 630, fit: 'max' })
-    : '/placeholder.svg';
-  const featuredBlurImageUrl = post.hasCoverImage
-    ? getMicroCmsImageUrl(post.coverImage.url, { width: 320, height: 168, fit: 'max' })
+    ? getMicroCmsImageUrl(post.coverImage.url, {
+        width: 1200,
+        height: 675,
+        fit: 'crop',
+      })
     : '/placeholder.svg';
 
   return (
@@ -27,19 +31,8 @@ export function FeaturedArticleCard({ post }: FeaturedArticleCardProps) {
       aria-labelledby={`featured-article-title-${post.slug}`}
     >
       <Card className="overflow-hidden card-surface card-surface-hover group-focus-visible:ring-2 group-focus-visible:ring-primary group-focus-visible:ring-offset-2 py-0">
-        <div className="grid md:grid-cols-[1fr_2fr]">
-          <div className="relative min-h-[180px] overflow-hidden md:min-h-[220px]">
-            <Image
-              src={featuredBlurImageUrl}
-              alt=""
-              aria-hidden="true"
-              fill
-              loading="eager"
-              fetchPriority="low"
-              sizes="(max-width: 768px) 100vw, 33vw"
-              className="pointer-events-none object-cover scale-110 blur-2xl opacity-45"
-            />
-            <div className="absolute inset-0 bg-background/20" aria-hidden="true" />
+        <div className="grid lg:grid-cols-[1.5fr_1.5fr]">
+          <div className="relative w-full overflow-hidden aspect-[16/9] lg:aspect-auto lg:h-full lg:min-h-[240px]">
             <Image
               src={featuredImageUrl}
               alt=""
@@ -47,9 +40,8 @@ export function FeaturedArticleCard({ post }: FeaturedArticleCardProps) {
               fill
               loading="eager"
               fetchPriority="high"
-              sizes="(max-width: 768px) 100vw, 33vw"
-              quality={90}
-              className="object-contain p-3"
+              sizes={FEATURED_IMAGE_SIZES}
+              className="object-cover object-center"
             />
           </div>
           <div className="flex flex-col justify-between gap-4 p-5 sm:p-6">
