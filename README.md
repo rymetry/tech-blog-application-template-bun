@@ -1,7 +1,7 @@
-Tech Blog Application Template (Next.js + microCMS)
-==================================================
+Portfolio + Writing Template (Next.js + microCMS)
+=================================================
 
-Next.js 15 / React 19 / Tailwind CSS v4 で構築した技術ブログ用テンプレートです。microCMS をヘッドレス CMS として採用し、記事一覧・検索・タグ絞り込み・関連記事・前後記事ナビゲーションなどブログ運用に必要な機能を備えています。App Router ベースで SEO とパフォーマンス最適化（ISR、メタデータ、構造化データ、RSS など）を実装済みです。
+Next.js 15 / React 19 / Tailwind CSS v4 で構築した、**Portfolio + Writing** 向けテンプレートです。microCMS をヘッドレス CMS として採用し、記事一覧・検索・タグ絞り込み・関連記事・前後記事ナビゲーションなどのブログ機能に加え、Projects / About / Contact を含むポートフォリオ導線を備えています。App Router ベースで SEO とパフォーマンス最適化（ISR、メタデータ、構造化データ、RSS など）を実装済みです。
 
 主な機能
 --------
@@ -9,11 +9,16 @@ Next.js 15 / React 19 / Tailwind CSS v4 で構築した技術ブログ用テン�
 - microCMS 連携
   - 記事 / タグの取得を `src/lib/api.ts` に集約
   - アダプターで API スキーマをアプリ内型へマッピング
+- ポートフォリオ UI
+  - Home のヒーロー、フォーカス領域、CTA
+  - Projects 一覧（カード表示）
+  - About / Contact ページ
+  - `src/lib/portfolio-config.ts` / `src/lib/projects.ts` によるプロフィール・実績の差し替え
 - ブログ UI
   - 最新記事カード（トップページ）
   - 記事一覧（検索、タグフィルタ、ページネーション）
-  - 記事詳細（著者 / 公開・更新日 / タグ / 関連記事 / 前後記事ナビ）
-  - お問い合わせフォーム、About ページ
+  - 記事詳細（著者 / 公開・更新日 / タグ / 目次 / 関連記事 / 前後記事ナビ）
+  - 記事本文の HTML サニタイズ、コードハイライト、行番号表示
 - SEO と配信
   - `generateMetadata` / `Metadata` API を活用した title / description / canonical / OGP / Twitter カード
   - JSON-LD（Article / Breadcrumb / Blog）を自動出力
@@ -33,8 +38,8 @@ Next.js 15 / React 19 / Tailwind CSS v4 で構築した技術ブログ用テン�
   - shadcn/ui コンポーネント
   - `next-themes` によるダークモード
   - 日本語最適化フォント
-    - **Noto Sans JP**（Google Fonts）: サイト全体（本文・見出し・UI）
-    - **PlemolJP HS版**（ローカルフォント）: コードブロック専用
+    - **Noto Sans JP**（CSSフォントスタック）: サイト全体（本文・見出し・UI）
+    - **PlemolJP HS版**（`next/font/local`）: 記事詳細ページのコード表示向け
     - clamp() による流動的なフォントサイズでレスポンシブ対応
     - 日本語イタリック問題への対策済み
   - アクセシビリティ対応（Skip Link、ARIA 属性など）
@@ -56,6 +61,7 @@ Next.js 15 / React 19 / Tailwind CSS v4 で構築した技術ブログ用テン�
 
 - `src/app`
   - `page.tsx` トップページ
+  - `projects` ポートフォリオ一覧
   - `articles/` 一覧・記事詳細ルート
   - `about` / `contact` / `not-found`
   - `layout.tsx` 共通レイアウト（メタデータ、テーマ、ヘッダー/フッター、GA、RSSリンク）
@@ -63,11 +69,14 @@ Next.js 15 / React 19 / Tailwind CSS v4 で構築した技術ブログ用テン�
   - `sitemap.ts` / `robots.ts` / `feed.xml/route.ts`
 - `src/components` UI コンポーネント、ページ専用コンポーネント
 - `src/lib`
+  - `portfolio-config.ts` プロフィール表示設定
+  - `projects.ts` プロジェクトデータ
   - `microcms.ts` microCMS クライアント
   - `api.ts` データ取得ラッパー
   - `metadata.ts` サイト定数と URL ユーティリティ
   - `metadata-helpers.ts` ページ/記事用メタデータ生成ヘルパー
   - `structured-data.ts` JSON-LD ユーティリティ
+  - `toc.ts` 記事本文の TOC / コードブロック処理
   - `utils.ts` 共通ヘルパー（`cn`, `formatDate`, `truncateForSEO`, `stripHtml` など）
 - `src/types` ドメイン型定義
 - `public` 静的アセット（プレースホルダー画像など）
@@ -100,6 +109,12 @@ NEXT_PUBLIC_GA_MEASUREMENT_ID=G-XXXXXXXXXX # GA4 を利用する場合のみ
 - `NEXT_PUBLIC_SITE_URL` を指定すると canonical / OGP / RSS URL が正しく生成されます。production で未設定の場合は `VERCEL_URL` を自動利用し、それも無い場合は fail-fast でビルドエラーになります。
 - `SITE_URL` は非サポートです。設定しても利用されず、起動時にエラーになります。
 - `ALLOW_LOCALHOST_SITE_URL_FOR_BUILD=1` はローカル検証専用です。`VERCEL=1` または truthy `CI`（`true|1|yes`）と併用すると fail-fast します。
+
+初期カスタマイズ:
+
+- `src/lib/portfolio-config.ts`: 名前、肩書き、自己紹介、SNSリンク、注力領域を更新
+- `src/lib/projects.ts`: プロジェクトカード内容（概要、役割、成果、リンク）を更新
+- `public/placeholder*.{svg,png,jpg}`: プロフィール・OGP・ロゴのプレースホルダーを差し替え
 
 任意のパッケージマネージャを利用できます。例として Bun:
 
@@ -136,13 +151,74 @@ npm run dev
 - `bun run test:csp-e2e` CSP nonce 伝播のE2E相当スモーク（build + start）
 - `bun run start` / `npm run start` 本番サーバー
 - `bun run format` Prettier による整形（`.prettierrc` を参照）
+- `bun run perf:urls` 対象URLリストを `.perf/urls-all.txt` に生成
+- `bun run perf:lh:mobile` Lighthouse（mobile）を実行し `.perf/lh-mobile/` に保存
+- `bun run perf:lh:desktop` Lighthouse（desktop）を実行し `.perf/lh-desktop/` に保存
+- `bun run perf:assert` Lighthouse サマリに対してスコア閾値を検証
 
-コンテンツモデリングのヒント
-----------------------------
+補足:
 
-- 記事コンテンツには `title`, `slug`, `excerpt`, `content`（リッチテキスト or HTML）, `ogpImage`, `tags`, `authors`, `relatedArticles` といったフィールドを想定しています。
-- タグと著者は microCMS のリレーション機能で記事と紐付けます。
-- OGP 画像は 1200x630 を推奨。未設定の場合はプレースホルダーが使用されます。
+- `test` スクリプトは `bun test` を実行するため、`npm test` を使う場合も Bun が必要です。
+
+コンテンツモデリング / microCMS API スキーマ
+--------------------------------------------
+
+以下は microCMS のスキーマ定義JSON（`2026-02-20` 取得）に基づく構成です。
+
+Articles API（`MICROCMS_ARTICLES`）
+
+| fieldId | kind | required | 備考 |
+| --- | --- | --- | --- |
+| `title` | `text` | yes | 記事タイトル |
+| `slug` | `text` | yes | 一意。バリデーション: `^[a-z0-9]+(?:-[a-z0-9]+)*$` |
+| `ogpImage` | `media` | yes | OGP / カバー画像 |
+| `authors` | `relation` | yes | Authors API への単一リレーション |
+| `tags` | `relationList` | yes | Tags API への複数リレーション |
+| `content` | `custom` | yes | カスタムフィールド（`articleBody`） |
+| `excerpt` | `text` | yes | 概要文 |
+
+Articles API `content`（custom: `articleBody`）
+
+| fieldId | kind | required | 備考 |
+| --- | --- | --- | --- |
+| `showToc` | `boolean` | no | 目次表示フラグ |
+| `body` | `richEditorV2` | yes | 本文（カスタムクラス対応） |
+| `relatedArticles` | `relationList` | no | Articles API への関連記事リレーション |
+
+Authors API（記事の `authors` リレーション先）
+
+| fieldId | kind | required | 備考 |
+| --- | --- | --- | --- |
+| `name` | `text` | yes | 著者名 |
+| `profileImage` | `media` | yes | プロフィール画像 |
+| `bio` | `richEditorV2` | no | 自己紹介 |
+| `role` | `text` | no | 役割 / 肩書き |
+| `email` | `text` | no | 連絡先メール |
+| `socialLinks` | `custom` | no | カスタムフィールド（`snsLinks`） |
+
+Authors API `socialLinks`（custom: `snsLinks`）
+
+| fieldId | kind | required |
+| --- | --- | --- |
+| `github` | `text` | no |
+| `xTwitter` | `text` | no |
+| `linkedin` | `text` | no |
+| `facebook` | `text` | no |
+| `instagram` | `text` | no |
+
+Tags API（`MICROCMS_TAGS`）
+
+| fieldId | kind | required | 備考 |
+| --- | --- | --- | --- |
+| `name` | `text` | yes | タグ名 |
+| `slug` | `text` | yes | 検索・URL用スラッグ |
+
+実装側の互換フォールバック（旧スキーマ対応）:
+
+- 本文: `custom_body.article_body` / `custom_body.body` / `content.body`
+- 目次: `custom_body.toc_visible` / `content.showToc`
+- 関連記事: `custom_body.related_articles` / `content.relatedArticles`
+- OGP画像: `ogp_image` / `ogpImage`
 
 SEO / 配信設定
 --------------
@@ -201,6 +277,7 @@ https://your-domain/api/draft/enable?secret=MICROCMS_PREVIEW_SECRET&contentId=..
 - **microCMS のデータが取得できない**: 環境変数のエンドポイント URL や API Key が正しいか確認してください。
 - **Prettier で `prettier-plugin-organize-imports` が見つからない**: `bun add -d prettier-plugin-organize-imports` で追加するか `.prettierrc` から plugins を削除してください。
 - **Draft Mode が有効にならない**: `MICROCMS_PREVIEW_SECRET` と microCMS 側のプレビュー設定を再確認してください。
+- **Contact フォーム送信が保存されない**: 現在は UI モック実装です。送信先API（Route Handler / 外部フォームサービス）を別途接続してください。
 
 デプロイ
 --------
