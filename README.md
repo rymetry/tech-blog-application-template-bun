@@ -1,7 +1,7 @@
-Portfolio + Writing Template (Next.js + microCMS)
+Portfolio & Blog Template (Next.js + microCMS)
 =================================================
 
-Next.js 15 / React 19 / Tailwind CSS v4 で構築した、**Portfolio + Writing** 向けテンプレートです。microCMS をヘッドレス CMS として採用し、記事一覧・検索・タグ絞り込み・関連記事・前後記事ナビゲーションなどのブログ機能に加え、Projects / About / Contact を含むポートフォリオ導線を備えています。App Router ベースで SEO とパフォーマンス最適化（ISR、メタデータ、構造化データ、RSS など）を実装済みです。
+Next.js 15 / React 19 / Tailwind CSS v4 で構築した、**Portfolio & Blog** 向けテンプレートです。microCMS をヘッドレス CMS として採用し、記事一覧・検索・タグ絞り込み・関連記事・前後記事ナビゲーションなどのブログ機能に加え、Projects / About / Contact を含むポートフォリオ導線を備えています。App Router ベースで SEO とパフォーマンス最適化（ISR、メタデータ、構造化データ、RSS など）を実装済みです。
 
 主な機能
 --------
@@ -191,20 +191,6 @@ Authors API（記事の `authors` リレーション先）
 | --- | --- | --- | --- |
 | `name` | `text` | yes | 著者名 |
 | `profileImage` | `media` | yes | プロフィール画像 |
-| `bio` | `richEditorV2` | no | 自己紹介 |
-| `role` | `text` | no | 役割 / 肩書き |
-| `email` | `text` | no | 連絡先メール |
-| `socialLinks` | `custom` | no | カスタムフィールド（`snsLinks`） |
-
-Authors API `socialLinks`（custom: `snsLinks`）
-
-| fieldId | kind | required |
-| --- | --- | --- |
-| `github` | `text` | no |
-| `xTwitter` | `text` | no |
-| `linkedin` | `text` | no |
-| `facebook` | `text` | no |
-| `instagram` | `text` | no |
 
 Tags API（`MICROCMS_TAGS`）
 
