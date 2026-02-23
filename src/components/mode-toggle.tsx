@@ -8,20 +8,19 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useTheme } from 'next-themes';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useSyncExternalStore } from 'react';
 import { Laptop, MoonStar, Sun } from 'lucide-react';
+
+const subscribe = () => () => {};
+const getSnapshot = () => true;
+const getServerSnapshot = () => false;
 
 export function ModeToggle() {
   const { setTheme, theme } = useTheme();
-  const [mounted, setMounted] = useState(false);
+  const mounted = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
   const setLightTheme = useCallback(() => setTheme('light'), [setTheme]);
   const setDarkTheme = useCallback(() => setTheme('dark'), [setTheme]);
   const setSystemTheme = useCallback(() => setTheme('system'), [setTheme]);
-
-  // クライアントサイドでのみ実行されるようにする
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   return (
     <DropdownMenu>

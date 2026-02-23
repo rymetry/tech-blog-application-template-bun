@@ -1,28 +1,17 @@
-import { dirname } from "path";
-import { fileURLToPath } from "url";
-import { FlatCompat } from "@eslint/eslintrc";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
-const compat = new FlatCompat({
-  baseDirectory: __dirname,
-});
+import nextCoreWebVitals from "eslint-config-next/core-web-vitals";
+import nextTypescript from "eslint-config-next/typescript";
+import prettier from "eslint-config-prettier";
 
 const NON_TEST_FILES = ["**/*.{js,jsx,ts,tsx,mjs,cjs}"];
-const TEST_FILES = ["**/*.test.{js,jsx,ts,tsx}", "**/__tests__/**"];
+const TEST_FILES = ["**/*.test.{js,jsx,ts,tsx}", "**/*.spec.{ts,tsx}", "**/__tests__/**"];
 
 const eslintConfig = [
   {
     ignores: [".next/**", "next-env.d.ts"],
   },
-  ...compat.config({
-    extends: [
-      "next/core-web-vitals",
-      "next/typescript",
-      "prettier",
-    ],
-  }),
+  ...nextCoreWebVitals,
+  ...nextTypescript,
+  prettier,
   {
     files: NON_TEST_FILES,
     ignores: TEST_FILES,

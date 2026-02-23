@@ -49,15 +49,19 @@ function readTocOffsets(): TocOffsets {
 }
 
 export function ArticleToc({ items }: ArticleTocProps) {
-  const [activeId, setActiveId] = useState(items[0]?.id ?? '');
+  const firstId = items[0]?.id ?? '';
+  const [activeId, setActiveId] = useState(firstId);
+  const [prevFirstId, setPrevFirstId] = useState(firstId);
   const [offsets, setOffsets] = useState<TocOffsets>({
     scroll: FALLBACK_SCROLL_OFFSET_PX,
     active: FALLBACK_ACTIVE_OFFSET_PX,
   });
 
-  useEffect(() => {
-    setActiveId(items[0]?.id ?? '');
-  }, [items]);
+  // items が変わったら activeId をリセットする（レンダリング中に同期）
+  if (prevFirstId !== firstId) {
+    setPrevFirstId(firstId);
+    setActiveId(firstId);
+  }
 
   useEffect(() => {
     const syncOffsets = () => {

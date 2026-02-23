@@ -40,6 +40,7 @@ const createSecurityHeaders = () => {
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+  cacheComponents: true,
   async headers() {
     return [
       {

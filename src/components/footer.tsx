@@ -1,3 +1,4 @@
+import { CopyrightYear } from '@/components/copyright-year';
 import Link from 'next/link';
 import { Github, Linkedin, Mail } from 'lucide-react';
 import { portfolioConfig } from '@/lib/portfolio-config';
@@ -60,7 +61,7 @@ export default function Footer() {
           </div>
         </div>
         <div className="mt-8 text-center text-xs sm:text-sm text-muted-foreground">
-          © {new Date().getFullYear()} {portfolioConfig.ownerName}. All rights reserved.
+          © <CopyrightYear /> {portfolioConfig.ownerName}. All rights reserved.
         </div>
       </div>
     </footer>

@@ -1,18 +1,17 @@
-import { CSP_NONCE_HEADER } from '@/lib/csp';
 import { logWarnEvent } from '@/lib/log-warn';
 import { stringifyJsonLd } from '@/lib/safe-json';
-import { headers } from 'next/headers';
 
 type JsonLdProps = {
   data: Record<string, unknown>;
   id?: string;
-  nonce?: string;
 };
 
-export async function JsonLd({ data, id, nonce }: JsonLdProps) {
+/**
+ * JSON-LD 構造化データを出力する同期コンポーネント。
+ * type="application/ld+json" は非実行型スクリプトのため、CSP nonce は不要。
+ */
+export function JsonLd({ data, id }: JsonLdProps) {
   let serialized = '';
-  const requestHeaders = await headers();
-  const effectiveNonce = nonce || requestHeaders.get(CSP_NONCE_HEADER) || undefined;
 
   try {
     serialized = stringifyJsonLd(data);
@@ -33,7 +32,6 @@ export async function JsonLd({ data, id, nonce }: JsonLdProps) {
     <script
       type="application/ld+json"
       suppressHydrationWarning
-      {...(effectiveNonce ? { nonce: effectiveNonce } : {})}
       {...(id ? { id } : {})}
       dangerouslySetInnerHTML={{ __html: serialized }}
     />

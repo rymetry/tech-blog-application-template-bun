@@ -5,7 +5,7 @@ import { JsonLd } from '@/components/json-ld';
 import { ArticleContent } from '@/components/article-content';
 import { ArticleToc } from '@/components/article-toc';
 import { TagPill } from '@/components/tag-pill';
-import { getAllArticles, getArticlePost } from '@/lib/api';
+import { getArticlePost } from '@/lib/api';
 import { getMicroCmsImageUrl } from '@/lib/image';
 import { createArticleMetadata, createPageMetadata } from '@/lib/metadata-helpers';
 import { buildArticleJsonLd, buildBreadcrumbJsonLd } from '@/lib/structured-data';
@@ -27,9 +27,6 @@ interface ArticlePostPageProps {
     contentId?: string;
   }>;
 }
-
-// revalidate は数値リテラルでないとビルド時に最適化されないため、ここで直接指定する。
-export const revalidate = 300;
 
 export async function generateMetadata({ params, searchParams }: ArticlePostPageProps) {
   const { slug } = await params;
@@ -59,15 +56,10 @@ export async function generateMetadata({ params, searchParams }: ArticlePostPage
   }
 }
 
-export async function generateStaticParams() {
-  try {
-    const articles = await getAllArticles();
-    return articles.map((article) => ({ slug: article.slug }));
-  } catch (error) {
-    console.error('Error generating static params for articles:', error);
-    return [];
-  }
-}
+// generateStaticParams は削除済み — cacheComponents: true は空配列で
+// EmptyGenerateStaticParamsError をスローするため、記事ゼロ環境での
+// ビルド失敗を回避する。dynamicParams = true（デフォルト）により
+// 全スラッグがオンデマンドで生成・自動キャッシュされる。
 
 // 関連/前後ナビは外部コンポーネントに分離
 

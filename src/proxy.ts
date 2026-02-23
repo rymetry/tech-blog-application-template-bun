@@ -1,9 +1,7 @@
 import {
-  CSP_NONCE_HEADER,
   CSP_REPORT_GROUP,
   CSP_REPORT_MAX_AGE_SECONDS,
   buildCspHeaderValue,
-  createCspNonce,
   resolveCspMode,
 } from '@/lib/csp';
 import type { NextRequest } from 'next/server';
@@ -37,27 +35,18 @@ export const shouldApplyCsp = (request: Pick<NextRequest, 'method' | 'headers'>)
   return fetchMode === NAVIGATE_MODE;
 };
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   if (!shouldApplyCsp(request)) {
     return NextResponse.next();
   }
 
-  const nonce = createCspNonce();
   const mode = resolveCspMode();
   const cspValue = buildCspHeaderValue({
-    nonce,
     isProduction: process.env.NODE_ENV === 'production',
     mode,
   });
-  const requestHeaders = new Headers(request.headers);
-  requestHeaders.set(CSP_NONCE_HEADER, nonce);
-  requestHeaders.set('content-security-policy', cspValue);
 
-  const response = NextResponse.next({
-    request: {
-      headers: requestHeaders,
-    },
-  });
+  const response = NextResponse.next();
 
   const reportEndpoint = new URL('/api/csp-report', request.nextUrl.origin).toString();
   response.headers.set(
@@ -79,6 +68,6 @@ export function middleware(request: NextRequest) {
   return response;
 }
 
-export const config = {
-  matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
+export const config: import('next/server').ProxyConfig = {
+  matcher: ['/((?!api|_next/static|_next/image|favicon.ico|sitemap\\.xml|robots\\.txt).*)'],
 };

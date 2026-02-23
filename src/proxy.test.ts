@@ -41,10 +41,10 @@ afterEach(() => {
   setNodeEnv(ORIGINAL_NODE_ENV);
 });
 
-describe('middleware CSP', () => {
+describe('proxy CSP', () => {
   it('applies HTML detection with case-insensitive Accept', async () => {
     setNodeEnv('production');
-    const { shouldApplyCsp } = await import(`./middleware?accept=${Date.now()}`);
+    const { shouldApplyCsp } = await import(`./proxy?accept=${Date.now()}`);
 
     const applies = shouldApplyCsp(
       makeRequestLike('GET', { Accept: 'TEXT/HTML,application/xhtml+xml' }),
@@ -55,7 +55,7 @@ describe('middleware CSP', () => {
 
   it('falls back to sec-fetch headers when Accept is missing', async () => {
     setNodeEnv('production');
-    const { shouldApplyCsp } = await import(`./middleware?fallback=${Date.now()}`);
+    const { shouldApplyCsp } = await import(`./proxy?fallback=${Date.now()}`);
 
     expect(
       shouldApplyCsp(
@@ -75,7 +75,7 @@ describe('middleware CSP', () => {
 
   it('applies only to GET/HEAD in production', async () => {
     setNodeEnv('production');
-    const { shouldApplyCsp } = await import(`./middleware?methods=${Date.now()}`);
+    const { shouldApplyCsp } = await import(`./proxy?methods=${Date.now()}`);
 
     expect(shouldApplyCsp(makeRequestLike('GET', { accept: 'text/html' }))).toBe(true);
     expect(shouldApplyCsp(makeRequestLike('HEAD', { accept: 'text/html' }))).toBe(true);
@@ -88,7 +88,7 @@ describe('middleware CSP', () => {
   it('sets absolute CSP reporting endpoints', async () => {
     setNodeEnv('production');
     process.env.CSP_MODE = 'report-only';
-    const { middleware } = await import(`./middleware?headers=${Date.now()}`);
+    const { proxy } = await import(`./proxy?headers=${Date.now()}`);
 
     const request = new NextServerRequest('https://example.com/articles', {
       method: 'GET',
@@ -96,7 +96,7 @@ describe('middleware CSP', () => {
         accept: 'text/html',
       },
     });
-    const response = middleware(request);
+    const response = proxy(request);
 
     const reportTo = response.headers.get('Report-To');
     expect(reportTo).toBeTruthy();
