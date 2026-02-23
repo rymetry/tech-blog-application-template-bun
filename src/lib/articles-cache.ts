@@ -6,7 +6,7 @@ import {
   getListRawOrThrow,
 } from '@/lib/microcms';
 import type { ArticlePost } from '@/types';
-import { unstable_cache } from 'next/cache';
+import { cacheLife, cacheTag } from 'next/cache';
 
 const fetchAllArticlesUncached = async (): Promise<ArticlePost[]> => {
   const allArticles: ArticlePost[] = [];
@@ -36,7 +36,9 @@ const fetchAllArticlesUncached = async (): Promise<ArticlePost[]> => {
   return allArticles;
 };
 
-export const getAllArticlesCached = unstable_cache(fetchAllArticlesUncached, ['articles:all'], {
-  revalidate: MICROCMS_REVALIDATE_SECONDS,
-  tags: ['microcms', MICROCMS_CACHE_TAGS.ARTICLES],
-});
+export async function getAllArticlesCached(): Promise<ArticlePost[]> {
+  'use cache';
+  cacheLife({ revalidate: MICROCMS_REVALIDATE_SECONDS });
+  cacheTag('microcms', MICROCMS_CACHE_TAGS.ARTICLES);
+  return fetchAllArticlesUncached();
+}

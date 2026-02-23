@@ -3,7 +3,6 @@ import { logWarnEvent } from '@/lib/log-warn';
 const VALID_CSP_MODES = new Set(['report-only', 'enforce']);
 const REPORT_ONLY_MODE = 'report-only';
 
-export const CSP_NONCE_HEADER = 'x-csp-nonce';
 export const CSP_REPORT_GROUP = 'csp-endpoint';
 export const CSP_REPORT_MAX_AGE_SECONDS = 86400;
 
@@ -12,7 +11,6 @@ let hasLoggedInvalidCspMode = false;
 export type CspMode = 'report-only' | 'enforce';
 
 type BuildCspHeaderValueOptions = {
-  nonce: string;
   isProduction: boolean;
   mode: CspMode;
 };
@@ -39,28 +37,7 @@ export const resolveCspMode = (value: string | undefined = process.env.CSP_MODE)
   return REPORT_ONLY_MODE;
 };
 
-const NONCE_BYTES_LENGTH = 24;
-
-const encodeBase64Url = (bytes: Uint8Array): string => {
-  if (typeof btoa === 'function') {
-    let binary = '';
-    for (const byte of bytes) {
-      binary += String.fromCharCode(byte);
-    }
-    return btoa(binary).replaceAll('+', '-').replaceAll('/', '_').replace(/=+$/g, '');
-  }
-
-  return Buffer.from(bytes).toString('base64url');
-};
-
-export const createCspNonce = (): string => {
-  const bytes = new Uint8Array(NONCE_BYTES_LENGTH);
-  globalThis.crypto.getRandomValues(bytes);
-  return encodeBase64Url(bytes);
-};
-
 export const buildCspHeaderValue = ({
-  nonce,
   isProduction,
   mode,
 }: BuildCspHeaderValueOptions): string => {
@@ -70,7 +47,7 @@ export const buildCspHeaderValue = ({
     "object-src 'none'",
     "frame-ancestors 'none'",
     "form-action 'self'",
-    `script-src 'self' 'nonce-${nonce}' 'strict-dynamic' https://www.googletagmanager.com`,
+    "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com",
     "script-src-attr 'none'",
     "style-src 'self' 'unsafe-inline'",
     "img-src 'self' data: blob: https://images.microcms-assets.io",

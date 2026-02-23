@@ -44,28 +44,17 @@ describe('csp utils', () => {
     expect(logWarnEvent).toHaveBeenCalledTimes(1);
   });
 
-  it('creates high-entropy nonce in base64url format', async () => {
-    const { createCspNonce } = await import(`./csp?nonce=${Date.now()}`);
-    const nonce = createCspNonce();
-
-    expect(nonce.length).toBe(32);
-    expect(nonce).toMatch(/^[A-Za-z0-9_-]{32}$/);
-  });
-
   it('includes upgrade-insecure-requests only for enforce mode in production', async () => {
     const { buildCspHeaderValue } = await import(`./csp?header=${Date.now()}`);
     const nonProductionReportOnlyValue = buildCspHeaderValue({
-      nonce: 'abc123',
       isProduction: false,
       mode: 'report-only',
     });
     const productionReportOnlyValue = buildCspHeaderValue({
-      nonce: 'abc123',
       isProduction: true,
       mode: 'report-only',
     });
     const productionEnforceValue = buildCspHeaderValue({
-      nonce: 'abc123',
       isProduction: true,
       mode: 'enforce',
     });
@@ -75,5 +64,10 @@ describe('csp utils', () => {
     expect(nonProductionReportOnlyValue).not.toContain('upgrade-insecure-requests');
     expect(productionReportOnlyValue).not.toContain('upgrade-insecure-requests');
     expect(productionEnforceValue).toContain('upgrade-insecure-requests');
+
+    // nonce 不使用・unsafe-inline ベースであることを確認する。
+    expect(productionEnforceValue).toContain("'unsafe-inline'");
+    expect(productionEnforceValue).not.toContain('nonce-');
+    expect(productionEnforceValue).not.toContain("'strict-dynamic'");
   });
 });

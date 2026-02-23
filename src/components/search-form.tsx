@@ -6,16 +6,22 @@ import { buildArticlesPath } from '@/lib/utils';
 import { Search } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import type React from 'react';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 
 export function SearchForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [query, setQuery] = useState(searchParams.get('q') || '');
+  const searchKey = searchParams.toString();
+  const urlQuery = searchParams.get('q') || '';
+  const [prevSearchKey, setPrevSearchKey] = useState(searchKey);
+  const [query, setQuery] = useState(urlQuery);
 
-  useEffect(() => {
-    setQuery(searchParams.get('q') || '');
-  }, [searchParams]);
+  // URL パラメータが変わったら query を同期する（レンダリング中に同期）
+  // q 以外（tag / page）だけ変わる遷移でも入力欄をリセットする。
+  if (prevSearchKey !== searchKey) {
+    setPrevSearchKey(searchKey);
+    setQuery(urlQuery);
+  }
 
   const handleSubmit = useCallback(
     (e: React.FormEvent) => {
