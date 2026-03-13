@@ -13,7 +13,7 @@ interface FeaturedArticleCardProps {
 }
 
 const FEATURED_IMAGE_SIZES =
-  '(max-width: 767px) 100vw, (max-width: 1023px) calc(100vw - 320px), (max-width: 1279px) calc((100vw - 344px) / 2), 468px';
+  '(max-width: 767px) calc(100vw - 40px), (max-width: 1023px) calc(100vw - 360px), (max-width: 1279px) calc((100vw - 384px) * 0.4), 380px';
 
 export function FeaturedArticleCard({ post }: FeaturedArticleCardProps) {
   const featuredImageUrl = post.hasCoverImage
@@ -31,18 +31,20 @@ export function FeaturedArticleCard({ post }: FeaturedArticleCardProps) {
       aria-labelledby={`featured-article-title-${post.slug}`}
     >
       <Card className="overflow-hidden card-surface card-surface-hover group-focus-visible:ring-2 group-focus-visible:ring-primary group-focus-visible:ring-offset-2 py-0">
-        <div className="grid lg:grid-cols-[1.5fr_1.5fr]">
-          <div className="relative w-full overflow-hidden aspect-[16/9] lg:aspect-auto lg:h-full lg:min-h-[240px]">
-            <Image
-              src={featuredImageUrl}
-              alt=""
-              aria-hidden="true"
-              fill
-              loading="eager"
-              fetchPriority="high"
-              sizes={FEATURED_IMAGE_SIZES}
-              className="object-cover object-center"
-            />
+        <div className="grid lg:grid-cols-[2fr_3fr]">
+          <div className="p-4 pb-0 lg:pb-4">
+            <div className="relative w-full overflow-hidden aspect-[16/9] lg:aspect-auto lg:h-full rounded-lg">
+              <Image
+                src={featuredImageUrl}
+                alt=""
+                aria-hidden="true"
+                fill
+                loading="eager"
+                fetchPriority="high"
+                sizes={FEATURED_IMAGE_SIZES}
+                className="object-cover object-center transition-transform duration-300 group-hover:scale-105"
+              />
+            </div>
           </div>
           <div className="flex flex-col justify-between gap-4 p-5 sm:p-6">
             <div className="space-y-3">

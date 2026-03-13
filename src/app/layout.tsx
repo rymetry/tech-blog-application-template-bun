@@ -1,19 +1,17 @@
 import Footer from '@/components/footer';
 import Header from '@/components/header';
-import DraftModeIndicator from '@/components/draft-mode-indicator';
 import { ThemeProvider } from '@/components/theme-provider';
 import { sanitizeMeasurementId } from '@/lib/constants';
-import { CSP_NONCE_HEADER } from '@/lib/csp';
 import { SITE_TITLE_TEMPLATE, buildOgImage, feedUrl, metadataBase, siteMetadata } from '@/lib/metadata';
 import type { Metadata } from 'next';
-import { draftMode, headers } from 'next/headers';
+import { draftMode } from 'next/headers';
 import Script from 'next/script';
+import { Suspense } from 'react';
 import './globals.css';
 
 const defaultOgImage = buildOgImage();
 const GA_MEASUREMENT_ID = sanitizeMeasurementId(process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID);
 const GA_MEASUREMENT_ID_JSON = GA_MEASUREMENT_ID ? JSON.stringify(GA_MEASUREMENT_ID) : null;
-const ENABLE_CSP_E2E_PROBE = process.env.CSP_NONCE_E2E_PROBE === '1';
 
 export const metadata: Metadata = {
   metadataBase,
@@ -52,12 +50,24 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function RootLayout({ children }: { children: React.ReactNode }) {
+/**
+ * ドラフトモードインジケーター — draftMode()（動的 API）を読み取り、
+ * プレビュー有効時のみインジケーターをレンダリングする。
+ * 静的シェルをブロックしないよう <Suspense> 境界内に配置する。
+ */
+async function DraftModeCheck() {
   const draftState = await draftMode();
-  const requestHeaders = await headers();
-  const { isEnabled } = draftState;
-  const cspNonce = requestHeaders.get(CSP_NONCE_HEADER) || undefined;
+  if (!draftState.isEnabled) return null;
+  const DraftModeIndicator = (await import('@/components/draft-mode-indicator')).default;
+  return <DraftModeIndicator />;
+}
 
+/**
+ * ルートレイアウト — 静的シェルとしてプリレンダリングされる。
+ * CSP は proxy.ts で unsafe-inline ベースのヘッダーを付与するため、
+ * nonce や headers() の呼び出しは不要。
+ */
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="ja" suppressHydrationWarning>
       <head>
@@ -65,7 +75,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <link rel="alternate" type="application/rss+xml" href={feedUrl} />
       </head>
       <body className="min-h-screen bg-background antialiased">
-        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem nonce={cspNonce}>
+        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
           <div className="flex min-h-screen flex-col">
             <a href="#main-content" className="skip-link">
               Skip to content
@@ -76,19 +86,19 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             </main>
             <Footer />
           </div>
-          {isEnabled && <DraftModeIndicator />}
+          <Suspense fallback={null}>
+            <DraftModeCheck />
+          </Suspense>
         </ThemeProvider>
         {GA_MEASUREMENT_ID_JSON ? (
           <>
             <Script
               src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
               strategy="afterInteractive"
-              nonce={cspNonce}
             />
             <Script
               id="ga4"
               strategy="afterInteractive"
-              nonce={cspNonce}
               dangerouslySetInnerHTML={{
                 __html: `
                   const GA_MEASUREMENT_ID = ${GA_MEASUREMENT_ID_JSON};
@@ -102,13 +112,6 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               }}
             />
           </>
-        ) : null}
-        {ENABLE_CSP_E2E_PROBE && cspNonce ? (
-          <script
-            id="layout-csp-probe"
-            nonce={cspNonce}
-            dangerouslySetInnerHTML={{ __html: 'window.__layoutCspProbe = true;' }}
-          />
         ) : null}
       </body>
     </html>

@@ -300,7 +300,7 @@
   }
 
   .editorial-scope .article-compact-card-media {
-    @apply h-[100px] w-[100px] rounded-xl border border-border/30;
+    @apply w-full aspect-[16/9] sm:w-[148px] md:w-[168px];
   }
 
   .editorial-scope .article-toc-panel {

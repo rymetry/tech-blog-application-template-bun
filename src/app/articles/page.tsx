@@ -11,8 +11,6 @@ import { buildBreadcrumbJsonLd } from '@/lib/structured-data';
 import { getTagsByIdMapSafe } from '@/lib/tags-map';
 import { buildQueryString } from '@/lib/utils';
 
-export const revalidate = 300;
-
 interface ArticlePageProps {
   searchParams: Promise<RawArticlesQuery>;
 }

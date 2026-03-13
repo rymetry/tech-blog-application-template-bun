@@ -4,8 +4,6 @@ import { feedUrl, siteMetadata, absoluteUrl } from '@/lib/metadata';
 import { MICROCMS_REVALIDATE_SECONDS } from '@/lib/microcms';
 import { stripHtml, truncateForSEO } from '@/lib/utils';
 
-// ルートセグメント設定は識別子参照を許可しないため、ここは数値リテラルで定義する。
-export const revalidate = 300;
 const CONTENT_PREVIEW_LENGTH = 1000;
 
 export async function GET() {

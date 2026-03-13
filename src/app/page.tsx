@@ -15,8 +15,6 @@ import { buildBlogListJsonLd } from '@/lib/structured-data';
 import Link from 'next/link';
 import { Suspense } from 'react';
 
-export const revalidate = 300;
-
 export const metadata = createPageMetadata({
   title: 'Home',
   description:
