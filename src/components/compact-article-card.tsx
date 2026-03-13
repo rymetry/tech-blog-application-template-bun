@@ -12,7 +12,7 @@ interface CompactArticleCardProps {
 
 export function CompactArticleCard({ post }: CompactArticleCardProps) {
   const compactImageUrl = post.hasCoverImage
-    ? getMicroCmsImageUrl(post.coverImage.url, { width: 240, height: 240, fit: 'max' })
+    ? getMicroCmsImageUrl(post.coverImage.url, { width: 320, height: 180, fit: 'crop' })
     : '';
 
   return (
@@ -21,38 +21,28 @@ export function CompactArticleCard({ post }: CompactArticleCardProps) {
       className="group block h-full focus-visible:outline-none"
       aria-labelledby={`compact-article-title-${post.slug}`}
     >
-      <Card className="article-compact-card h-full min-h-[108px] overflow-hidden card-surface card-surface-hover group-focus-visible:ring-2 group-focus-visible:ring-primary group-focus-visible:ring-offset-2 py-0">
-        <div className="flex h-full items-center gap-4 px-4 py-1">
-          <div className="shrink-0">
+      <Card className="article-compact-card h-full overflow-hidden card-surface card-surface-hover group-focus-visible:ring-2 group-focus-visible:ring-primary group-focus-visible:ring-offset-2 py-0">
+        <div className="flex h-full flex-col sm:flex-row sm:items-center">
+          <div className="shrink-0 p-3 pb-0 sm:pb-3">
             {post.hasCoverImage ? (
-              <div className="article-compact-card-media relative overflow-hidden">
+              <div className="article-compact-card-media relative overflow-hidden rounded-lg">
                 <Image
                   src={compactImageUrl}
                   alt=""
                   aria-hidden="true"
                   fill
-                  sizes="100px"
-                  className="pointer-events-none object-cover scale-110 blur-xl opacity-45"
-                />
-                <div className="absolute inset-0 bg-background/20" aria-hidden="true" />
-                <Image
-                  src={compactImageUrl}
-                  alt=""
-                  aria-hidden="true"
-                  fill
-                  sizes="100px"
-                  quality={90}
-                  className="object-contain p-1.5"
+                  sizes="(max-width: 639px) calc(100vw - 24px), (max-width: 767px) 148px, 168px"
+                  className="object-cover transition-transform duration-300 group-hover:scale-105"
                 />
               </div>
             ) : (
               <div
-                className="article-compact-card-media article-hero-cover-placeholder"
+                className="article-compact-card-media article-hero-cover-placeholder rounded-lg"
                 aria-hidden="true"
               />
             )}
           </div>
-          <div className="flex min-w-0 flex-1">
+          <div className="flex min-w-0 flex-1 p-3 pt-2 sm:py-3 sm:pr-3 sm:pl-0">
             <div className="space-y-2">
               <h3
                 id={`compact-article-title-${post.slug}`}

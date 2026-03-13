@@ -131,6 +131,7 @@ export default async function ArticlePostPage({ params, searchParams }: ArticleP
                     alt=""
                     aria-hidden="true"
                     fill
+                    priority
                     sizes="(max-width: 767px) 200px, (max-width: 1023px) 224px, 240px"
                     className="object-cover object-center"
                   />
